@@ -1,0 +1,24 @@
+# Arquivos do Maven
+target/
+*.jar
+*.war
+*.ear
+
+# Configuração do IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs e arquivos temporários
+*.log
+logs/
+*.swp
+*.swo
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configuração do Git
+.gitignore
