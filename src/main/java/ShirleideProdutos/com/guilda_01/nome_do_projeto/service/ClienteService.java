@@ -22,8 +22,6 @@ public class ClienteService {
 
     public ClienteDTO cadastrarCliente(ClienteDTO clienteDTO) {
         Cliente cliente = clienteMapper.toEntity(clienteDTO);
-        cliente.setCriadoEm(LocalDate.now());
-        cliente.setAtualizadoEm(LocalDate.now());
         Cliente clienteSalvo = clienteRepository.save(cliente);
         return clienteMapper.toDTO(clienteSalvo);
     }
@@ -46,7 +44,6 @@ public class ClienteService {
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         cliente.setNome(clienteDTO.getNome());
-        cliente.setAtualizadoEm(LocalDate.now());
 
         Cliente clienteAtualizado = clienteRepository.save(cliente);
         return clienteMapper.toDTO(clienteAtualizado);
@@ -56,6 +53,7 @@ public class ClienteService {
         if (!clienteRepository.existsById(id)) {
             throw new RuntimeException("Cliente não encontrado");
         }
+
         clienteRepository.deleteById(id);
     }
 }
