@@ -1,5 +1,6 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO;
 
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class ContatoDTO {
     private String celular;
     private LocalDate criadoEm;
     private LocalDate atualizadoEm;
-    private ClienteDTO cliente;
+    private Cliente cliente;
     
 
     public ContatoDTO(Contato contato) {
@@ -25,7 +26,7 @@ public class ContatoDTO {
         this.celular = contato.getCelular();
         this.criadoEm = contato.getCriadoEm();
         this.atualizadoEm = contato.getAtualizadoEm();
-        this.cliente = new ClienteDTO(contato.getCliente());
+        this.cliente = contato.getCliente();
 
     }
 }
