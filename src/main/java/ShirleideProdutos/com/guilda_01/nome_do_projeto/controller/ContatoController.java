@@ -37,14 +37,12 @@ public class ContatoController {
         Cliente cliente = possivelCliente.get();
 
         Contato contato = new Contato();
-        contato.setCelular(contatoDTO.getCelular());
-        contato.setCriadoEm(LocalDate.now());
-        contato.setAtualizadoEm(LocalDate.now());
-        contato.setCliente(cliente);
 
+        contato.setCelular(contatoDTO.getCelular());
+        contato.setClienteId(cliente.getId());
         cliente.getContatos().add(contato);
 
-        clienteRepository.save(cliente);
+        contatoRepository.save(contato);
 
         return ResponseEntity.ok(new ContatoDTO(contato));
     }
