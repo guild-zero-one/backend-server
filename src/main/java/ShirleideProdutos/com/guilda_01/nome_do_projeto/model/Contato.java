@@ -29,8 +29,6 @@ public class Contato {
     @UpdateTimestamp
     private LocalDate atualizadoEm;
 
-    @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    private Cliente cliente;
+    private Integer clienteId;
 
 }

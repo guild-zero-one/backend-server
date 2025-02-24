@@ -11,7 +11,7 @@ public class ContatoMapper {
 
     public ContatoDTO toDto(Contato contato) {
         return new ContatoDTO(
-                contato.getId(), contato.getCelular(), contato.getCriadoEm(), contato.getAtualizadoEm(), contato.getCliente()
+                contato.getId(), contato.getCelular(), contato.getCriadoEm(), contato.getAtualizadoEm(), contato.getClienteId()
         );
     }
 
@@ -20,7 +20,7 @@ public class ContatoMapper {
                 contatoDTO.getCelular(),
                 contatoDTO.getCriadoEm(),
                 contatoDTO.getAtualizadoEm(),
-                contatoDTO.getCliente());
+                contatoDTO.getClienteId());
     }
 
 }

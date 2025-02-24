@@ -18,7 +18,7 @@ public class ContatoDTO {
     private String celular;
     private LocalDate criadoEm;
     private LocalDate atualizadoEm;
-    private Cliente cliente;
+    private Integer clienteId;
     
 
     public ContatoDTO(Contato contato) {
@@ -26,7 +26,7 @@ public class ContatoDTO {
         this.celular = contato.getCelular();
         this.criadoEm = contato.getCriadoEm();
         this.atualizadoEm = contato.getAtualizadoEm();
-        this.cliente = contato.getCliente();
+        this.clienteId = contato.getClienteId();
 
     }
 }

@@ -31,7 +31,7 @@ public class Cliente {
     @UpdateTimestamp
     private LocalDate atualizadoEm;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contato> contatos = new ArrayList<>();
 }
 
