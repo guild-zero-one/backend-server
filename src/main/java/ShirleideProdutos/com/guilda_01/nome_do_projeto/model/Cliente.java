@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,8 +25,10 @@ public class Cliente {
 
     private String nome;
 
+    @CreationTimestamp
     private LocalDate criadoEm = LocalDate.now();
 
+    @UpdateTimestamp
     private LocalDate atualizadoEm;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
