@@ -1,0 +1,8 @@
+package ShirleideProdutos.com.guilda_01.nome_do_projeto.repository;
+
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ClienteRepository extends JpaRepository<Cliente, Integer>{
+
+}
