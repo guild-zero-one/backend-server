@@ -1,5 +1,6 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ContatoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ContatoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
@@ -50,6 +51,29 @@ public class ContatoService {
         return contatosDto;
 
 
+
+    }
+
+    public ContatoDTO atualizarContato(Integer id, ContatoDTO contatoDTO) {
+        Contato contato = contatoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contato não encontrado"));
+
+        contato.setCelular(contatoDTO.getCelular());
+
+        Contato contatoAtualizado = contatoRepository.save(contato);
+        return contatoMapper.toDto(contatoAtualizado);
+    }
+
+    public void deletarContato(Integer id) {
+        Contato contato = contatoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Contato não encontrado."));
+
+        Cliente cliente = clienteRepository.findById(contato.getClienteId())
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
+
+        cliente.getContatos().remove(contato);
+        clienteRepository.save(cliente);
+        contatoRepository.delete(contato);
 
     }
 

@@ -1,5 +1,6 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ContatoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
@@ -33,6 +34,17 @@ public class ContatoController {
     @GetMapping("/{clienteId}")
     public ResponseEntity<List<ContatoDTO>> buscarContatosPorCliente(@PathVariable Integer clienteId) {
         return ResponseEntity.ok(contatoService.buscarContatosPorCliente(clienteId));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ContatoDTO> atualizarContato(@PathVariable Integer id, @RequestBody ContatoDTO contatoDTO) {
+        return ResponseEntity.ok(contatoService.atualizarContato(id, contatoDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarContato (@PathVariable Integer id) {
+        contatoService.deletarContato(id);
+        return ResponseEntity.noContent().build();
     }
 
 
