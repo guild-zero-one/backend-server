@@ -10,6 +10,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ContatoService {
 
@@ -36,5 +39,18 @@ public class ContatoService {
         return contatoMapper.toDto(contatoRepository.save(contato));
     }
 
+    public List<ContatoDTO> buscarContatosPorCliente (Integer clienteId) {
+        List<ContatoDTO> contatosDto = new ArrayList<>();
+        List<Contato> contatos = contatoRepository.findByClienteId(clienteId);
+
+        for (Contato contato : contatos) {
+            contatosDto.add(contatoMapper.toDto(contato));
+        }
+
+        return contatosDto;
+
+
+
+    }
 
 }

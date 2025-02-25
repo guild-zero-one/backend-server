@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -27,6 +28,11 @@ public class ContatoController {
             @PathVariable Integer clienteId,
             @RequestBody ContatoDTO contatoDTO) {
         return ResponseEntity.ok(contatoService.adicionarContato(clienteId, contatoDTO));
+    }
+
+    @GetMapping("/{clienteId}")
+    public ResponseEntity<List<ContatoDTO>> buscarContatosPorCliente(@PathVariable Integer clienteId) {
+        return ResponseEntity.ok(contatoService.buscarContatosPorCliente(clienteId));
     }
 
 
