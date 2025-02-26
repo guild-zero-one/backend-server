@@ -1,6 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.Exceptions.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ClienteMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
@@ -35,7 +36,7 @@ public class ClienteService {
 
     public ClienteDTO buscarClientePorId(Integer id) {
         Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
         return clienteMapper.toDTO(cliente);
     }
 
