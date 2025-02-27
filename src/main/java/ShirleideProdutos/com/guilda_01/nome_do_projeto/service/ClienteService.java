@@ -35,14 +35,11 @@ public class ClienteService {
     }
 
     public ClienteDTO buscarClientePorId(Integer id) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
-        return clienteMapper.toDTO(cliente);
+        return clienteMapper.toDTO(buscarCliente(id));
     }
 
     public ClienteDTO atualizarCliente(Integer id, ClienteDTO clienteDTO) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = buscarCliente(id);
 
         cliente.setNome(clienteDTO.getNome());
 
@@ -52,10 +49,15 @@ public class ClienteService {
 
     public void deletarCliente(Integer id) {
         if (!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente não encontrado");
+            throw new ResourceNotFoundException("Cliente não encontrado");
         }
 
         clienteRepository.deleteById(id);
+    }
+
+    private Cliente buscarCliente(Integer id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 }
 

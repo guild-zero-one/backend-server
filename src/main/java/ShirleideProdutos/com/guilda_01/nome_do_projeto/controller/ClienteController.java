@@ -3,6 +3,8 @@ package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +19,16 @@ public class ClienteController {
 
     @PostMapping("/cadastrar")
     public ResponseEntity<ClienteDTO> cadastrarCliente(@RequestBody ClienteDTO clienteDTO) {
-        return ResponseEntity.ok(clienteService.cadastrarCliente(clienteDTO));
+        return new ResponseEntity<>(clienteService.cadastrarCliente(clienteDTO), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<ClienteDTO> listarClientes() {
-        return clienteService.listarClientes();
+    public ResponseEntity <List<ClienteDTO>> listarClientes() {
+        List<ClienteDTO> clientes = clienteService.listarClientes();
+        if(clientes.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(clientes, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
