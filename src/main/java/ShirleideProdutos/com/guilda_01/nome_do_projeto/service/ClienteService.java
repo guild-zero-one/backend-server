@@ -1,14 +1,13 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.Exceptions.ResourceNotFoundException;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ClienteMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,14 +34,12 @@ public class ClienteService {
     }
 
     public ClienteDTO buscarClientePorId(Integer id) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+        Cliente cliente = buscarCliente(id);
         return clienteMapper.toDTO(cliente);
     }
 
     public ClienteDTO atualizarCliente(Integer id, ClienteDTO clienteDTO) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = buscarCliente(id);
 
         cliente.setNome(clienteDTO.getNome());
 
@@ -52,10 +49,17 @@ public class ClienteService {
 
     public void deletarCliente(Integer id) {
         if (!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente não encontrado");
+            throw new ResourceNotFoundException("Cliente não encontrado");
         }
 
         clienteRepository.deleteById(id);
     }
+
+
+    private Cliente buscarCliente(Integer id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    }
+
 }
 
