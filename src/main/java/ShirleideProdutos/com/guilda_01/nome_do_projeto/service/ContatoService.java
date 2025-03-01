@@ -28,12 +28,11 @@ public class ContatoService {
 
 
 
-    public ContatoDTO adicionarContato(Integer clienteId, ContatoDTO contatoDTO) {
+    public ContatoDTO adicionarContato(Integer clienteId, Contato contato) {
         Cliente cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
 
-        Contato contato = contatoMapper.toEntity(contatoDTO);
-        contato.setClienteId(clienteId);
+        contato.setCliente(cliente);
 
         cliente.getContatos().add(contato);
 
@@ -68,7 +67,7 @@ public class ContatoService {
         Contato contato = contatoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Contato não encontrado."));
 
-        Cliente cliente = clienteRepository.findById(contato.getClienteId())
+        Cliente cliente = clienteRepository.findById(contato.getCliente().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
 
         cliente.getContatos().remove(contato);

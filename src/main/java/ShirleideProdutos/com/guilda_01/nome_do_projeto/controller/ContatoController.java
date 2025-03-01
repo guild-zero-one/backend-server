@@ -27,8 +27,8 @@ public class ContatoController {
     @PostMapping("/adicionar/{clienteId}")
     public ResponseEntity<ContatoDTO> adicionarContato(
             @PathVariable Integer clienteId,
-            @RequestBody ContatoDTO contatoDTO) {
-        return ResponseEntity.ok(contatoService.adicionarContato(clienteId, contatoDTO));
+            @RequestBody Contato contato) {
+        return ResponseEntity.ok(contatoService.adicionarContato(clienteId, contato));
     }
 
     @GetMapping("/{clienteId}")

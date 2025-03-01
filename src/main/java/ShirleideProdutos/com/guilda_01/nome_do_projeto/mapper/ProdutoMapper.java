@@ -18,5 +18,6 @@ public class ProdutoMapper {
         produto.setQtdTotal(produtoDTO.getQtdTotal());
         produto.setCriadoEm(produtoDTO.getCriadoEm());
         produto.setAtualizadoEm(produtoDTO.getAtualizadoEm());
+        return produto;
     }
 }

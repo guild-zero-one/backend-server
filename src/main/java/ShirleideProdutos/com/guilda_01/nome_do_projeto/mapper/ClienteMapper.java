@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class ClienteMapper {
 
     public ClienteDTO toDTO(Cliente cliente) {
-        return new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getCriadoEm(), cliente.getAtualizadoEm(), cliente.getContatos());
+        return new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getCriadoEm(), cliente.getAtualizadoEm());
     }
 
     public Cliente toEntity(ClienteDTO clienteDTO) {

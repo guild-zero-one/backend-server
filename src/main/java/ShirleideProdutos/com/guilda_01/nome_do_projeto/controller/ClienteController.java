@@ -1,6 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,8 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<ClienteDTO> cadastrarCliente(@RequestBody ClienteDTO clienteDTO) {
-        return new ResponseEntity<>(clienteService.cadastrarCliente(clienteDTO), HttpStatus.CREATED);
+    public ResponseEntity<ClienteDTO> cadastrarCliente(@RequestBody Cliente cliente) {
+        return new ResponseEntity<>(clienteService.cadastrarCliente(cliente), HttpStatus.CREATED);
     }
 
     @GetMapping
