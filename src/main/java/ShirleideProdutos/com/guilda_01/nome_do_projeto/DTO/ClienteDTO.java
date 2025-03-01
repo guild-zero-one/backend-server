@@ -20,14 +20,6 @@ public class ClienteDTO {
     private String nome;
     private LocalDate criadoEm;
     private LocalDate atualizadoEm;
-    private List<Contato> contatos;
 
-    public ClienteDTO(Cliente cliente) {
-        this.id = cliente.getId();
-        this.nome = cliente.getNome();
-        this.criadoEm = cliente.getCriadoEm();
-        this.atualizadoEm = cliente.getAtualizadoEm();
-        this.contatos = new ArrayList<>();
-    }
 
 }
