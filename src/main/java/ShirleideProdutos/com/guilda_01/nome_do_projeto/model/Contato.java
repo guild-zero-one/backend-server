@@ -15,8 +15,6 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 
 public class Contato {
     @Id
@@ -29,6 +27,7 @@ public class Contato {
     @UpdateTimestamp
     private LocalDate atualizadoEm;
 
-    private Integer clienteId;
+    @ManyToOne
+    private Cliente cliente;
 
 }
