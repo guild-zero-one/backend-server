@@ -18,7 +18,7 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    @PostMapping("/cadastrar")
+    @PostMapping()
     public ResponseEntity<ClienteDTO> cadastrarCliente(@RequestBody Cliente cliente) {
         return new ResponseEntity<>(clienteService.cadastrarCliente(cliente), HttpStatus.CREATED);
     }
