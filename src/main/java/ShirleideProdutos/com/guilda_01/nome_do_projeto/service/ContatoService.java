@@ -1,18 +1,17 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ContatoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceAlreadyExistsException;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ContatoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ContatoRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ContatoService {
@@ -30,7 +29,13 @@ public class ContatoService {
 
     public ContatoDTO adicionarContato(Integer clienteId, Contato contato) {
         Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado."));
+
+        Optional<Contato> possivelContato = contatoRepository.findByCelular(contato.getCelular());
+
+        if(possivelContato.isPresent()) {
+            throw new ResourceAlreadyExistsException("Já existe um contato cadastrado com este número de celular.");
+        }
 
         contato.setCliente(cliente);
 
@@ -39,23 +44,24 @@ public class ContatoService {
         return contatoMapper.toDto(contatoRepository.save(contato));
     }
 
-    public List<ContatoDTO> buscarContatosPorCliente (Integer clienteId) {
-        List<ContatoDTO> contatosDto = new ArrayList<>();
-        List<Contato> contatos = contatoRepository.findByClienteId(clienteId);
+    public Set<ContatoDTO> buscarContatosPorCliente (Integer clienteId) {
 
-        for (Contato contato : contatos) {
-            contatosDto.add(contatoMapper.toDto(contato));
-        }
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado."));
 
-        return contatosDto;
+        Set<ContatoDTO> contatosDTO = new HashSet<>();
 
+        contatosDTO.addAll(cliente.getContatos()
+                .stream()
+                .map(contatoMapper:: toDto)
+                .toList());
 
-
+        return contatosDTO;
     }
 
     public ContatoDTO atualizarContato(Integer id, ContatoDTO contatoDTO) {
         Contato contato = contatoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contato não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado"));
 
         contato.setCelular(contatoDTO.getCelular());
 
@@ -65,11 +71,9 @@ public class ContatoService {
 
     public void deletarContato(Integer id) {
         Contato contato = contatoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Contato não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado."));
 
-        Cliente cliente = clienteRepository.findById(contato.getCliente().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
-
+        Cliente cliente = clienteRepository.findById(contato.getCliente().getId()).get();
         cliente.getContatos().remove(contato);
         clienteRepository.save(cliente);
         contatoRepository.delete(contato);
