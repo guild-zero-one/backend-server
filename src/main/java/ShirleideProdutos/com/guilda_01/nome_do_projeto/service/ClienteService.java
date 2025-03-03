@@ -21,6 +21,7 @@ public class ClienteService {
     private ClienteMapper clienteMapper;
 
     public ClienteDTO cadastrarCliente(Cliente cliente) {
+        cliente.setId(null);
         Cliente clienteSalvo = clienteRepository.save(cliente);
         return clienteMapper.toDTO(clienteSalvo);
     }

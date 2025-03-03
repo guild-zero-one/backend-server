@@ -26,6 +26,7 @@ public class ProdutoService {
     private ProdutoMapper produtoMapper;
 
     public ProdutoDTO cadastrarProduto(ProdutoDTO produtoDTO){
+        produtoDTO.setId(null);
         Fornecedor fornecedor = fornecedorService.buscarFornecedor(produtoDTO.getFornecedorId());
         Produto produtoCriado = produtoMapper.toEntity(produtoDTO, fornecedor);
         Produto produtoSalvo = produtoRepository.save(produtoCriado);

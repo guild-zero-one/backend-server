@@ -21,6 +21,7 @@ public class FornecedorService {
     FornecedorMapper fornecedorMapper;
 
     public FornecedorDTO cadastrarFornecedor(Fornecedor fornecedor){
+        fornecedor.setId(null);
         Fornecedor fornecedorSalvo = fornecedorRepository.save(fornecedor);
         return fornecedorMapper.toDTO(fornecedorSalvo);
     }

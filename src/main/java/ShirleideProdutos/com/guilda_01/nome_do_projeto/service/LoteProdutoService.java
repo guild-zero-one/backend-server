@@ -25,6 +25,7 @@ public class LoteProdutoService {
     ProdutoRepository produtoRepository;
 
     public LoteProdutoDTO adicionarLote(Integer produtoId, LoteProduto loteProduto){
+        loteProduto.setId(null);
         Produto produto = produtoRepository.findById(produtoId).orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado."));
 
         loteProduto.setProduto(produto);

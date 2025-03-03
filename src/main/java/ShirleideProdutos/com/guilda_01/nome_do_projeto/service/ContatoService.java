@@ -28,6 +28,7 @@ public class ContatoService {
 
 
     public ContatoDTO adicionarContato(Integer clienteId, Contato contato) {
+        contato.setId(null);
         Cliente cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado."));
 
