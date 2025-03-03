@@ -1,6 +1,8 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Produto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("/produtos")
 public class ProdutoController {
 
     @Autowired
@@ -36,8 +38,8 @@ public class ProdutoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoDTO produtoDTO){
-        return ResponseEntity.ok(produtoService.atualizarProduto(id, produtoDTO));
+    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoDTO produtoDTO, @RequestBody Fornecedor fornecedor){
+        return ResponseEntity.ok(produtoService.atualizarProduto(id, produtoDTO, fornecedor));
     }
 
     @DeleteMapping("/{id}")

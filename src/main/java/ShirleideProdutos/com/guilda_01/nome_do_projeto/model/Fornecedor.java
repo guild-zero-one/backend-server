@@ -1,9 +1,10 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -13,20 +14,12 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class Produto {
+public class Fornecedor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String nomeNf;
-
-    private String nomeFantasia;
-
-    @ManyToOne
-    @JoinColumn(name = "fk_fornecedor", nullable = false)
-    private Fornecedor fornecedor;
+    private String nome;
+    private String cnpj;
 
     @CreationTimestamp
     private LocalDate criadoEm = LocalDate.now();
