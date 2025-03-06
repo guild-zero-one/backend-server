@@ -30,8 +30,8 @@ public class ContatoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ContatoDTO> atualizarContato(@PathVariable Integer id, @RequestBody ContatoDTO contatoDTO) {
-        return ResponseEntity.ok(contatoService.atualizarContato(id, contatoDTO));
+    public ResponseEntity<ContatoDTO> atualizarContato(@PathVariable Integer id, @RequestBody  Contato contato) {
+        return ResponseEntity.ok(contatoService.atualizarContato(id, contato));
     }
 
     @DeleteMapping("/{id}")

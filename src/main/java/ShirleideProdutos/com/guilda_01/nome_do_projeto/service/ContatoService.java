@@ -60,11 +60,11 @@ public class ContatoService {
         return contatosDTO;
     }
 
-    public ContatoDTO atualizarContato(Integer id, ContatoDTO contatoDTO) {
-        Contato contato = contatoRepository.findById(id)
+    public ContatoDTO atualizarContato(Integer id, Contato contato) {
+        Contato contatoEncontrado = contatoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Contato não encontrado"));
 
-        contato.setCelular(contatoDTO.getCelular());
+        contatoEncontrado.setCelular(contato.getCelular());
 
         Contato contatoAtualizado = contatoRepository.save(contato);
         return contatoMapper.toDto(contatoAtualizado);
