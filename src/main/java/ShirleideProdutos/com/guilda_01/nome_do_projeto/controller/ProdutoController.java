@@ -1,6 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Produto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ProdutoService;
@@ -18,33 +19,33 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    @PostMapping("/cadastrar")
-    public ResponseEntity<ProdutoDTO> cadastrarProduto(@RequestBody ProdutoDTO produtoDTO){
-        return new ResponseEntity<>(produtoService.cadastrarProduto(produtoDTO), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/listar")
-    public ResponseEntity<List<ProdutoDTO>> listarProdutos(){
-        List<ProdutoDTO> produtos = produtoService.listarProdutos();
+    @GetMapping
+    public ResponseEntity<List<ProdutoDTO>> findAll() {
+        List<ProdutoDTO> produtos = produtoService.findAll();
         if (produtos.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("Nenhum produto encontrado");
         }
-        return new ResponseEntity<>(produtos, HttpStatus.OK);
+        return ResponseEntity.ok(produtos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> buscarPorId(@PathVariable Integer id){
-        return ResponseEntity.ok(produtoService.buscarProdutoPorId(id));
+    public ResponseEntity<ProdutoDTO> findById(@PathVariable Integer id) {
+        ProdutoDTO produtoDTO = produtoService.findById(id);
+        if (produtoDTO != null) {
+            return ResponseEntity.ok(produtoDTO);
+        }
+        throw new ResourceNotFoundException("Produto não encontrado");
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoDTO produtoDTO, @RequestBody Fornecedor fornecedor){
-        return ResponseEntity.ok(produtoService.atualizarProduto(id, produtoDTO, fornecedor));
+    @PostMapping
+    public ResponseEntity<ProdutoDTO> save(@RequestBody ProdutoDTO produtoDTO) {
+        produtoDTO.setId(null);
+        return ResponseEntity.ok(produtoService.save(produtoDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarProduto(@PathVariable Integer id){
-        produtoService.deletarProduto(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+        produtoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

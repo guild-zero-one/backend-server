@@ -1,27 +1,23 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
+import lombok.Data;
 
+
+import java.time.LocalDateTime;
+
+@Data
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Produto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nomeNf;
-
+    private String nome;
     private String nomeFantasia;
 
     @ManyToOne
@@ -29,8 +25,8 @@ public class Produto {
     private Fornecedor fornecedor;
 
     @CreationTimestamp
-    private LocalDate criadoEm = LocalDate.now();
+    private LocalDateTime criadoEm;
 
     @UpdateTimestamp
-    private LocalDate atualizadoEm;
+    private LocalDateTime atualizadoEm;
 }

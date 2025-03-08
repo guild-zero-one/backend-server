@@ -1,14 +1,14 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.FornecedorMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ProdutoMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Produto;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.FornecedorRepository;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,50 +17,39 @@ import java.util.stream.Collectors;
 public class ProdutoService {
 
     @Autowired
-    FornecedorService fornecedorService;
-
-    @Autowired
     private ProdutoRepository produtoRepository;
 
     @Autowired
-    private ProdutoMapper produtoMapper;
+    private FornecedorService fornecedorService;
 
-    public ProdutoDTO cadastrarProduto(ProdutoDTO produtoDTO){
-        produtoDTO.setId(null);
-        Fornecedor fornecedor = fornecedorService.buscarFornecedor(produtoDTO.getFornecedorId());
-        Produto produtoCriado = produtoMapper.toEntity(produtoDTO, fornecedor);
-        Produto produtoSalvo = produtoRepository.save(produtoCriado);
-        return produtoMapper.toDTO(produtoSalvo);
+    // Método para salvar a partir de um DTO
+    public ProdutoDTO save(ProdutoDTO produtoDTO) {
+        Produto produto = ProdutoMapper.toEntity(produtoDTO);
+        // Busca o fornecedor pelo ID e seta no produto
+        FornecedorDTO fornecedor = fornecedorService.findById(produtoDTO.getFornecedorId());
+        produto.setFornecedor(FornecedorMapper.toEntity(fornecedor));
+        produto = save(produto); // Chama o método que salva a entidade
+        return ProdutoMapper.toDTO(produto);
     }
 
-    public List<ProdutoDTO> listarProdutos(){
-        return produtoRepository.findAll().stream().map(produtoMapper::toDTO).collect(Collectors.toList());
+    // Método para salvar a partir de uma entidade
+    public Produto save(Produto produto) {
+        return produtoRepository.save(produto);
     }
 
-    public ProdutoDTO buscarProdutoPorId(Integer id){
-        return produtoMapper.toDTO(buscarProduto(id));
+    public List<ProdutoDTO> findAll() {
+        return produtoRepository.findAll().stream()
+                .map(ProdutoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public ProdutoDTO atualizarProduto(Integer id,ProdutoDTO produtoDTO, Fornecedor fornecedor){
-        Produto produto = buscarProduto(id);
-
-        produto.setNomeNf(produtoDTO.getNomeNf());
-        produto.setNomeFantasia(produtoDTO.getNomeFantasia());
-        produto.setFornecedor(fornecedor);
-
-        Produto produtoSalvo = produtoRepository.save(produto);
-        return produtoMapper.toDTO(produtoSalvo);
+    public ProdutoDTO findById(Integer id) {
+        return produtoRepository.findById(id)
+                .map(ProdutoMapper::toDTO)
+                .orElse(null);
     }
 
-    public void deletarProduto(Integer id){
-        if(!produtoRepository.existsById(id)){
-            throw new ResourceNotFoundException("Produto não encontrado");
-        }
+    public void deleteById(Integer id) {
         produtoRepository.deleteById(id);
     }
-
-    private Produto buscarProduto(Integer id) {
-        return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
-    }
-
 }
