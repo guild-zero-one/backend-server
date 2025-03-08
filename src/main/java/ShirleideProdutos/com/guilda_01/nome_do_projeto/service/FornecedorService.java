@@ -17,14 +17,14 @@ public class FornecedorService {
     @Autowired
     private FornecedorRepository fornecedorRepository;
 
-    // Método para salvar a partir de um DTO
+
     public FornecedorDTO save(FornecedorDTO fornecedorDTO) {
         Fornecedor fornecedor = FornecedorMapper.toEntity(fornecedorDTO);
-        fornecedor = save(fornecedor); // Chama o método que salva a entidade
+        fornecedor = save(fornecedor);
         return FornecedorMapper.toDTO(fornecedor);
     }
 
-    // Método para salvar a partir de uma entidade
+
     public Fornecedor save(Fornecedor fornecedor) {
         return fornecedorRepository.save(fornecedor);
     }

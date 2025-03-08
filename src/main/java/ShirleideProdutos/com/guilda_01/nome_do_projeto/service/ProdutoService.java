@@ -25,10 +25,9 @@ public class ProdutoService {
     // Método para salvar a partir de um DTO
     public ProdutoDTO save(ProdutoDTO produtoDTO) {
         Produto produto = ProdutoMapper.toEntity(produtoDTO);
-        // Busca o fornecedor pelo ID e seta no produto
         FornecedorDTO fornecedor = fornecedorService.findById(produtoDTO.getFornecedorId());
         produto.setFornecedor(FornecedorMapper.toEntity(fornecedor));
-        produto = save(produto); // Chama o método que salva a entidade
+        produto = save(produto);
         return ProdutoMapper.toDTO(produto);
     }
 
