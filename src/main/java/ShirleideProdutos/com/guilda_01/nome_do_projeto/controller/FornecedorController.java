@@ -1,12 +1,9 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.FornecedorMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.FornecedorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,35 +14,35 @@ import java.util.List;
 public class FornecedorController {
 
     @Autowired
-    FornecedorService fornecedorService;
-
-    @PostMapping
-    public ResponseEntity<FornecedorDTO> cadastrarFornecedores(@RequestBody Fornecedor fornecedor){
-        return new ResponseEntity<>(fornecedorService.cadastrarFornecedor(fornecedor), HttpStatus.CREATED);
-    }
+    private FornecedorService fornecedorService;
 
     @GetMapping
-    public ResponseEntity<List<FornecedorDTO>> listarFornecedores(){
-        List<FornecedorDTO> fornecedores = fornecedorService.listarFornecedores();
-        if(fornecedores.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<List<FornecedorDTO>> findAll() {
+        List<FornecedorDTO>fornecedores = fornecedorService.findAll();
+        if (fornecedores.isEmpty()){
+            throw new ResourceNotFoundException("Fornecedores não encontrados");
         }
-        return new ResponseEntity<>(fornecedores, HttpStatus.OK);
+        return ResponseEntity.ok(fornecedores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FornecedorDTO> buscarFornecedorPorId(@PathVariable Integer id){
-        return ResponseEntity.ok(fornecedorService.buscarFornecedorPorId(id));
+    public ResponseEntity<FornecedorDTO> findById(@PathVariable Integer id) {
+        FornecedorDTO fornecedorDTO = fornecedorService.findById(id);
+        if(fornecedorDTO == null){
+            throw new ResourceNotFoundException("Fornecedor não encontrado");
+        }
+        return ResponseEntity.ok(fornecedorDTO);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<FornecedorDTO> atualizarFornecedor(@PathVariable Integer id, @RequestBody FornecedorDTO fornecedorDTO) {
-        return ResponseEntity.ok(fornecedorService.atualizarFornecedor(id, fornecedorDTO));
+    @PostMapping
+    public ResponseEntity<FornecedorDTO> save(@RequestBody FornecedorDTO fornecedorDTO) {
+        fornecedorDTO.setId(null);
+        return ResponseEntity.ok(fornecedorService.save(fornecedorDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirFornecedor(@PathVariable Integer id){
-        fornecedorService.excluirFornecedor(id);
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+        fornecedorService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }

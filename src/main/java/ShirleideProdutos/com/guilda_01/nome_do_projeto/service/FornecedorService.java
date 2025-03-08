@@ -2,9 +2,7 @@ package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.FornecedorMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.FornecedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,43 +13,35 @@ import java.util.stream.Collectors;
 
 @Service
 public class FornecedorService {
+
     @Autowired
-    FornecedorRepository fornecedorRepository;
-    @Autowired
-    FornecedorMapper fornecedorMapper;
+    private FornecedorRepository fornecedorRepository;
 
-    public FornecedorDTO cadastrarFornecedor(Fornecedor fornecedor){
-        fornecedor.setId(null);
-        Fornecedor fornecedorSalvo = fornecedorRepository.save(fornecedor);
-        return fornecedorMapper.toDTO(fornecedorSalvo);
+    // Método para salvar a partir de um DTO
+    public FornecedorDTO save(FornecedorDTO fornecedorDTO) {
+        Fornecedor fornecedor = FornecedorMapper.toEntity(fornecedorDTO);
+        fornecedor = save(fornecedor); // Chama o método que salva a entidade
+        return FornecedorMapper.toDTO(fornecedor);
     }
 
-    public List<FornecedorDTO> listarFornecedores(){
-        return fornecedorRepository.findAll().stream().map(fornecedorMapper::toDTO).collect(Collectors.toList());
+    // Método para salvar a partir de uma entidade
+    public Fornecedor save(Fornecedor fornecedor) {
+        return fornecedorRepository.save(fornecedor);
     }
 
-    public FornecedorDTO buscarFornecedorPorId(Integer id){
-        return fornecedorMapper.toDTO(buscarFornecedor(id));
+    public List<FornecedorDTO> findAll() {
+        return fornecedorRepository.findAll().stream()
+                .map(FornecedorMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public FornecedorDTO atualizarFornecedor(Integer id, FornecedorDTO fornecedorDTO){
-        Fornecedor fornecedor = buscarFornecedor(id);
-
-        fornecedorDTO.setId(fornecedor.getId());
-        fornecedor.setNome(fornecedorDTO.getNome());
-        fornecedor.setCnpj(fornecedorDTO.getCnpj());
-
-        Fornecedor fornecedorAtualizado = fornecedorRepository.save(fornecedor);
-        return fornecedorMapper.toDTO(fornecedorAtualizado);
-    }
-
-    public void excluirFornecedor(Integer id){
-        Fornecedor fornecedor = buscarFornecedor(id);
-        fornecedorRepository.deleteById(id);
-    }
-
-    public Fornecedor buscarFornecedor(Integer id) {
+    public FornecedorDTO findById(Integer id) {
         return fornecedorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Fornecedor não encontrado"));
+                .map(FornecedorMapper::toDTO)
+                .orElse(null);
+    }
+
+    public void deleteById(Integer id) {
+        fornecedorRepository.deleteById(id);
     }
 }

@@ -2,24 +2,36 @@ package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FornecedorMapper {
 
-    public FornecedorDTO toDTO(Fornecedor fornecedor) {
-        return new FornecedorDTO(
-                fornecedor.getId(),
-                fornecedor.getNome(),
-                fornecedor.getCnpj()
-        );
+    public static FornecedorDTO toDTO(Fornecedor fornecedor) {
+        if (fornecedor == null) {
+            return null;
+        }
+
+        FornecedorDTO dto = new FornecedorDTO();
+        dto.setId(fornecedor.getId());
+        dto.setNome(fornecedor.getNome());
+        dto.setCnpj(fornecedor.getCnpj());
+        dto.setCriadoEm(fornecedor.getCriadoEm());
+        dto.setAtualizadoEm(fornecedor.getAtualizadoEm());
+
+        return dto;
     }
 
-    public Fornecedor toEntity(FornecedorDTO fornecedorDTO) {
+    public static Fornecedor toEntity(FornecedorDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
         Fornecedor fornecedor = new Fornecedor();
-        fornecedor.setId(fornecedorDTO.getId());
-        fornecedor.setNome(fornecedorDTO.getNome());
-        fornecedor.setCnpj(fornecedorDTO.getCnpj());
+        fornecedor.setId(dto.getId());
+        fornecedor.setNome(dto.getNome());
+        fornecedor.setCnpj(dto.getCnpj());
+        fornecedor.setCriadoEm(dto.getCriadoEm());
+        fornecedor.setAtualizadoEm(dto.getAtualizadoEm());
+
         return fornecedor;
     }
 }
