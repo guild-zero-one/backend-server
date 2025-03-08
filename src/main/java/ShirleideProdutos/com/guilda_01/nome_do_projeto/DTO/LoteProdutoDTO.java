@@ -1,23 +1,17 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class LoteProdutoDTO {
+
     private Integer id;
     private Integer qtdLote;
-    private Double valorUnitario;
-    private LocalDate dataValidade;
+    private Double valorUnitCompra;
+    private LocalDateTime dataValidade;
     private Integer produtoId;
-    private LocalDate criadoEm;
-    private LocalDate atualizadoEm;
+    private LocalDateTime criadoEm;
+    private LocalDateTime atualizadoEm;
 }

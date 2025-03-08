@@ -1,42 +1,47 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.LoteProdutoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.LoteProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/lote-produtos")
+@RequestMapping("/lotes")
 public class LoteProdutoController {
-    @Autowired
-    LoteProdutoService loteProdutoService;
 
-    @PostMapping("/cadastrar/{id}")
-    public ResponseEntity<LoteProdutoDTO>adicionarLote(@PathVariable Integer id, @RequestBody LoteProduto loteProduto){
-        return ResponseEntity.ok(loteProdutoService.adicionarLote(id, loteProduto));
-    }
+    @Autowired
+    private LoteProdutoService loteProdutoService;
 
     @GetMapping
-    public ResponseEntity<List<LoteProdutoDTO>>listarLotes(){
-        List<LoteProdutoDTO> lotes = loteProdutoService.listarLotes();
+    public ResponseEntity<List<LoteProdutoDTO>> findAll() {
+        List<LoteProdutoDTO> lotes = loteProdutoService.findAll();
         if (lotes.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            throw new ResourceNotFoundException("Lotes não encontrados");
         }
-        return new ResponseEntity<>(lotes, HttpStatus.OK);
+        return ResponseEntity.ok(lotes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LoteProdutoDTO>buscarLotePorId(@PathVariable Integer id){
-        return ResponseEntity.ok(loteProdutoService.buscarLotePorId(id));
+    public ResponseEntity<LoteProdutoDTO> findById(@PathVariable Integer id) {
+        LoteProdutoDTO loteProdutoDTO = loteProdutoService.findById(id);
+        if(loteProdutoDTO == null){
+            throw new ResourceNotFoundException("Lote não encontrado");
+        }
+        return ResponseEntity.ok(loteProdutoDTO);
     }
-    @GetMapping("/buscarPorProduto/{id}")
-    public ResponseEntity<List<LoteProdutoDTO>>buscarLotesPorProduto(@PathVariable Integer id){
-        return ResponseEntity.ok(loteProdutoService.buscarLotesPorProduto(id));
+
+    @PostMapping
+    public ResponseEntity<LoteProdutoDTO> save(@RequestBody LoteProdutoDTO loteProdutoDTO) {
+        loteProdutoDTO.setId(null);
+        return ResponseEntity.ok(loteProdutoService.save(loteProdutoDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer id) {
+        loteProdutoService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

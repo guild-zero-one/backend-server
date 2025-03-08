@@ -2,33 +2,39 @@ package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.LoteProdutoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Produto;
-import org.springframework.stereotype.Component;
 
-@Component
 public class LoteProdutoMapper {
-    public LoteProdutoDTO toDTO(LoteProduto loteProduto){
-        LoteProdutoDTO loteProdutoDTO = new LoteProdutoDTO();
-        loteProdutoDTO.setId(loteProduto.getId());
-        loteProdutoDTO.setQtdLote(loteProduto.getQtdLote());
-        loteProdutoDTO.setValorUnitario(loteProduto.getValorUnitario());
-        loteProdutoDTO.setDataValidade(loteProduto.getDataValidade());
-        loteProdutoDTO.setCriadoEm(loteProduto.getCriadoEm());
-        loteProdutoDTO.setAtualizadoEm(loteProduto.getAtualizadoEm());
-        loteProdutoDTO.setProdutoId(loteProduto.getProduto().getId());
-        return loteProdutoDTO;
+
+    public static LoteProdutoDTO toDTO(LoteProduto loteProduto) {
+        if (loteProduto == null) {
+            return null;
+        }
+
+        LoteProdutoDTO dto = new LoteProdutoDTO();
+        dto.setId(loteProduto.getId());
+        dto.setQtdLote(loteProduto.getQtdLote());
+        dto.setValorUnitCompra(loteProduto.getValorUnitCompra());
+        dto.setDataValidade(loteProduto.getDataValidade());
+        dto.setProdutoId(loteProduto.getProduto().getId());
+        dto.setCriadoEm(loteProduto.getCriadoEm());
+        dto.setAtualizadoEm(loteProduto.getAtualizadoEm());
+
+        return dto;
     }
 
-    public LoteProduto toEntity(LoteProdutoDTO loteProdutoDTO, Produto produto) {
-        LoteProduto loteProdutos = new LoteProduto();
-        loteProdutos.setId(loteProdutoDTO.getId());
-        loteProdutos.setQtdLote(loteProdutoDTO.getQtdLote());
-        loteProdutos.setValorUnitario(loteProdutoDTO.getValorUnitario());
-        loteProdutos.setDataValidade(loteProdutoDTO.getDataValidade());
-        loteProdutos.setCriadoEm(loteProdutoDTO.getCriadoEm());
-        loteProdutos.setAtualizadoEm(loteProdutoDTO.getAtualizadoEm());
-        loteProdutos.setProduto(produto);
-        return loteProdutos;
-    }
+    public static LoteProduto toEntity(LoteProdutoDTO dto) {
+        if (dto == null) {
+            return null;
+        }
 
+        LoteProduto loteProduto = new LoteProduto();
+        loteProduto.setId(dto.getId());
+        loteProduto.setQtdLote(dto.getQtdLote());
+        loteProduto.setValorUnitCompra(dto.getValorUnitCompra());
+        loteProduto.setDataValidade(dto.getDataValidade());
+        loteProduto.setCriadoEm(dto.getCriadoEm());
+        loteProduto.setAtualizadoEm(dto.getAtualizadoEm());
+
+        return loteProduto;
+    }
 }
