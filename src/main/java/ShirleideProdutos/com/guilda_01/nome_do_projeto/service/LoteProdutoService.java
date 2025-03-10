@@ -6,6 +6,7 @@ import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoun
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.LoteProdutoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ProdutoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Produto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.LoteProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,8 @@ public class LoteProdutoService {
 
     public LoteProdutoDTO cadastrarLote(LoteProdutoDTO loteProdutoDTO) {
         LoteProduto loteProduto = LoteProdutoMapper.toEntity(loteProdutoDTO);
-        ProdutoDTO produto = produtoService.buscarPorId(loteProdutoDTO.getProdutoId());
-        loteProduto.setProduto(ProdutoMapper.toEntity(produto));
+        Produto produto = produtoService.buscarPorId(loteProdutoDTO.getProdutoId());
+        loteProduto.setProduto(produto);
         loteProduto = cadastrarLote(loteProduto);
         return LoteProdutoMapper.toDTO(loteProduto);
     }
