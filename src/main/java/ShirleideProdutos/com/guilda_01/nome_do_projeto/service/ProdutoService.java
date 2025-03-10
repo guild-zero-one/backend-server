@@ -2,8 +2,10 @@ package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.FornecedorMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ProdutoMapper;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Produto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,33 +24,36 @@ public class ProdutoService {
     @Autowired
     private FornecedorService fornecedorService;
 
-    // Método para salvar a partir de um DTO
-    public ProdutoDTO save(ProdutoDTO produtoDTO) {
+    public ProdutoDTO cadastrarProduto(ProdutoDTO produtoDTO) {
         Produto produto = ProdutoMapper.toEntity(produtoDTO);
-        FornecedorDTO fornecedor = fornecedorService.findById(produtoDTO.getFornecedorId());
-        produto.setFornecedor(FornecedorMapper.toEntity(fornecedor));
-        produto = save(produto);
+        Fornecedor fornecedor = fornecedorService.buscarPorId(produtoDTO.getFornecedorId());
+        produto.setFornecedor(fornecedor);
+        produto = cadastrarProduto(produto);
         return ProdutoMapper.toDTO(produto);
     }
 
-    // Método para salvar a partir de uma entidade
-    public Produto save(Produto produto) {
+    public Produto cadastrarProduto(Produto produto) {
         return produtoRepository.save(produto);
     }
 
-    public List<ProdutoDTO> findAll() {
+    public List<ProdutoDTO> listar() {
         return produtoRepository.findAll().stream()
                 .map(ProdutoMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public ProdutoDTO findById(Integer id) {
-        return produtoRepository.findById(id)
-                .map(ProdutoMapper::toDTO)
-                .orElse(null);
+    public Produto buscarPorId(Integer id) {
+        return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado"));
     }
 
-    public void deleteById(Integer id) {
+    public void excluirPorId(Integer id) {
         produtoRepository.deleteById(id);
+    }
+
+    public ProdutoDTO atualizar(Integer id, Produto produto){
+        Produto produtoBuscado = buscarPorId(id);
+        produto.setId(id);
+        Produto produtoSalvo = produtoRepository.save(produto);
+        return ProdutoMapper.toDTO(produtoSalvo);
     }
 }
