@@ -2,6 +2,7 @@ package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.LoteProdutoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.LoteProdutoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ProdutoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
@@ -21,33 +22,36 @@ public class LoteProdutoService {
     @Autowired
     private ProdutoService produtoService;
 
-    // Método para salvar a partir de um DTO
-    public LoteProdutoDTO save(LoteProdutoDTO loteProdutoDTO) {
+    public LoteProdutoDTO cadastrarLote(LoteProdutoDTO loteProdutoDTO) {
         LoteProduto loteProduto = LoteProdutoMapper.toEntity(loteProdutoDTO);
-        ProdutoDTO produto = produtoService.findById(loteProdutoDTO.getProdutoId());
+        ProdutoDTO produto = produtoService.buscarPorId(loteProdutoDTO.getProdutoId());
         loteProduto.setProduto(ProdutoMapper.toEntity(produto));
-        loteProduto = save(loteProduto);
+        loteProduto = cadastrarLote(loteProduto);
         return LoteProdutoMapper.toDTO(loteProduto);
     }
 
-    // Método para salvar a partir de uma entidade
-    public LoteProduto save(LoteProduto loteProduto) {
+    public LoteProduto cadastrarLote(LoteProduto loteProduto) {
         return loteProdutoRepository.save(loteProduto);
     }
 
-    public List<LoteProdutoDTO> findAll() {
+    public List<LoteProdutoDTO> listar() {
         return loteProdutoRepository.findAll().stream()
                 .map(LoteProdutoMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public LoteProdutoDTO findById(Integer id) {
-        return loteProdutoRepository.findById(id)
-                .map(LoteProdutoMapper::toDTO)
-                .orElse(null);
+    public LoteProduto buscarPorId(Integer id) {
+        return loteProdutoRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Fornecedor Não Encontrado"));
     }
 
-    public void deleteById(Integer id) {
+    public void excluirPorId(Integer id) {
         loteProdutoRepository.deleteById(id);
+    }
+
+    public LoteProdutoDTO atualizar(Integer id, LoteProduto loteProduto){
+        LoteProduto loteBuscado = buscarPorId(id);
+        loteProduto.setId(id);
+        LoteProduto loteSalvo = loteProdutoRepository.save(loteProduto);
+        return LoteProdutoMapper.toDTO(loteSalvo);
     }
 }
