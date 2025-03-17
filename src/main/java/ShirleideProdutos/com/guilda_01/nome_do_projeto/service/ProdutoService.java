@@ -50,10 +50,11 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
-    public ProdutoDTO atualizar(Integer id, Produto produto){
+    public ProdutoDTO atualizar(Integer id, ProdutoDTO produtoDTO){
         Produto produtoBuscado = buscarPorId(id);
-        produto.setId(id);
-        Produto produtoSalvo = produtoRepository.save(produto);
+        produtoBuscado.setNome(produtoDTO.getNome());
+        produtoBuscado.setNomeFantasia(produtoDTO.getNomeFantasia());
+        Produto produtoSalvo = produtoRepository.save(produtoBuscado);
         return ProdutoMapper.toDTO(produtoSalvo);
     }
 }
