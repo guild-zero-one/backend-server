@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.metamodel.model.domain.IdentifiableDomainType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +28,9 @@ public class PedidoVenda{
     @ManyToOne
     @JoinColumn(name = "fk_cliente", nullable = false)
     private Cliente cliente;
+
+    @OneToMany(mappedBy = "pedido_item", cascade = CascadeType.ALL)
+    private List<PedidoItem> itens;
 
     @CreationTimestamp
     private LocalDate criadoEm;
