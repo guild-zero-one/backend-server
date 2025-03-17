@@ -29,7 +29,7 @@ public class PedidoVenda{
     @JoinColumn(name = "fk_cliente", nullable = false)
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "pedido_item", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pedidoVenda", cascade = CascadeType.ALL)
     private List<PedidoItem> itens;
 
     @CreationTimestamp
