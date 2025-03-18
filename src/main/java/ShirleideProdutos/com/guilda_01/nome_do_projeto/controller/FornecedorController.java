@@ -48,8 +48,8 @@ public class FornecedorController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<FornecedorDTO> atualizar(@PathVariable Integer id, @RequestBody Fornecedor fornecedor){
-        return ResponseEntity.ok(fornecedorService.atualizar(id,fornecedor));
+    @PatchMapping("/{id}")
+    public ResponseEntity<FornecedorDTO> atualizar(@PathVariable Integer id, @RequestBody FornecedorDTO fornecedorDTO){
+        return ResponseEntity.ok(fornecedorService.atualizar(id,fornecedorDTO));
     }
 }

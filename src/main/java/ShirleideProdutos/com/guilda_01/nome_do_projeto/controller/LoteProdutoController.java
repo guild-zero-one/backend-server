@@ -1,6 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.LoteProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.LoteProdutoMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
@@ -42,5 +43,10 @@ public class LoteProdutoController {
     public ResponseEntity<Void> excluirPorId(@PathVariable Integer id) {
         loteProdutoService.excluirPorId(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<LoteProdutoDTO> atualizarLote(@PathVariable Integer id, @RequestBody LoteProdutoDTO loteProdutoDTO) {
+        return ResponseEntity.ok(loteProdutoService.atualizar(id,loteProdutoDTO));
     }
 }

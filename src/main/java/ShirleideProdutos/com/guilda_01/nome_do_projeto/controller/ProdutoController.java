@@ -44,4 +44,9 @@ public class ProdutoController {
         produtoService.excluirPorId(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoDTO produtoDTO){
+        return ResponseEntity.ok(produtoService.atualizar(id,produtoDTO));
+    }
 }

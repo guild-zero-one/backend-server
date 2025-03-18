@@ -49,10 +49,11 @@ public class LoteProdutoService {
         loteProdutoRepository.deleteById(id);
     }
 
-    public LoteProdutoDTO atualizar(Integer id, LoteProduto loteProduto){
+    public LoteProdutoDTO atualizar(Integer id, LoteProdutoDTO loteProdutoDTO){
         LoteProduto loteBuscado = buscarPorId(id);
-        loteProduto.setId(id);
-        LoteProduto loteSalvo = loteProdutoRepository.save(loteProduto);
+        loteBuscado.setQtdLote(loteProdutoDTO.getQtdLote());
+        loteBuscado.setValorUnitCompra(loteProdutoDTO.getValorUnitCompra());
+        LoteProduto loteSalvo = loteProdutoRepository.save(loteBuscado);
         return LoteProdutoMapper.toDTO(loteSalvo);
     }
 }

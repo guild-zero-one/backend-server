@@ -41,11 +41,11 @@ public class FornecedorService {
         fornecedorRepository.deleteById(id);
     }
 
-    public FornecedorDTO atualizar(Integer id, Fornecedor fornecedor){
+    public FornecedorDTO atualizar(Integer id, FornecedorDTO fornecedorDTO){
        Fornecedor fornecedorBuscado = buscarPorId(id);
-       fornecedor.setId(id);
-       Fornecedor fornecedorSalvo = fornecedorRepository.save(fornecedor);
-       return FornecedorMapper.toDTO(fornecedorSalvo);
+       fornecedorBuscado.setNome(fornecedorDTO.getNome());
+       Fornecedor fornecedorAtualizado = fornecedorRepository.save(fornecedorBuscado);
+       return FornecedorMapper.toDTO(fornecedorAtualizado);
     }
 
     public Fornecedor buscarPorId(Integer id){
