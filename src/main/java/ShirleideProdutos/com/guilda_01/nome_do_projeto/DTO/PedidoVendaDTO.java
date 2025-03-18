@@ -16,7 +16,7 @@ public class PedidoVendaDTO {
 
     private Integer id;
     private String status;
-    private Integer idVenda;
+    private Integer idVenda = -1;
     private Integer idCliente;
     private LocalDate criadoEm;
     private LocalDate atualizadoEm;

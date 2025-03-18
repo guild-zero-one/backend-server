@@ -15,10 +15,18 @@ public class PedidoVendaMapper {
     ClienteRepository clienteRepository;
 
     public PedidoVendaDTO toDto(PedidoVenda pedidoVenda) {
+
+        Integer idVenda = -1;
+
+        if(pedidoVenda.getVenda() != null) {
+            idVenda = pedidoVenda.getVenda().getId();
+        }
+
+
         return new PedidoVendaDTO(
                 pedidoVenda.getId(),
                 pedidoVenda.getStatus(),
-                pedidoVenda.getVenda().getId(),
+                idVenda,
                 pedidoVenda.getCliente().getId(),
                 pedidoVenda.getCriadoEm(),
                 pedidoVenda.getAtualizadoEm()
