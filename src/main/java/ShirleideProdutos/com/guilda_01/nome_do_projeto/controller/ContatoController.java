@@ -21,12 +21,18 @@ public class ContatoController {
     public ResponseEntity<ContatoDTO> adicionarContato(
             @PathVariable Integer clienteId,
             @RequestBody Contato contato) {
-        return ResponseEntity.ok(contatoService.adicionarContato(clienteId, contato));
+        return ResponseEntity.status(201)
+                .body(contatoService.adicionarContato(clienteId, contato));
     }
 
-    @GetMapping("/{clienteId}")
-    public ResponseEntity<Set<ContatoDTO>> buscarContatosPorCliente(@PathVariable Integer clienteId) {
-        return ResponseEntity.ok(contatoService.buscarContatosPorCliente(clienteId));
+    @GetMapping("/{id}")
+    public ResponseEntity<ContatoDTO> buscar(@PathVariable Integer id) {
+        return ResponseEntity.ok(contatoService.buscarContatoPorId(id));
+    }
+
+    @GetMapping("/cliente/{id}")
+    public ResponseEntity<Set<ContatoDTO>> buscarContatosPorCliente(@PathVariable Integer id) {
+        return ResponseEntity.ok(contatoService.buscarContatosPorCliente(id));
     }
 
     @PatchMapping("/{id}")

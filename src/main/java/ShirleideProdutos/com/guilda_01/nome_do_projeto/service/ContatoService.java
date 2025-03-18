@@ -45,6 +45,16 @@ public class ContatoService {
         return contatoMapper.toDto(contatoRepository.save(contato));
     }
 
+    public ContatoDTO buscarContatoPorId(Integer id) {
+
+        if(!contatoRepository.findById(id).isPresent()) {
+            throw  new ResourceNotFoundException("Contato não encontrado.");
+        }
+
+        return contatoMapper.toDto(contatoRepository.findById(id).get());
+
+    }
+
     public Set<ContatoDTO> buscarContatosPorCliente (Integer clienteId) {
 
         Cliente cliente = clienteRepository.findById(clienteId)
