@@ -21,9 +21,9 @@ public class PedidoVenda{
     private Integer id;
     private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_venda", nullable = false)
-    private Venda venda;
+        @ManyToOne
+        @JoinColumn(name = "fk_venda")
+        private Venda venda;
 
     @ManyToOne
     @JoinColumn(name = "fk_cliente", nullable = false)
