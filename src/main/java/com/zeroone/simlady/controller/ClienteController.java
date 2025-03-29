@@ -14,8 +14,11 @@ import java.util.List;
 @RequestMapping("/clientes")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
+
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @PostMapping()
     public ResponseEntity<ClienteResponseDto> cadastrar(@RequestBody @Valid ClienteRequestDto dto) {

@@ -7,22 +7,19 @@ import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.mapper.ClienteMapper;
 import com.zeroone.simlady.entity.Cliente;
 import com.zeroone.simlady.repository.ClienteRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
 
     private final ClienteMapper clienteMapper;
-
-    public ClienteService(ClienteRepository clienteRepository, ClienteMapper clienteMapper) {
-        this.clienteRepository = clienteRepository;
-        this.clienteMapper = clienteMapper;
-    }
 
 
     public ClienteResponseDto cadastrar(ClienteRequestDto dto) {
