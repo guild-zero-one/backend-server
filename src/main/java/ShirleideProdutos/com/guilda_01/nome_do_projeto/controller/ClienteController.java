@@ -1,8 +1,10 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ClienteDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.cliente.ClienteRequestDto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.cliente.ClienteResponseDto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,32 +20,45 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping()
-    public ResponseEntity<ClienteDTO> cadastrarCliente(@RequestBody Cliente cliente) {
-        return new ResponseEntity<>(clienteService.cadastrarCliente(cliente), HttpStatus.CREATED);
+    public ResponseEntity<ClienteResponseDto> cadastrar(@RequestBody @Valid ClienteRequestDto dto) {
+
+        return ResponseEntity.status(201)
+                .body(clienteService
+                        .cadastrar(dto));
+
     }
 
     @GetMapping
-    public ResponseEntity <List<ClienteDTO>> listarClientes() {
-        List<ClienteDTO> clientes = clienteService.listarClientes();
-        if(clientes.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity <List<ClienteResponseDto>> listarClientes() {
+
+        List<ClienteResponseDto> clientes = clienteService.listar();
+
+        if(clientes.isEmpty()) {
+            return ResponseEntity
+                    .status(204)
+                    .build();
         }
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+
+        return ResponseEntity
+                .status(200)
+                .body(clientes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteDTO> buscarClientePorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(clienteService.buscarClientePorId(id));
+    public ResponseEntity<ClienteResponseDto> buscar(@PathVariable Integer id) {
+        return ResponseEntity.ok(clienteService.buscar(id));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ClienteDTO> atualizarCliente(@PathVariable Integer id, @RequestBody ClienteDTO clienteDTO) {
-        return ResponseEntity.ok(clienteService.atualizarCliente(id, clienteDTO));
+    @PutMapping("/{id}")
+    public ResponseEntity<ClienteResponseDto> atualizarCliente(@PathVariable Integer id, @Valid @RequestBody ClienteRequestDto dto) {
+        return ResponseEntity.ok(
+                clienteService
+                        .atualizar(id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarCliente(@PathVariable Integer id) {
-        clienteService.deletarCliente(id);
+        clienteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 }

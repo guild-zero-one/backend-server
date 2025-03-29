@@ -1,11 +1,12 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ClienteDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.cliente.ClienteRequestDto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.cliente.ClienteResponseDto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceAlreadyExistsException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ClienteMapper;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,39 +15,58 @@ import java.util.stream.Collectors;
 @Service
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
-    @Autowired
-    private ClienteMapper clienteMapper;
+    private final ClienteMapper clienteMapper;
 
-    public ClienteDTO cadastrarCliente(Cliente cliente) {
-        cliente.setId(null);
-        Cliente clienteSalvo = clienteRepository.save(cliente);
-        return clienteMapper.toDTO(clienteSalvo);
+    public ClienteService(ClienteRepository clienteRepository, ClienteMapper clienteMapper) {
+        this.clienteRepository = clienteRepository;
+        this.clienteMapper = clienteMapper;
     }
 
-    public List<ClienteDTO> listarClientes() {
+
+    public ClienteResponseDto cadastrar(ClienteRequestDto dto) {
+
+        validarCpf(dto.getCpf());
+        validarEmail(dto.getEmail());
+
+        Cliente cliente = clienteMapper.toEntity(dto);
+        clienteRepository.save(cliente);
+
+        return clienteMapper.toDto(cliente);
+    }
+
+    public List<ClienteResponseDto> listar() {
         return clienteRepository.findAll()
                 .stream()
-                .map(clienteMapper::toDTO)
+                .map(clienteMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public ClienteDTO buscarClientePorId(Integer id) {
-        return clienteMapper.toDTO(buscarCliente(id));
+    public ClienteResponseDto buscar(Integer id) {
+        return clienteMapper.toDto(buscarCliente(id));
     }
 
-    public ClienteDTO atualizarCliente(Integer id, ClienteDTO clienteDTO) {
-        Cliente cliente = buscarCliente(id);
+    public ClienteResponseDto atualizar(Integer id, ClienteRequestDto dto) {
 
-        cliente.setNome(clienteDTO.getNome());
+        buscarCliente(id);
 
-        Cliente clienteAtualizado = clienteRepository.save(cliente);
-        return clienteMapper.toDTO(clienteAtualizado);
+        boolean existePorCpf = clienteRepository.existsByCpfAndIdNot(dto.getCpf(), id);
+        boolean existePorEmail = clienteRepository.existsByEmailAndIdNot(dto.getEmail(), id);
+
+        if(existePorCpf && existePorEmail) {
+            throw new ResourceAlreadyExistsException("Dados inválidos, email e/ou cpf já cadastrados");
+        }
+
+        Cliente cliente = clienteMapper.toEntity(dto);
+
+        cliente.setId(id);
+        clienteRepository.save(cliente);
+
+        return clienteMapper.toDto(cliente);
     }
 
-    public void deletarCliente(Integer id) {
+    public void deletar(Integer id) {
         if (!clienteRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cliente não encontrado");
         }
@@ -57,6 +77,18 @@ public class ClienteService {
     private Cliente buscarCliente(Integer id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    }
+
+    private void validarCpf(String cpf) {
+        if(clienteRepository.existsByCpf(cpf)) {
+            throw new ResourceAlreadyExistsException("CPF já cadastrado!");
+        }
+    }
+
+    private void validarEmail(String email) {
+        if(clienteRepository.existsByEmail(email)) {
+            throw new ResourceAlreadyExistsException("Email já cadastrado!");
+        }
     }
 }
 
