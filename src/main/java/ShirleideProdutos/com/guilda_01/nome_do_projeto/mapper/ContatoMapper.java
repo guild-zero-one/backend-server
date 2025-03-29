@@ -1,9 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ContatoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ContatoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Contato;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,7 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ContatoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ContatoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Contato;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ContatoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

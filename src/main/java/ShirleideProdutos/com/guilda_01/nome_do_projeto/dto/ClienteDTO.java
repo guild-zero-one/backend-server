@@ -1,15 +1,10 @@
-package ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO;
+package ShirleideProdutos.com.guilda_01.nome_do_projeto.dto;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter

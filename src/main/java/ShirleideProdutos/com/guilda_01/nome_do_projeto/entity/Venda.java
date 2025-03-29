@@ -1,4 +1,4 @@
-package ShirleideProdutos.com.guilda_01.nome_do_projeto.model;
+package ShirleideProdutos.com.guilda_01.nome_do_projeto.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Entity

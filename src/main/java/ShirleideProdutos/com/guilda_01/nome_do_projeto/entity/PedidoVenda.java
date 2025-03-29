@@ -1,11 +1,10 @@
-package ShirleideProdutos.com.guilda_01.nome_do_projeto.model;
+package ShirleideProdutos.com.guilda_01.nome_do_projeto.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.metamodel.model.domain.IdentifiableDomainType;
 
 import java.time.LocalDate;
 import java.util.List;

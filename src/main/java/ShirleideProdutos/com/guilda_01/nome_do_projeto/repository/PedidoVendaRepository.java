@@ -1,7 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.repository;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.PedidoVenda;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.PedidoVenda;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

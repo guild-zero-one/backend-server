@@ -1,14 +1,13 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.PedidoVendaDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.PedidoVenda;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.PedidoVendaDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.PedidoVenda;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.PedidoVendaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/pedidos")

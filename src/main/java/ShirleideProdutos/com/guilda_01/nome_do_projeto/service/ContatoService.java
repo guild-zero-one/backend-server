@@ -1,11 +1,11 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ContatoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ContatoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceAlreadyExistsException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.ContatoMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Contato;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Contato;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ContatoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

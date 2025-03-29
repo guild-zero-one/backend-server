@@ -1,4 +1,4 @@
-package ShirleideProdutos.com.guilda_01.nome_do_projeto.model;
+package ShirleideProdutos.com.guilda_01.nome_do_projeto.entity;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

@@ -1,7 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.FornecedorDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Fornecedor;
 
 public class FornecedorMapper {
 

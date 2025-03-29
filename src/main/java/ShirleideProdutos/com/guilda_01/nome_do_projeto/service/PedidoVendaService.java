@@ -1,20 +1,16 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.PedidoVendaDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.PedidoVendaDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.PedidoVendaMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.PedidoItem;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.PedidoVenda;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.PedidoVenda;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.PedidoVendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.ls.LSException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PedidoVendaService {

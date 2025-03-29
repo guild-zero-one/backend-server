@@ -1,16 +1,15 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.service;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.FornecedorDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.FornecedorDTO;
 
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.FornecedorMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Fornecedor;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Fornecedor;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.FornecedorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

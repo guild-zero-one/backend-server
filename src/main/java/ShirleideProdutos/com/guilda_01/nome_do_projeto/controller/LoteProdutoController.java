@@ -1,10 +1,9 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.LoteProdutoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.LoteProdutoDTO;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.exception.ResourceNotFoundException;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper.LoteProdutoMapper;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.LoteProduto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.LoteProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

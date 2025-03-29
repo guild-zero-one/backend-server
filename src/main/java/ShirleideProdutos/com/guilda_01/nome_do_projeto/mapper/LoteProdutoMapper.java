@@ -1,7 +1,7 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.LoteProdutoDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.LoteProduto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.LoteProdutoDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.LoteProduto;
 
 public class LoteProdutoMapper {
 

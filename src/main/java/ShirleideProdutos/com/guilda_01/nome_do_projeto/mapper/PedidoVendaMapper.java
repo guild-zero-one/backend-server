@@ -1,9 +1,9 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.PedidoVendaDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.PedidoVenda;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Venda;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.PedidoVendaDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.PedidoVenda;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Venda;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.ClienteRepository;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.repository.VendaRepository;
 import org.springframework.stereotype.Component;

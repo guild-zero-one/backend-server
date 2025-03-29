@@ -1,11 +1,10 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.controller;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.DTO.ClienteDTO;
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.model.Cliente;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ClienteDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
