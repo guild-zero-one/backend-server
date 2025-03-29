@@ -1,23 +1,16 @@
 package ShirleideProdutos.com.guilda_01.nome_do_projeto.mapper;
 
-import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.ClienteDTO;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.cliente.ClienteRequestDto;
+import ShirleideProdutos.com.guilda_01.nome_do_projeto.dto.cliente.ClienteResponseDto;
 import ShirleideProdutos.com.guilda_01.nome_do_projeto.entity.Cliente;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-public class ClienteMapper {
+@Mapper(componentModel = "spring")
+public interface ClienteMapper {
 
-    public ClienteDTO toDTO(Cliente cliente) {
-        return new ClienteDTO(cliente.getId(), cliente.getNome(), cliente.getCriadoEm(), cliente.getAtualizadoEm());
-    }
+    Cliente toEntity (ClienteRequestDto dto);
 
-    public Cliente toEntity(ClienteDTO clienteDTO) {
-        Cliente cliente = new Cliente();
-        cliente.setId(clienteDTO.getId());
-        cliente.setNome(clienteDTO.getNome());
-        cliente.setCriadoEm(clienteDTO.getCriadoEm());
-        cliente.setAtualizadoEm(clienteDTO.getAtualizadoEm());
-        return cliente;
-    }
+    ClienteResponseDto toDto(Cliente cliente);
+
 }
 
