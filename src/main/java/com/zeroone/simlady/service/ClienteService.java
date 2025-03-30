@@ -41,12 +41,12 @@ public class ClienteService {
     }
 
     public ClienteResponseDto buscar(Integer id) {
-        return clienteMapper.toDto(buscarCliente(id));
+        return clienteMapper.toDto(buscarEntidade(id));
     }
 
     public ClienteResponseDto atualizar(Integer id, ClienteRequestDto dto) {
 
-        buscarCliente(id);
+        buscarEntidade(id);
 
         boolean existePorCpf = clienteRepository.existsByCpfAndIdNot(dto.getCpf(), id);
         boolean existePorEmail = clienteRepository.existsByEmailAndIdNot(dto.getEmail(), id);
@@ -71,7 +71,7 @@ public class ClienteService {
         clienteRepository.deleteById(id);
     }
 
-    private Cliente buscarCliente(Integer id) {
+    public Cliente buscarEntidade(Integer id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }

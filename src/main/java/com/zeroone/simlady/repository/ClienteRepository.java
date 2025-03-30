@@ -15,4 +15,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer>{
     boolean existsByCpfAndIdNot(@CPF(message = "CPF inválido") @NotBlank(message = "CPF não pode ser vazio") String cpf, Integer id);
 
     boolean existsByEmailAndIdNot(@Email(message = "Email inválido") @NotBlank(message = "Email não pode ser vazio") String email, Integer id);
+
 }
