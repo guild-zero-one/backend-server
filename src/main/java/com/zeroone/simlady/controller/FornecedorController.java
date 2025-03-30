@@ -1,10 +1,12 @@
 package com.zeroone.simlady.controller;
 
-import com.zeroone.simlady.dto.FornecedorDTO;
+import com.zeroone.simlady.dto.fornecedor.FornecedorRequestDto;
+import com.zeroone.simlady.dto.fornecedor.FornecedorResponseDto;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.mapper.FornecedorMapper;
 import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.service.FornecedorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +20,12 @@ public class FornecedorController {
     @Autowired
     private FornecedorService fornecedorService;
 
+    @Autowired
+    private FornecedorMapper fornecedorMapper;
+
     @GetMapping
-    public ResponseEntity<List<FornecedorDTO>> listar() {
-        List<FornecedorDTO>fornecedores = fornecedorService.listar();
+    public ResponseEntity<List<FornecedorResponseDto>> listar() {
+        List<FornecedorResponseDto>fornecedores = fornecedorService.listar().stream().map(fornecedorMapper::toResponseDto).toList();
         if (fornecedores.isEmpty()){
             throw new ResourceNotFoundException("Fornecedores não encontrados");
         }
@@ -28,18 +33,19 @@ public class FornecedorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FornecedorDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<FornecedorResponseDto> buscarPorId(@PathVariable Integer id) {
         Fornecedor fornecedor = fornecedorService.buscarPorId(id);
         if(fornecedor == null){
             throw new ResourceNotFoundException("Fornecedor não encontrado");
         }
-        return ResponseEntity.ok(FornecedorMapper.toDTO(fornecedor));
+        return ResponseEntity.ok(fornecedorMapper.toResponseDto(fornecedor));
     }
 
     @PostMapping
-    public ResponseEntity<FornecedorDTO> cadastrarFornecedor(@RequestBody FornecedorDTO fornecedorDTO) {
-        fornecedorDTO.setId(null);
-        return ResponseEntity.ok(fornecedorService.cadastrarFornecedor(fornecedorDTO));
+    public ResponseEntity<FornecedorResponseDto> cadastrarFornecedor(@Valid @RequestBody FornecedorRequestDto dto) {
+        Fornecedor fornecedor = fornecedorMapper.toEntity(dto);
+        FornecedorResponseDto response = fornecedorMapper.toResponseDto(fornecedorService.cadastrarFornecedor(fornecedor));
+        return ResponseEntity.status(201).body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -49,7 +55,9 @@ public class FornecedorController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<FornecedorDTO> atualizar(@PathVariable Integer id, @RequestBody FornecedorDTO fornecedorDTO){
-        return ResponseEntity.ok(fornecedorService.atualizar(id,fornecedorDTO));
+    public ResponseEntity<FornecedorResponseDto> atualizar(@PathVariable Integer id, @RequestBody FornecedorRequestDto dto){
+        Fornecedor fornecedor = fornecedorMapper.toEntity(dto);
+        FornecedorResponseDto response = fornecedorMapper.toResponseDto(fornecedorService.atualizar(id,fornecedor));
+        return ResponseEntity.status(200).body(response);
     }
 }
