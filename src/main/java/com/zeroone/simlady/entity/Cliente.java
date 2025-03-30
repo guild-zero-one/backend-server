@@ -55,7 +55,7 @@ public class Cliente {
     @UpdateTimestamp
     private LocalDate atualizadoEm;
 
-    @OneToMany(mappedBy = "fkCliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contato> contatos = new HashSet<>();
 
     public void adicionarContato(Contato contato) {
