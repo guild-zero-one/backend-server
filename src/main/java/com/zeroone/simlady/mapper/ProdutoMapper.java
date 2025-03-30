@@ -1,38 +1,15 @@
 package com.zeroone.simlady.mapper;
 
-import com.zeroone.simlady.dto.ProdutoDTO;
+import com.zeroone.simlady.dto.produto.ProdutoRequestDto;
+import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.entity.Produto;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class ProdutoMapper {
+@Mapper(componentModel = "spring")
+public interface ProdutoMapper {
+    @Mapping(target = "fornecedorId", source = "fornecedor.id")
+    ProdutoResponseDto toResponseDto (Produto produto);
 
-    public static ProdutoDTO toDTO(Produto produto) {
-        if (produto == null) {
-            return null;
-        }
-
-        ProdutoDTO dto = new ProdutoDTO();
-        dto.setId(produto.getId());
-        dto.setNome(produto.getNome());
-        dto.setNomeFantasia(produto.getNomeFantasia());
-        dto.setFornecedorId(produto.getFornecedor().getId());
-        dto.setCriadoEm(produto.getCriadoEm());
-        dto.setAtualizadoEm(produto.getAtualizadoEm());
-
-        return dto;
-    }
-
-    public static Produto toEntity(ProdutoDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        Produto produto = new Produto();
-        produto.setId(dto.getId());
-        produto.setNome(dto.getNome());
-        produto.setNomeFantasia(dto.getNomeFantasia());
-        produto.setCriadoEm(dto.getCriadoEm());
-        produto.setAtualizadoEm(dto.getAtualizadoEm());
-
-        return produto;
-    }
+    Produto toEntity (ProdutoRequestDto request);
 }

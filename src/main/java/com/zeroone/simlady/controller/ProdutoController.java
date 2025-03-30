@@ -1,9 +1,12 @@
 package com.zeroone.simlady.controller;
 
-import com.zeroone.simlady.dto.ProdutoDTO;
+import com.zeroone.simlady.dto.produto.ProdutoRequestDto;
+import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
+import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.entity.Produto;
+import com.zeroone.simlady.service.FornecedorService;
 import com.zeroone.simlady.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +20,14 @@ public class ProdutoController {
 
     @Autowired
     private ProdutoService produtoService;
+    @Autowired
+    private ProdutoMapper produtoMapper;
+    @Autowired
+    private FornecedorService fornecedorService;
 
     @GetMapping
-    public ResponseEntity<List<ProdutoDTO>> listar() {
-        List<ProdutoDTO> produtos = produtoService.listar();
+    public ResponseEntity<List<ProdutoResponseDto>> listar() {
+        List<ProdutoResponseDto> produtos = produtoService.listar().stream().map(produtoMapper::toResponseDto).toList();
         if (produtos.isEmpty()){
             throw new ResourceNotFoundException("Nenhum produto encontrado");
         }
@@ -28,15 +35,18 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<ProdutoResponseDto> buscarPorId(@PathVariable Integer id) {
         Produto produto = produtoService.buscarPorId(id);
-        return ResponseEntity.ok(ProdutoMapper.toDTO(produto));
+        return ResponseEntity.ok(produtoMapper.toResponseDto(produto));
     }
 
     @PostMapping
-    public ResponseEntity<ProdutoDTO> cadastrarProduto(@RequestBody ProdutoDTO produtoDTO) {
-        produtoDTO.setId(null);
-        return ResponseEntity.ok(produtoService.cadastrarProduto(produtoDTO));
+    public ResponseEntity<ProdutoResponseDto> cadastrarProduto(@RequestBody ProdutoRequestDto dto) {
+        Produto produto = produtoMapper.toEntity(dto);
+        Fornecedor fornecedor = fornecedorService.buscarPorId(dto.getFornecedorId());
+        produto.setFornecedor(fornecedor);
+        ProdutoResponseDto response = produtoMapper.toResponseDto(produtoService.cadastrarProduto(produto));
+        return ResponseEntity.status(201).body(response);
     }
 
     @DeleteMapping("/{id}")
@@ -46,7 +56,9 @@ public class ProdutoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoDTO produtoDTO){
-        return ResponseEntity.ok(produtoService.atualizar(id,produtoDTO));
+    public ResponseEntity<ProdutoResponseDto> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoRequestDto request){
+        Produto produto = produtoMapper.toEntity(request);
+        ProdutoResponseDto response = produtoMapper.toResponseDto(produtoService.atualizar(id,produto));
+        return ResponseEntity.ok(response);
     }
 }
