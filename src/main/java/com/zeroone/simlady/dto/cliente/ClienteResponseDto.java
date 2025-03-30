@@ -1,6 +1,7 @@
 package com.zeroone.simlady.dto.cliente;
 
 import com.zeroone.simlady.dto.contato.ContatoResponseDto;
+import com.zeroone.simlady.dto.contato.ContatoResponseListDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,6 @@ public class ClienteResponseDto {
     private String cpf;
     private String email;
     private Boolean ativo;
-    private Set<ContatoResponseDto> contatos = new HashSet<>();
+    private Set<ContatoResponseListDto> contatos;
 
 }
