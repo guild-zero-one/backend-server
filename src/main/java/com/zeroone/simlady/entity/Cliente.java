@@ -10,10 +10,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.br.CPF;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -57,7 +56,10 @@ public class Cliente {
     private LocalDate atualizadoEm;
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Contato> contatos = new ArrayList<>();
+    private Set<Contato> contatos = new HashSet<>();
 
+    public void adicionarContato(Contato contato) {
+        contatos.add(contato);
+    }
 }
 
