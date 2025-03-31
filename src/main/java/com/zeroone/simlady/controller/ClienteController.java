@@ -57,6 +57,12 @@ public class ClienteController {
                         .atualizar(id, dto));
     }
 
+    @PatchMapping("/desativar/{id}")
+    public ResponseEntity<Void> desativar(@PathVariable Integer id) {
+         clienteService.desativarCliente(id);
+         return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarCliente(@PathVariable Integer id) {
         clienteService.deletar(id);

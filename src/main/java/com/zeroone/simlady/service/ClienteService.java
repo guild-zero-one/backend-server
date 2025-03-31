@@ -63,6 +63,12 @@ public class ClienteService {
         return clienteMapper.toDto(cliente);
     }
 
+    public void desativarCliente(Integer id) {
+        Cliente cliente = buscarEntidade(id);
+        cliente.setAtivo(false);
+        clienteRepository.save(cliente);
+    }
+
     public void deletar(Integer id) {
         if (!clienteRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cliente não encontrado");
