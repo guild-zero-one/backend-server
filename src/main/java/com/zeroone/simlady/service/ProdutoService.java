@@ -1,0 +1,43 @@
+package com.zeroone.simlady.service;
+
+import com.zeroone.simlady.exception.ResourceNotFoundException;
+import com.zeroone.simlady.entity.Produto;
+import com.zeroone.simlady.repository.ProdutoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+
+import java.util.List;
+
+@Service
+public class ProdutoService {
+
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private FornecedorService fornecedorService;
+
+    public Produto cadastrarProduto(Produto produto) {
+        return produtoRepository.save(produto);
+    }
+
+    public List<Produto> listar() {
+        return produtoRepository.findAll();
+    }
+
+    public Produto buscarPorId(Integer id) {
+        return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado"));
+    }
+
+    public void excluirPorId(Integer id) {
+        produtoRepository.deleteById(id);
+    }
+
+    public Produto atualizar(Integer id, Produto produto){
+        Produto produtoBuscado = buscarPorId(id);
+        produtoBuscado.setNome(produto.getNome());
+        produtoBuscado.setNomeFantasia(produto.getNomeFantasia());
+        return produtoRepository.save(produtoBuscado);
+    }
+}
