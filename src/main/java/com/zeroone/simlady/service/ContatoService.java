@@ -18,82 +18,65 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ContatoService {
 
-    ContatoMapper contatoMapper;
-    ContatoRepository contatoRepository;
-    ClienteService clienteService;
-    ClienteRepository clienteRepository;
-
-    public ContatoService(ContatoMapper contatoMapper,
-                          ContatoRepository contatoRepository,
-                          ClienteService clienteService,
-                          ClienteRepository clienteRepository) {
-        this.contatoMapper = contatoMapper;
-        this.contatoRepository = contatoRepository;
-        this.clienteService = clienteService;
-        this.clienteRepository = clienteRepository;
-    }
+    private final ContatoRepository contatoRepository;
+    private final ClienteService clienteService;
+    private final ClienteRepository clienteRepository;
 
 
-    public ContatoResponseDto adicionar(Integer clienteId, ContatoRequestDto dto) {
 
-        Cliente cliente = clienteService.buscarEntidade(clienteId);
+    public Contato adicionar(Integer clienteId, Contato contato) {
 
-        validarCelular(dto.getCelular());
-        Contato contato = contatoMapper.toEntity(dto);
+        Cliente cliente = clienteService.buscar(clienteId);
+
+        validarCelular(contato.getCelular());
 
         contato.setCliente(cliente);
         cliente.adicionarContato(contato);
 
         contatoRepository.save(contato);
 
-        return contatoMapper.toDto(contato);
+        return contato;
 
     }
 
-    public ContatoResponseDto buscarPorId(Integer id) {
-
-        Contato contato = buscarEntidade(id);
-
-        return contatoMapper.toDto(contato);
-
+    public Contato buscar(Integer id) {
+        return contatoRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Contato não encontrado."));
     }
 
-    public Set<ContatoResponseDto> buscarPorCliente (Integer clienteId) {
+    public Set<Contato> buscarPorCliente (Integer clienteId) {
 
-        Cliente cliente = clienteService.buscarEntidade(clienteId);
+        Cliente cliente = clienteService.buscar(clienteId);
 
         return cliente
-                .getContatos()
-                .stream()
-                .map(contatoMapper::toDto)
-                .collect(Collectors.toSet());
+                .getContatos();
     }
 
-    public ContatoResponseDto atualizar(Integer id, ContatoRequestDto dto) {
+    public Contato atualizar(Integer id, Contato contato) {
 
-        Cliente cliente = clienteService.buscarEntidade(id);
+        Cliente cliente = clienteService.buscar(id);
 
-        Contato contato = contatoMapper.toEntity(dto);
 
-        if(contatoRepository.existsByCelularAndIdNot(dto.getCelular(), id)) {
-            throw new ResourceAlreadyExistsException("Contato já cadastrado.");
+        if(contatoRepository.existsByCelularAndIdNot(contato.getCelular(), id)) {
+            throw new ResourceAlreadyExistsException("Celular já cadastrado.");
         }
 
         contato.setId(id);
-        contato.setCelular(dto.getCelular());
         contato.setCliente(cliente);
 
         contatoRepository.save(contato);
-        return contatoMapper.toDto(contato);
+        return contato;
     }
 
     public void deletar(Integer id) {
-        Contato contato = buscarEntidade(id);
+        Contato contato = buscar(id);
 
-        Cliente cliente = clienteService.buscarEntidade(contato.getCliente().getId());
+        Cliente cliente = clienteService.buscar(contato.getCliente().getId());
         cliente.getContatos().remove(contato);
 
         clienteRepository.save(cliente);
@@ -101,11 +84,6 @@ public class ContatoService {
 
     }
 
-    private Contato buscarEntidade(Integer id) {
-        return contatoRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Contato não encontrado."));
-    }
     private void validarCelular(String celular) {
         if(contatoRepository.existsByCelular(celular)) {
             throw new ResourceAlreadyExistsException("Celular já cadastrado.");

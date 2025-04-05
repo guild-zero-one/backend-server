@@ -19,52 +19,42 @@ public class ClienteService {
 
     private final ClienteRepository clienteRepository;
 
-    private final ClienteMapper clienteMapper;
 
+    public Cliente cadastrar(Cliente cliente) {
 
-    public ClienteResponseDto cadastrar(ClienteRequestDto dto) {
+        validarCpf(cliente.getCpf());
+        validarEmail(cliente.getEmail());
 
-        validarCpf(dto.getCpf());
-        validarEmail(dto.getEmail());
-
-        Cliente cliente = clienteMapper.toEntity(dto);
-        clienteRepository.save(cliente);
-
-        return clienteMapper.toDto(cliente);
+        return clienteRepository.save(cliente);
     }
 
-    public List<ClienteResponseDto> listar() {
-        return clienteRepository.findAll()
-                .stream()
-                .map(clienteMapper::toDto)
-                .collect(Collectors.toList());
+    public List<Cliente> listar() {
+        return clienteRepository.findAll();
     }
 
-    public ClienteResponseDto buscar(Integer id) {
-        return clienteMapper.toDto(buscarEntidade(id));
+    public Cliente buscar(Integer id) {
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 
-    public ClienteResponseDto atualizar(Integer id, ClienteRequestDto dto) {
+    public Cliente atualizar(Integer id, Cliente cliente) {
 
-        buscarEntidade(id);
+        buscar(id);
 
-        boolean existePorCpf = clienteRepository.existsByCpfAndIdNot(dto.getCpf(), id);
-        boolean existePorEmail = clienteRepository.existsByEmailAndIdNot(dto.getEmail(), id);
+        boolean existePorCpf = clienteRepository.existsByCpfAndIdNot(cliente.getCpf(), id);
+        boolean existePorEmail = clienteRepository.existsByEmailAndIdNot(cliente.getEmail(), id);
 
         if(existePorCpf && existePorEmail) {
             throw new ResourceAlreadyExistsException("Dados inválidos, email e/ou cpf já cadastrados");
         }
 
-        Cliente cliente = clienteMapper.toEntity(dto);
-
         cliente.setId(id);
-        clienteRepository.save(cliente);
 
-        return clienteMapper.toDto(cliente);
+        return clienteRepository.save(cliente);
     }
 
     public void desativarCliente(Integer id) {
-        Cliente cliente = buscarEntidade(id);
+        Cliente cliente = buscar(id);
         cliente.setAtivo(false);
         clienteRepository.save(cliente);
     }
@@ -75,11 +65,6 @@ public class ClienteService {
         }
 
         clienteRepository.deleteById(id);
-    }
-
-    public Cliente buscarEntidade(Integer id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 
     private void validarCpf(String cpf) {
