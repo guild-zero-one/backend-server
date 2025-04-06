@@ -1,114 +1,62 @@
 package com.zeroone.simlady.service;
 
-import com.zeroone.simlady.dto.PedidoVendaDTO;
-import com.zeroone.simlady.exception.ResourceNotFoundException;
-import com.zeroone.simlady.mapper.PedidoVendaMapper;
-import com.zeroone.simlady.entity.Cliente;
 import com.zeroone.simlady.entity.PedidoVenda;
-import com.zeroone.simlady.repository.ClienteRepository;
+import com.zeroone.simlady.entity.enums.StatusPedido;
+import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PedidoVendaService {
 
-    @Autowired
-    PedidoVendaRepository pedidoVendaRepository;
+    private final PedidoVendaRepository pedidoVendaRepository;
+    private final ClienteService clienteService;
+    private final LoteProdutoService loteProdutoService;
 
-    @Autowired
-    ClienteRepository clienteRepository;
+    public PedidoVenda cadastrar(PedidoVenda pedido) {
+        Integer idCliente = pedido.getCliente().getId();
 
-    @Autowired
-    PedidoVendaMapper pedidoVendaMapper;
+        clienteService.buscar(idCliente);
+        pedido.getItens().forEach(item -> item.setPedidoVenda(pedido));
 
-    public PedidoVendaDTO cadastrar(PedidoVenda pedidoVenda, Integer clienteId) {
+        pedido.getItens().forEach(item -> item.setLoteProduto(loteProdutoService.buscarPorId(item.getLoteProduto().getId())));
 
-        buscarCliente(clienteId);
-
-        pedidoVenda.setCliente(clienteRepository.findById(clienteId).get());
-        pedidoVenda.setId(null);
-        pedidoVenda.setStatus("PENDENTE");
-
-        pedidoVendaRepository.save(pedidoVenda);
-
-        return pedidoVendaMapper.toDto(pedidoVenda);
-
+        return pedidoVendaRepository.save(pedido);
     }
 
-    public List<PedidoVendaDTO> listar() {
-        List<PedidoVenda> pedidoVendas = pedidoVendaRepository.findAll();
-
-        return pedidoVendas
-                .stream()
-                .map(pedidoVendaMapper::toDto)
-                .toList();
+    public List<PedidoVenda> listar() {
+        return pedidoVendaRepository.findAll();
     }
 
-    public PedidoVendaDTO buscarPorId(Integer id) {
-        buscarPedidoVendaPorId(id);
-
-        return pedidoVendaMapper.toDto(pedidoVendaRepository.findById(id).get());
+    public PedidoVenda buscar(Integer id) {
+        return pedidoVendaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
     }
 
-    public List<PedidoVendaDTO> buscarPorCliente(Integer id) {
-        Cliente cliente = buscarCliente(id);
+    public PedidoVenda atualizar(Integer id, PedidoVenda pedidoAtualizado) {
+        PedidoVenda existente = buscar(id);
 
-        List<PedidoVenda> pedidos = pedidoVendaRepository.findAllByCliente(cliente);
+        existente.setCliente(pedidoAtualizado.getCliente());
+        existente.setItens(pedidoAtualizado.getItens());
+        existente.setStatus(pedidoAtualizado.getStatus());
 
-        return pedidos
-                .stream()
-                .map(pedidoVendaMapper::toDto)
-                .toList();
+        return pedidoVendaRepository.save(existente);
     }
 
-    public PedidoVendaDTO atualizar(Integer id, PedidoVenda pedidoVenda) {
-        pedidoVenda.setId(id);
-
-        PedidoVenda antigo = buscarPedidoVendaPorId(id);
-        pedidoVenda.setCliente(antigo.getCliente());
-        pedidoVenda.setCriadoEm(antigo.getCriadoEm());
-
-        return pedidoVendaMapper.toDto(pedidoVendaRepository.save(pedidoVenda));
-
-    }
-
-    public PedidoVendaDTO atualizarStatus(Integer id, String status) {
-        buscarPedidoVendaPorId(id);
-
-        PedidoVenda pedidoVenda = pedidoVendaRepository.findById(id).get();
-        pedidoVenda.setStatus(status);
-
-        return pedidoVendaMapper.toDto(pedidoVendaRepository.save(pedidoVenda));
-    }
-
-    public void remover(Integer id) {
-        buscarPedidoVendaPorId(id);
+    public void deletar(Integer id) {
+        if (!pedidoVendaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Pedido não encontrado");
+        }
         pedidoVendaRepository.deleteById(id);
     }
 
-    public List<PedidoVendaDTO> buscarTodosPorStatus(String status)  {
-
-        List<PedidoVenda> pedidos = pedidoVendaRepository.findAllByStatus(status);
-
-        return pedidos
-                .stream()
-                .map(pedidoVendaMapper:: toDto)
-                .toList();
-
-    }
-
-
-
-    private PedidoVenda buscarPedidoVendaPorId(Integer id) {
-        return pedidoVendaRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Pedido não encontrado"));
-    }
-
-    private Cliente buscarCliente(Integer id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    public PedidoVenda atualizarStatus(Integer id, StatusPedido novoStatus) {
+        PedidoVenda pedido = buscar(id);
+        pedido.setStatus(novoStatus);
+        return pedidoVendaRepository.save(pedido);
     }
 }

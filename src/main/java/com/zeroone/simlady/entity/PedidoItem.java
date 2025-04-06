@@ -1,8 +1,11 @@
 package com.zeroone.simlady.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -23,7 +26,7 @@ public class PedidoItem {
     private PedidoVenda pedidoVenda;
 
     private Integer quantidade;
-    private Double precoUnitario;
+    private BigDecimal precoUnitario;
 
 
 
