@@ -38,7 +38,12 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contato> contatos = new HashSet<>();
 
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PedidoVenda> pedidos = new HashSet<>();
+
     public void adicionarContato(Contato contato) {
         contatos.add(contato);
+        contato.setCliente(this);
     }
 }

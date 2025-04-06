@@ -5,12 +5,12 @@ import com.zeroone.simlady.dto.cliente.ClienteResponseDto;
 import com.zeroone.simlady.entity.Cliente;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PedidoVendaMapper.class, ContatoMapper.class})
 public interface ClienteMapper {
 
-    Cliente toEntity (ClienteRequestDto dto);
+    Cliente toEntity(ClienteRequestDto dto);
 
     ClienteResponseDto toDto(Cliente cliente);
-
 }
+
 
