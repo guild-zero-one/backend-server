@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
-
+@Table(name = "pedido_item")
 public class PedidoItem {
 
     @Id
@@ -18,8 +18,8 @@ public class PedidoItem {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "fk_lote_produto", nullable = false)
-    private LoteProduto loteProduto;
+    @JoinColumn(name = "fk_produto", nullable = false)
+    private Produto produto;
 
     @ManyToOne
     @JoinColumn(name = "fk_pedido", nullable = false)

@@ -15,7 +15,7 @@ public class PedidoVendaService {
 
     private final PedidoVendaRepository pedidoVendaRepository;
     private final ClienteService clienteService;
-    private final LoteProdutoService loteProdutoService;
+    private final ProdutoService produtoService;
 
     public PedidoVenda cadastrar(PedidoVenda pedido) {
         Integer idCliente = pedido.getCliente().getId();
@@ -23,7 +23,7 @@ public class PedidoVendaService {
         clienteService.buscar(idCliente);
         pedido.getItens().forEach(item -> item.setPedidoVenda(pedido));
 
-        pedido.getItens().forEach(item -> item.setLoteProduto(loteProdutoService.buscarPorId(item.getLoteProduto().getId())));
+        pedido.getItens().forEach(item -> item.setProduto(produtoService.buscarPorId(item.getProduto().getId())));
 
         return pedidoVendaRepository.save(pedido);
     }

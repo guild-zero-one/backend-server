@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 public class PedidoItemRequestDto {
 
-    private Integer idLoteProduto;
+    private Integer idProduto;
 
     @Positive
     private Integer quantidade;

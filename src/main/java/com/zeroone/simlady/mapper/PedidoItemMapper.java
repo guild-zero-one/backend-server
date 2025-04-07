@@ -8,10 +8,10 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface PedidoItemMapper {
 
-    @Mapping(target = "loteProduto.id", source = "idLoteProduto")
+    @Mapping(target = "produto.id", source = "idProduto")
     PedidoItem toEntity(PedidoItemRequestDto dto);
 
-    @Mapping(target = "idLoteProduto", source = "loteProduto.id")
+    @Mapping(target = "idProduto", source = "produto.id")
     PedidoItemResponseDto toDto(PedidoItem pedido);
 }
 
