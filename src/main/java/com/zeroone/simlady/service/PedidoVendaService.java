@@ -1,12 +1,14 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.entity.PedidoVenda;
+import com.zeroone.simlady.entity.Venda;
 import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -58,5 +60,15 @@ public class PedidoVendaService {
         PedidoVenda pedido = buscar(id);
         pedido.setStatus(novoStatus);
         return pedidoVendaRepository.save(pedido);
+    }
+
+    public BigDecimal calcularValorTotal(PedidoVenda pedido) {
+        return pedido
+                .getItens()
+                .stream()
+                .map(item -> item.getPrecoUnitario()
+                        .multiply(BigDecimal
+                                .valueOf(item.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
