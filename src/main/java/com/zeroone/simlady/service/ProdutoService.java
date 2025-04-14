@@ -3,6 +3,7 @@ package com.zeroone.simlady.service;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.repository.ProdutoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +11,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProdutoService {
+    private final ProdutoRepository produtoRepository;
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
-
-    @Autowired
-    private FornecedorService fornecedorService;
+    private final FornecedorService fornecedorService;
 
     public Produto cadastrarProduto(Produto produto) {
         return produtoRepository.save(produto);
