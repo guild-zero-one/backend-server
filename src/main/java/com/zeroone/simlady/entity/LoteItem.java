@@ -1,12 +1,16 @@
 package com.zeroone.simlady.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 
 @Entity
+@Getter
+@Setter
 public class LoteItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

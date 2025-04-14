@@ -3,6 +3,8 @@ package com.zeroone.simlady.mapper;
 import com.zeroone.simlady.dto.lote.LoteRequestDto;
 import com.zeroone.simlady.dto.lote.LoteResponseDto;
 import com.zeroone.simlady.dto.lote.LoteResponseItemDto;
+import com.zeroone.simlady.dto.loteItem.LoteItemRequestDto;
+import com.zeroone.simlady.dto.loteItem.LoteItemResponseDto;
 import com.zeroone.simlady.entity.Lote;
 import com.zeroone.simlady.entity.LoteItem;
 import org.mapstruct.Mapper;
@@ -20,5 +22,5 @@ public interface LoteMapper {
     @Mapping(target = "id", source = "id")
     LoteResponseDto toResponseDto(Lote lote);
 
-    LoteResponseItemDto toResponseItemDto(Lote lote, List<LoteItem> loteItems);
+    LoteResponseItemDto toResponseItemDto(Lote lote, List<LoteItemResponseDto> loteItems);
 }

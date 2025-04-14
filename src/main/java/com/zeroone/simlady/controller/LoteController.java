@@ -4,6 +4,7 @@ import com.zeroone.simlady.dto.lote.LoteRequestDto;
 import com.zeroone.simlady.dto.lote.LoteResponseDto;
 import com.zeroone.simlady.dto.lote.LoteResponseItemDto;
 import com.zeroone.simlady.dto.loteItem.LoteItemRequestDto;
+import com.zeroone.simlady.dto.loteItem.LoteItemResponseDto;
 import com.zeroone.simlady.entity.LoteItem;
 import com.zeroone.simlady.entity.Lote;
 import com.zeroone.simlady.mapper.LoteItemMapper;
@@ -42,14 +43,14 @@ public class LoteController {
         Lote lote = loteMapper.toEntity(loteDto);
         List<LoteItemRequestDto> loteItems = loteDto.getLoteItems();
         Lote loteCadastrado = loteService.cadastrarLote(lote);
-        List<LoteItemRequestDto> loteItemsComId = loteItems.stream().map(loteItemRequestDto -> {
-            loteItemRequestDto.setLoteId(loteCadastrado.getId());
-            return loteItemRequestDto;
-        }).toList();
+        List<LoteItemRequestDto> loteItemsComId = loteItems.stream().peek(loteItemRequestDto -> loteItemRequestDto.setLoteId(loteCadastrado.getId())).toList();
         List<LoteItem> loteItemsParaSalvar = loteItemsComId.stream()
                 .map(loteItemMapper::toEntity)
                 .toList();
         List<LoteItem> loteItemCadastrados = loteService.cadastrarLoteItem(loteItemsParaSalvar);
-        return ResponseEntity.ok(loteMapper.toResponseItemDto(loteCadastrado, loteItemCadastrados));
+        List<LoteItemResponseDto> loteItemResponse = loteItemCadastrados.stream()
+                .map(loteItemMapper::toResponseDto)
+                .toList();
+        return ResponseEntity.ok(loteMapper.toResponseItemDto(loteCadastrado, loteItemResponse));
     }
 }
