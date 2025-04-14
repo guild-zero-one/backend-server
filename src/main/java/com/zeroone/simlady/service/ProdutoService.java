@@ -37,7 +37,13 @@ public class ProdutoService {
     public Produto atualizar(Integer id, Produto produto){
         Produto produtoBuscado = buscarPorId(id);
         produtoBuscado.setNome(produto.getNome());
-        produtoBuscado.setNomeFantasia(produto.getNomeFantasia());
+        produtoBuscado.setSku(produto.getSku());
+        produtoBuscado.setDesc(produto.getDesc());
+        produtoBuscado.setTag(produto.getTag());
+        produtoBuscado.setQuantidade(produto.getQuantidade());
+        produtoBuscado.setPrecoUnitario(produto.getPrecoUnitario());
+        produtoBuscado.setCatalogo(produto.getCatalogo());
+        produtoBuscado.setValorVenda(produto.getValorVenda());
         return produtoRepository.save(produtoBuscado);
     }
 }
