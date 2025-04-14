@@ -51,6 +51,30 @@ public class LoteController {
         List<LoteItemResponseDto> loteItemResponse = loteItemCadastrados.stream()
                 .map(loteItemMapper::toResponseDto)
                 .toList();
-        return ResponseEntity.ok(loteMapper.toResponseItemDto(loteCadastrado, loteItemResponse));
+        return ResponseEntity.status(201).body(loteMapper.toResponseItemDto(loteCadastrado, loteItemResponse));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<LoteResponseDto> atualizarLote(@PathVariable Integer id, @RequestBody LoteRequestDto loteDto) {
+        Lote lote = loteMapper.toEntity(loteDto);
+        Lote loteAtualizado = loteService.atualizarLote(id, lote);
+        return ResponseEntity.ok(loteMapper.toResponseDto(loteAtualizado));
+    }
+
+    @PatchMapping("/{id}/lote-items")
+    public ResponseEntity<List<LoteItemResponseDto>> atualizarLoteItem(@PathVariable Integer id, @RequestBody List<LoteItemRequestDto> loteItems) {
+        List<LoteItem> loteItemsAtualizados = loteItems.stream()
+                .map(loteItemMapper::toEntity)
+                .toList();
+        List<LoteItem> loteItemAtualizados = loteService.atualizarLoteItem(id, loteItemsAtualizados);
+        return ResponseEntity.ok(loteItemAtualizados.stream()
+                .map(loteItemMapper::toResponseDto)
+                .toList());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarLote(@PathVariable Integer id) {
+        loteService.deletarLote(id);
+        return ResponseEntity.noContent().build();
     }
 }
