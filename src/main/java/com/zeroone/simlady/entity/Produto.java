@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Produto {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

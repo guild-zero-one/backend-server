@@ -8,6 +8,7 @@ import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.service.FornecedorService;
 import com.zeroone.simlady.service.ProdutoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/produtos")
 public class ProdutoController {
+    private final ProdutoService produtoService;
 
-    @Autowired
-    private ProdutoService produtoService;
-    @Autowired
-    private ProdutoMapper produtoMapper;
-    @Autowired
-    private FornecedorService fornecedorService;
+    private final ProdutoMapper produtoMapper;
+
+    private final FornecedorService fornecedorService;
 
     @GetMapping
     public ResponseEntity<List<ProdutoResponseDto>> listar() {
