@@ -1,8 +1,10 @@
 package com.zeroone.simlady.service;
 
+import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.entity.ProdutoImagem;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.ProdutoImagemRepository;
+import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,14 @@ import java.util.List;
 public class ProdutoImagemService {
     private final ProdutoImagemRepository produtoImagemRepository;
 
+    private final ProdutoRepository produtoRepository;
+
     public ProdutoImagem cadastrarImagem(ProdutoImagem produtoImagem) {
+        if (produtoImagem.getProduto() != null && produtoImagem.getProduto().getId() != null) {
+            Produto produtoPersistido = produtoRepository.findById(produtoImagem.getProduto().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoImagem.getProduto().getId()));
+            produtoImagem.setProduto(produtoPersistido);
+        }
         return produtoImagemRepository.save(produtoImagem);
     }
 
@@ -28,7 +37,18 @@ public class ProdutoImagemService {
     public ProdutoImagem atualizarImagem(Integer id, ProdutoImagem produtoImagemAtualizado) {
         ProdutoImagem produtoImagemExistente = buscarImagemPorId(id);
         if (produtoImagemExistente != null) {
+            // Busca o produto do banco de dados
+            Produto produtoPersistido = produtoRepository.findById(produtoImagemAtualizado.getProduto().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoImagemAtualizado.getProduto().getId()));
+
+            // Mantém as datas originais
+            produtoImagemAtualizado.setDataCriacao(produtoImagemExistente.getDataCriacao());
+            produtoImagemAtualizado.setDataAtualizacao(produtoImagemExistente.getDataAtualizacao());
+
+            // Define o ID e o produto persistido
             produtoImagemAtualizado.setId(id);
+            produtoImagemAtualizado.setProduto(produtoPersistido);
+
             return produtoImagemRepository.save(produtoImagemAtualizado);
         }
         throw new ResourceNotFoundException("Imagem não encontrada com o ID: " + id);

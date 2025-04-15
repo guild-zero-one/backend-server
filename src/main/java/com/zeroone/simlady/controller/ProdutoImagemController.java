@@ -1,5 +1,6 @@
 package com.zeroone.simlady.controller;
 
+import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemPatchDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemRequestDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemResponseDto;
 import com.zeroone.simlady.entity.ProdutoImagem;
@@ -45,7 +46,7 @@ public class ProdutoImagemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProdutoImagemResponseDto> atualizarImagem(@PathVariable Integer id, @RequestBody ProdutoImagemRequestDto produtoImagemDto) {
+    public ResponseEntity<ProdutoImagemResponseDto> atualizarImagem(@PathVariable Integer id, @RequestBody ProdutoImagemPatchDto produtoImagemDto) {
         ProdutoImagem imagemAtualizada = produtoImagemMapper.toEntity(produtoImagemDto);
         ProdutoImagem imagem = produtoImagemService.atualizarImagem(id, imagemAtualizada);
         ProdutoImagemResponseDto imagemResponse = produtoImagemMapper.toResponseDto(imagem);
