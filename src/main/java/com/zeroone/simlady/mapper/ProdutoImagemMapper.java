@@ -12,6 +12,7 @@ public interface ProdutoImagemMapper {
 
     @Mapping(target = "produto.id", source = "produtoId")
     ProdutoImagem toEntity(ProdutoImagemRequestDto request);
+
     @Mapping(target = "produto.id", source = "produtoId")
     ProdutoImagem toEntity(ProdutoImagemPatchDto request);
 

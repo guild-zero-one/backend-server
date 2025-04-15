@@ -37,15 +37,12 @@ public class ProdutoImagemService {
     public ProdutoImagem atualizarImagem(Integer id, ProdutoImagem produtoImagemAtualizado) {
         ProdutoImagem produtoImagemExistente = buscarImagemPorId(id);
         if (produtoImagemExistente != null) {
-            // Busca o produto do banco de dados
             Produto produtoPersistido = produtoRepository.findById(produtoImagemAtualizado.getProduto().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoImagemAtualizado.getProduto().getId()));
 
-            // Mantém as datas originais
             produtoImagemAtualizado.setDataCriacao(produtoImagemExistente.getDataCriacao());
             produtoImagemAtualizado.setDataAtualizacao(produtoImagemExistente.getDataAtualizacao());
 
-            // Define o ID e o produto persistido
             produtoImagemAtualizado.setId(id);
             produtoImagemAtualizado.setProduto(produtoPersistido);
 
