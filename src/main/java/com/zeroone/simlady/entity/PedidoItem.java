@@ -16,7 +16,7 @@ public class PedidoItem {
 
     @ManyToOne
     @JoinColumn(name = "fk_lote_produto", nullable = false)
-    private LoteProduto loteProduto;
+    private Lote lote;
 
     @ManyToOne
     @JoinColumn(name = "fk_pedido", nullable = false)

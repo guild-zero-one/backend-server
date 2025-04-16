@@ -7,6 +7,7 @@ import com.zeroone.simlady.mapper.FornecedorMapper;
 import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.service.FornecedorService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/fornecedores")
 public class FornecedorController {
+    private final FornecedorService fornecedorService;
 
-    @Autowired
-    private FornecedorService fornecedorService;
-
-    @Autowired
-    private FornecedorMapper fornecedorMapper;
+    private final FornecedorMapper fornecedorMapper;
 
     @GetMapping
     public ResponseEntity<List<FornecedorResponseDto>> listar() {

@@ -3,16 +3,16 @@ package com.zeroone.simlady.service;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.repository.FornecedorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FornecedorService {
-
-    @Autowired
-    private FornecedorRepository fornecedorRepository;
+    private final FornecedorRepository fornecedorRepository;
 
     public Fornecedor cadastrarFornecedor(Fornecedor fornecedor) {
         return fornecedorRepository.save(fornecedor);

@@ -6,26 +6,22 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import lombok.Data;
-
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
-public class Fornecedor {
-
+public class ProdutoImagem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    private String nome;
-    private String cnpj;
-
+    private String urlImagem;
+    private Boolean imagemPrincipal;
+    @ManyToOne
+    @JoinColumn(name = "produto_id", nullable = false)
+    private Produto produto;
     @CreationTimestamp
-    private LocalDateTime criadoEm;
-
+    private LocalDate dataCriacao;
     @UpdateTimestamp
-    private LocalDateTime atualizadoEm;
+    private LocalDate dataAtualizacao;
 }
