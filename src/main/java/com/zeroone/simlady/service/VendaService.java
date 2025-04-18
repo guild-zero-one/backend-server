@@ -48,6 +48,22 @@ public class VendaService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    public List<Venda> listar() {
+        return vendaRepository.findAll();
+    }
+
+    public Venda buscar(Integer id) {
+        return vendaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Venda não encontrada"));
+    }
+
+    public void deletar(Integer id) {
+        if (!vendaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Venda não encontrada");
+        }
+        vendaRepository.deleteById(id);
+    }
+
 
 
 

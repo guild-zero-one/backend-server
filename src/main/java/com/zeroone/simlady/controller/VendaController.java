@@ -8,10 +8,9 @@ import com.zeroone.simlady.service.VendaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +29,36 @@ public class VendaController {
 
         return ResponseEntity.status(201).body(vendaMapper.toDto(venda));
 
+    }
+
+    @GetMapping
+    public ResponseEntity<List<VendaResponseDto>> listar() {
+        List<Venda> vendas = vendaService.listar();
+
+        if(vendas.isEmpty()) {
+            return ResponseEntity
+                    .status(204)
+                    .build();
+        }
+        return ResponseEntity
+                .ok(vendaMapper
+                        .toDto(vendas));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<VendaResponseDto> buscar(@PathVariable Integer id) {
+        return ResponseEntity
+                .ok(vendaMapper
+                        .toDto(vendaService
+                                .buscar(id)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        vendaService.deletar(id);
+        return ResponseEntity
+                .status(200)
+                .build();
     }
 
 
