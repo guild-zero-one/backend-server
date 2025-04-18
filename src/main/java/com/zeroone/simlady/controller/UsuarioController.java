@@ -1,13 +1,16 @@
 package com.zeroone.simlady.controller;
 
 
+import com.zeroone.simlady.dto.usuario.UsuarioLoginDto;
 import com.zeroone.simlady.dto.usuario.UsuarioRequestDto;
 import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
+import com.zeroone.simlady.dto.usuario.UsuarioTokenDto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
 import com.zeroone.simlady.mapper.UsuarioMapper;
 import com.zeroone.simlady.service.UsuarioService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class UsuarioController {
 
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioResponseDto> cadastrar(@RequestBody @Valid UsuarioRequestDto dto) {
         Usuario usuario = usuarioMapper.toEntity(dto);
 
@@ -36,6 +40,20 @@ public class UsuarioController {
         return ResponseEntity.status(201)
                 .body(usuarioMapper
                         .toDto(salvo));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {
+
+        final Usuario usuario = usuarioMapper.toEntity(usuarioLoginDto);
+
+        UsuarioTokenDto usuarioTokenDto = usuarioMapper.toTokenDto(usuario);
+
+        String token = usuarioService.autenticar(usuario);
+
+        usuarioTokenDto.setToken(token);
+
+        return ResponseEntity.status(200).body(usuarioTokenDto);
     }
 
     @GetMapping

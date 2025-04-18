@@ -1,7 +1,9 @@
 package com.zeroone.simlady.mapper;
 
+import com.zeroone.simlady.dto.usuario.UsuarioLoginDto;
 import com.zeroone.simlady.dto.usuario.UsuarioRequestDto;
 import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
+import com.zeroone.simlady.dto.usuario.UsuarioTokenDto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
@@ -14,6 +16,10 @@ public interface UsuarioMapper {
     Usuario toEntity (UsuarioRequestDto dto);
 
     UsuarioResponseDto toDto (Usuario entity);
+
+    Usuario toEntity(UsuarioLoginDto dto);
+
+    UsuarioTokenDto toTokenDto(Usuario entity);
 
     default Permissao toPermissao(String permissao) {
         if (permissao == null) {
