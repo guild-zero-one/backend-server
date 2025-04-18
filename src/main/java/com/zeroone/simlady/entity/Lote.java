@@ -1,27 +1,25 @@
 package com.zeroone.simlady.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-public class LoteProduto {
+@Getter
+@Setter
+public class Lote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer qtdLote;
-    private Double valorUnitCompra;
-    private LocalDateTime dataValidade;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_produto", nullable = false)
-    private Produto produto;
+    private Double valorTotal;
 
     @CreationTimestamp
     private LocalDateTime criadoEm;
