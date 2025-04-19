@@ -10,7 +10,7 @@ import java.util.List;
 public class PedidoVendaResponseDto {
     private Integer id;
     private String status;
-    private Integer idCliente;
+    private Integer idUsuario;
     private Integer idVenda;
     private LocalDate criadoEm;
     private LocalDate atualizadoEm;

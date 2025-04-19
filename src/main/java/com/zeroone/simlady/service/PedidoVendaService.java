@@ -1,7 +1,6 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.entity.PedidoVenda;
-import com.zeroone.simlady.entity.Venda;
 import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
@@ -16,13 +15,13 @@ import java.util.List;
 public class PedidoVendaService {
 
     private final PedidoVendaRepository pedidoVendaRepository;
-    private final ClienteService clienteService;
+    private final UsuarioService usuarioService;
     private final ProdutoService produtoService;
 
     public PedidoVenda cadastrar(PedidoVenda pedido) {
-        Integer idCliente = pedido.getCliente().getId();
+        Integer idUsuario = pedido.getUsuario().getId();
 
-        clienteService.buscar(idCliente);
+        usuarioService.buscar(idUsuario);
         pedido.getItens().forEach(item -> item.setPedidoVenda(pedido));
 
         pedido.getItens().forEach(item -> item.setProduto(produtoService.buscarPorId(item.getProduto().getId())));
@@ -42,7 +41,7 @@ public class PedidoVendaService {
     public PedidoVenda atualizar(Integer id, PedidoVenda pedidoAtualizado) {
         PedidoVenda existente = buscar(id);
 
-        existente.setCliente(pedidoAtualizado.getCliente());
+        existente.setUsuario(pedidoAtualizado.getUsuario());
         existente.setItens(pedidoAtualizado.getItens());
         existente.setStatus(pedidoAtualizado.getStatus());
 

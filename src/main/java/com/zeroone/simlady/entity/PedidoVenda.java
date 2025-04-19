@@ -8,9 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -30,8 +28,8 @@ public class PedidoVenda{
     private Venda venda;
 
     @ManyToOne
-    @JoinColumn(name = "fk_cliente", nullable = false)
-    private Cliente cliente;
+    @JoinColumn(name = "fk_usuario", nullable = false)
+    private Usuario usuario;
 
     @OneToMany(mappedBy = "pedidoVenda", cascade = CascadeType.ALL)
     private List<PedidoItem> itens;

@@ -27,7 +27,7 @@ public class Contato {
     private LocalDate atualizadoEm;
 
     @ManyToOne
-    @JoinColumn(name = "fk_cliente")
-    private Cliente cliente;
+    @JoinColumn(name = "fk_usuario")
+    private Usuario usuario;
 
 }

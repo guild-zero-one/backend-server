@@ -1,26 +1,44 @@
 package com.zeroone.simlady.dto.usuario;
 
-import com.zeroone.simlady.entity.enums.Permissao;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.hibernate.validator.constraints.br.CPF;
+
 
 @Data
 public class UsuarioRequestDto {
 
-    @NotBlank
-    @Size(min = 3, max = 30)
+    @NotBlank(message = "Nome não deve ser vazio.")
+    @Size(min = 3, max = 30, message = "Nome deve ter entre 3 e 30 caracteres.")
     private String nome;
 
+    @Size(min = 3, max = 30, message = "Sobrenome deve ter entre 3 e 30 caracteres.")
+    private String sobrenome;
 
-    @Email
-    @NotNull
+    @Size(min = 2, max = 15, message = "Apelido deve ter entre 2 e 15 caracteres.")
+    private String apelido;
+
+    @CPF(message = "CPF inválido.")
+    @Column(unique = true, nullable = false)
+    @NotBlank(message = "CPF não pode ser vazio.")
+    private String cpf;
+
+    @Email(message = "Email inválido.")
+    @NotBlank(message = "Email não pode ser vazio.")
     private String email;
 
-    @Size(min = 8)
+    @NotBlank(message = "Senha não pode ser vazia.")
+    @Size(min = 8, max = 30, message = "Senha deve ter entre 8 e 30 caracteres.")
     private String senha;
 
-    @NotBlank
+    @NotBlank(message = "Permissão não pode ser nula.")
     private String permissao;
+
+
+
 
 
 }

@@ -16,11 +16,11 @@ public interface PedidoVendaMapper {
     @Mapping(target = "venda", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
-    @Mapping(target = "cliente.id", source = "idCliente")
+    @Mapping(target = "usuario.id", source = "idUsuario")
     @Mapping(target = "itens", source = "itens")
     PedidoVenda toEntity(PedidoVendaRequestDto dto);
 
-    @Mapping(target = "idCliente", source = "cliente.id")
+    @Mapping(target = "idUsuario", source = "usuario.id")
     @Mapping(target = "idVenda", source = "venda.id")
     @Mapping(target = "itens", source = "itens")
     PedidoVendaResponseDto toDto(PedidoVenda entity);

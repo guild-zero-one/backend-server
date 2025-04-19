@@ -1,7 +1,5 @@
 package com.zeroone.simlady.service;
 
-import com.zeroone.simlady.dto.usuario.UsuarioTokenDto;
-import com.zeroone.simlady.entity.Cliente;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
@@ -20,8 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
     private final PasswordEncoder passwordEncoder;
@@ -29,14 +27,16 @@ public class UsuarioService {
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
 
+
     public Usuario cadastrar(Usuario usuario) {
 
+        validarCpf(usuario.getCpf());
         validarEmail(usuario.getEmail());
+
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
 
         return usuarioRepository.save(usuario);
-
     }
 
     public String autenticar(Usuario usuario) {
@@ -47,27 +47,13 @@ public class UsuarioService {
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
         usuarioRepository.findByEmail(usuario.getEmail())
-                        .orElseThrow(
-                                () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null)
-                        );
+                .orElseThrow(
+                        () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null)
+                );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final String token = gerenciadorTokenJwt.generateToken(authentication);
-
-        return token;
-    }
-
-
-    public Usuario buscar(Integer id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-    }
-
-    public List<Usuario> listar() {
-
-        return usuarioRepository.findAll();
-
+        return gerenciadorTokenJwt.generateToken(authentication);
     }
 
     public void atualizarPermissao( Integer id ,String permissao) {
@@ -79,7 +65,7 @@ public class UsuarioService {
         }
 
         try{
-        usuario.setPermissao(Permissao.valueOf(permissao));
+            usuario.setPermissao(Permissao.valueOf(permissao));
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Permissão inválida.");
         }
@@ -88,23 +74,49 @@ public class UsuarioService {
 
     }
 
+    public List<Usuario> listar() {
+        return usuarioRepository.findAll();
+    }
+
+    public Usuario buscar(Integer id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    }
+
     public Usuario atualizar(Integer id, Usuario usuario) {
-        Usuario usuarioExistente = buscar(id);
-        Boolean existe = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), usuario.getId());
 
-        if (existe) {
-            throw new ResourceAlreadyExistsException("Email já cadastrado");
+        buscar(id);
+
+        boolean existePorCpf = usuarioRepository.existsByCpfAndIdNot(usuario.getCpf(), id);
+        boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
+
+        if(existePorCpf && existePorEmail) {
+            throw new ResourceAlreadyExistsException("Dados inválidos, email e/ou cpf já cadastrados");
         }
-        usuarioExistente.setId(id);
-        usuarioExistente.setEmail(usuario.getEmail());
-        usuarioExistente.setNome(usuario.getNome());
-        return usuarioRepository.save(usuarioExistente);
 
+        usuario.setId(id);
+
+        return usuarioRepository.save(usuario);
+    }
+
+    public void desativar(Integer id) {
+        Usuario usuario = buscar(id);
+        usuario.setAtivo(false);
+        usuarioRepository.save(usuario);
     }
 
     public void deletar(Integer id) {
-        Usuario usuario = buscar(id);
-        usuarioRepository.delete(usuario);
+        if (!usuarioRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Cliente não encontrado");
+        }
+
+        usuarioRepository.deleteById(id);
+    }
+
+    private void validarCpf(String cpf) {
+        if(usuarioRepository.existsByCpf(cpf)) {
+            throw new ResourceAlreadyExistsException("CPF já cadastrado!");
+        }
     }
 
     private void validarEmail(String email) {
@@ -112,6 +124,5 @@ public class UsuarioService {
             throw new ResourceAlreadyExistsException("Email já cadastrado!");
         }
     }
-
-
 }
+

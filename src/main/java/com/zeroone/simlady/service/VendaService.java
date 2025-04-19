@@ -17,7 +17,6 @@ import java.util.List;
 public class VendaService {
 
     private final VendaRepository vendaRepository;
-    private final ClienteService clienteService;
     private final PedidoVendaRepository pedidoVendaRepository;
     private final PedidoVendaService pedidoVendaService;
 

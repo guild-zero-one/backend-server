@@ -1,41 +1,34 @@
 package com.zeroone.simlady.service;
 
-import com.zeroone.simlady.dto.cliente.ClienteResponseDto;
-import com.zeroone.simlady.dto.contato.ContatoRequestDto;
-import com.zeroone.simlady.dto.contato.ContatoResponseDto;
+import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
-import com.zeroone.simlady.mapper.ClienteMapper;
-import com.zeroone.simlady.mapper.ContatoMapper;
-import com.zeroone.simlady.entity.Cliente;
 import com.zeroone.simlady.entity.Contato;
-import com.zeroone.simlady.repository.ClienteRepository;
+import com.zeroone.simlady.repository.UsuarioRepository;
 import com.zeroone.simlady.repository.ContatoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class ContatoService {
 
     private final ContatoRepository contatoRepository;
-    private final ClienteService clienteService;
-    private final ClienteRepository clienteRepository;
+    private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
 
 
 
     public Contato adicionar(Integer clienteId, Contato contato) {
 
-        Cliente cliente = clienteService.buscar(clienteId);
+        Usuario usuario = usuarioService.buscar(clienteId);
 
         validarCelular(contato.getCelular());
 
-        contato.setCliente(cliente);
-        cliente.adicionarContato(contato);
+        contato.setUsuario(usuario);
+        usuario.adicionarContato(contato);
 
         contatoRepository.save(contato);
 
@@ -51,15 +44,15 @@ public class ContatoService {
 
     public Set<Contato> buscarPorCliente (Integer clienteId) {
 
-        Cliente cliente = clienteService.buscar(clienteId);
+        Usuario usuario = usuarioService.buscar(clienteId);
 
-        return cliente
+        return usuario
                 .getContatos();
     }
 
     public Contato atualizar(Integer id, Contato contato) {
 
-        Cliente cliente = clienteService.buscar(id);
+        Usuario usuario = usuarioService.buscar(id);
 
 
         if(contatoRepository.existsByCelularAndIdNot(contato.getCelular(), id)) {
@@ -67,7 +60,7 @@ public class ContatoService {
         }
 
         contato.setId(id);
-        contato.setCliente(cliente);
+        contato.setUsuario(usuario);
 
         contatoRepository.save(contato);
         return contato;
@@ -76,10 +69,10 @@ public class ContatoService {
     public void deletar(Integer id) {
         Contato contato = buscar(id);
 
-        Cliente cliente = clienteService.buscar(contato.getCliente().getId());
-        cliente.getContatos().remove(contato);
+        Usuario usuario = usuarioService.buscar(contato.getUsuario().getId());
+        usuario.getContatos().remove(contato);
 
-        clienteRepository.save(cliente);
+        usuarioRepository.save(usuario);
         contatoRepository.delete(contato);
 
     }

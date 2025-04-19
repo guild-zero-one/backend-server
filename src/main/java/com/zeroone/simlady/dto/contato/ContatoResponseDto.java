@@ -7,7 +7,7 @@ public class ContatoResponseDto {
 
     private Integer id;
     private String celular;
-    private Integer fkCliente;
+    private Integer fkUsuario;
 
 }
 

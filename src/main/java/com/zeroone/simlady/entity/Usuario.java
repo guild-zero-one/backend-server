@@ -7,29 +7,48 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+@Entity
 @Getter
 @Setter
-@Entity
 @Table(name = "usuario")
 public class Usuario {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nome;
+    private String sobrenome;
+    private String apelido;
+    private String cpf;
     private String email;
     private String senha;
 
     @Enumerated(EnumType.STRING)
     private Permissao permissao;
 
+
+    private Boolean ativo = true;
+
     @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime criadoEm;
+    private LocalDate criadoEm;
 
     @UpdateTimestamp
-    private LocalDateTime atualizadoEm;
+    private LocalDate atualizadoEm;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Contato> contatos = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PedidoVenda> pedidos = new HashSet<>();
+
+    public void adicionarContato(Contato contato) {
+        contatos.add(contato);
+        contato.setUsuario(this);
+    }
 }

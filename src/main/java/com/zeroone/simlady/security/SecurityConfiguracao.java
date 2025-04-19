@@ -2,10 +2,8 @@ package com.zeroone.simlady.security;
 
 import com.zeroone.simlady.service.AutenticacaoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,17 +50,16 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/webjars/**"),
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
-            new AntPathRequestMatcher("/usuarios/login/**"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
-            new AntPathRequestMatcher("/clientes"),
-            new AntPathRequestMatcher("/contatos"),
-            new AntPathRequestMatcher("/fornecedores"),
-            new AntPathRequestMatcher("/lotes"),
-            new AntPathRequestMatcher("/pedidos"),
-            new AntPathRequestMatcher("/productos"),
-            new AntPathRequestMatcher("/vendas")
+            new AntPathRequestMatcher("/usuarios/**"),
+            new AntPathRequestMatcher("/contatos/**"),
+            new AntPathRequestMatcher("/fornecedores/**"),
+            new AntPathRequestMatcher("/lotes/**"),
+            new AntPathRequestMatcher("/pedidos/**"),
+            new AntPathRequestMatcher("/produtos/**"),
+            new AntPathRequestMatcher("/vendas/**")
     };
 
     @Bean

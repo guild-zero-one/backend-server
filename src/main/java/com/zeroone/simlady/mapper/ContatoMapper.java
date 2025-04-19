@@ -13,7 +13,7 @@ public interface ContatoMapper {
 
     Contato toEntity(ContatoRequestDto contatoRequestDto);
 
-    @Mapping(source = "cliente.id", target = "fkCliente")
+    @Mapping(source = "usuario.id", target = "fkUsuario")
     ContatoResponseDto toDto(Contato contato);
 
 }
