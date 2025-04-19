@@ -1,11 +1,11 @@
 package com.zeroone.simlady.service;
 import com.zeroone.simlady.dto.usuario.UsuarioDetalhesDto;
+import com.zeroone.simlady.entity.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.repository.UsuarioRepository;
 
 

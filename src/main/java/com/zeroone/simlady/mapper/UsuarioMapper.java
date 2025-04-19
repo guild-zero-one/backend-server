@@ -1,5 +1,4 @@
 package com.zeroone.simlady.mapper;
-
 import com.zeroone.simlady.dto.usuario.UsuarioLoginDto;
 import com.zeroone.simlady.dto.usuario.UsuarioRequestDto;
 import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
@@ -8,9 +7,8 @@ import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {PedidoVendaMapper.class, ContatoMapper.class})
 public interface UsuarioMapper {
 
     Usuario toEntity (UsuarioRequestDto dto);
@@ -34,5 +32,6 @@ public interface UsuarioMapper {
 
         throw new BadRequestException("Permissão inválida: " + permissao);
     }
-
 }
+
+

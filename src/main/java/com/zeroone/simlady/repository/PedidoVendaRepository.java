@@ -1,6 +1,6 @@
 package com.zeroone.simlady.repository;
 
-import com.zeroone.simlady.entity.Cliente;
+import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.PedidoVenda;
 import com.zeroone.simlady.entity.enums.StatusPedido;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +12,5 @@ import java.util.List;
 public interface PedidoVendaRepository extends JpaRepository<PedidoVenda, Integer> {
     List<PedidoVenda> findAllByStatus(StatusPedido status);
 
-    List<PedidoVenda> findAllByCliente(Cliente cliente);
+    List<PedidoVenda> findAllByUsuario(Usuario usuario);
 }

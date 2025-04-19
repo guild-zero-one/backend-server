@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class PedidoVendaRequestDto {
 
-    private Integer idCliente;
+    private Integer idUsuario;
 
     @NotNull
     private List<PedidoItemRequestDto> itens;

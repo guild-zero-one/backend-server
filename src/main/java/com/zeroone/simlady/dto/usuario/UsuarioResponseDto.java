@@ -9,6 +9,9 @@ public class UsuarioResponseDto {
 
     private Integer id;
     private String nome;
+    private String sobrenome;
+    private String apelido;
+    private String cpf;
     private String email;
-    private String permissao;
+    private Boolean ativo;
 }
