@@ -22,15 +22,11 @@ public class VendaService {
 
     @Transactional
     public Venda cadastrar(Venda venda, List<Integer> idPedidos) {
-
-
         List<PedidoVenda> pedidos = pedidoVendaRepository.findAllById(idPedidos);
 
         if(pedidos.isEmpty()) {
             throw new ResourceNotFoundException("Pedidos não encontrados");
         }
-
-
 
         pedidos.forEach(pedido -> {pedido.setVenda(venda);});
         venda.setPedidos(pedidos);
@@ -62,9 +58,4 @@ public class VendaService {
         }
         vendaRepository.deleteById(id);
     }
-
-
-
-
-
 }
