@@ -9,11 +9,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "contato")
 @Getter
 @Setter
+@Table(name = "contato")
 public class Contato {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -29,5 +28,4 @@ public class Contato {
     @ManyToOne
     @JoinColumn(name = "fk_usuario")
     private Usuario usuario;
-
 }
