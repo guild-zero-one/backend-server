@@ -1,4 +1,4 @@
-package com.zeroone.simlady.security;
+package com.zeroone.simlady.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
