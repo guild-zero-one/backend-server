@@ -1,4 +1,4 @@
-package com.zeroone.simlady.security;
+package com.zeroone.simlady.config.security;
 
 import com.zeroone.simlady.service.AutenticacaoService;
 import lombok.RequiredArgsConstructor;
@@ -54,12 +54,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/usuarios/**"),
-            new AntPathRequestMatcher("/contatos/**"),
-            new AntPathRequestMatcher("/fornecedores/**"),
-            new AntPathRequestMatcher("/lotes/**"),
-            new AntPathRequestMatcher("/pedidos/**"),
             new AntPathRequestMatcher("/produtos/**"),
-            new AntPathRequestMatcher("/vendas/**")
     };
 
     @Bean

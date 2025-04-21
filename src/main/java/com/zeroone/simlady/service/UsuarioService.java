@@ -6,7 +6,7 @@ import com.zeroone.simlady.exception.BadRequestException;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.UsuarioRepository;
-import com.zeroone.simlady.security.GerenciadorTokenJwt;
+import com.zeroone.simlady.config.security.GerenciadorTokenJwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

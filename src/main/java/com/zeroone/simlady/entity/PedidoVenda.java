@@ -15,7 +15,6 @@ import java.util.List;
 @Setter
 @Table(name = "pedido_venda")
 public class PedidoVenda{
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
@@ -39,6 +38,4 @@ public class PedidoVenda{
 
     @UpdateTimestamp
     private LocalDate atualizadoEm;
-
-
 }

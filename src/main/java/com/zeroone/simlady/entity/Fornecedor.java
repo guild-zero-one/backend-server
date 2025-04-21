@@ -14,13 +14,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@Table(name = "fornecedor")
 public class Fornecedor {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nome;
+
     private String cnpj;
 
     @CreationTimestamp

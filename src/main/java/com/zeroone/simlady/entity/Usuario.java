@@ -16,21 +16,24 @@ import java.util.Set;
 @Setter
 @Table(name = "usuario")
 public class Usuario {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nome;
+
     private String sobrenome;
+
     private String apelido;
+
     private String cpf;
+
     private String email;
+
     private String senha;
 
     @Enumerated(EnumType.STRING)
     private Permissao permissao;
-
 
     private Boolean ativo = true;
 

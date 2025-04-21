@@ -1,4 +1,4 @@
-package com.zeroone.simlady.security;
+package com.zeroone.simlady.config.security;
 
 import com.zeroone.simlady.service.AutenticacaoService;
 import org.springframework.security.authentication.AuthenticationProvider;

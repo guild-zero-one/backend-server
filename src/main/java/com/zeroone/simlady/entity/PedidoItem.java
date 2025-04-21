@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 @Setter
 @Table(name = "pedido_item")
 public class PedidoItem {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -26,7 +25,4 @@ public class PedidoItem {
 
     private Integer quantidade;
     private BigDecimal precoUnitario;
-
-
-
 }

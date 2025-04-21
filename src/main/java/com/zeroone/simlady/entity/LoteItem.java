@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@Table(name = "lote_item")
 public class LoteItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +24,11 @@ public class LoteItem {
     private LocalDate dataValidade;
 
     @ManyToOne
-    @JoinColumn(name = "produto_id")
+    @JoinColumn(name = "produto_id", nullable = false)
     private Produto produto;
 
     @ManyToOne
-    @JoinColumn(name = "lote_id")
+    @JoinColumn(name = "lote_id", nullable = false)
     private Lote lote;
 
     @CreationTimestamp
