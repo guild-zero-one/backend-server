@@ -1,19 +1,18 @@
 package com.zeroone.simlady.dto.fornecedor;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import org.hibernate.validator.constraints.br.CNPJ;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class FornecedorRequestDto {
-    @NotBlank(message = "Nome não deve ser vazio")
+    @NotBlank(message = "Nome não pode ser vazio.")
+    @Schema(description = "Nome do fornecedor/marca", example = "Boticário")
     private String nome;
-    @CNPJ(message = "CNPJ Invalido!")
+
+    @CNPJ(message = "CNPJ inválido.")
+    @Schema(description = "CNPJ", example = "10.164.222/0001-01")
     private String cnpj;
 }
