@@ -26,7 +26,6 @@ import java.util.List;
 @RequestMapping("/vendas")
 @Tag(name = "Vendas", description = "Gerenciamento de Vendas")
 public class VendaController {
-
     private final VendaService vendaService;
 
     private final VendaMapper vendaMapper;

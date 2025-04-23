@@ -17,7 +17,6 @@ import java.util.List;
 public class PedidoVenda{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Integer id;
 
     private StatusPedido status = StatusPedido.PENDENTE;

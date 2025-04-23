@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LoteItemMapperHelper {
-
     private final ProdutoRepository produtoRepository;
     private final LoteRepository loteRepository;
 
