@@ -1,4 +1,4 @@
-package com.zeroone.simlady.dto.item;
+package com.zeroone.simlady.dto.pedidoItem;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
