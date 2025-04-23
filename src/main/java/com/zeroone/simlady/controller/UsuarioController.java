@@ -30,7 +30,6 @@ import java.util.List;
 @RequestMapping("/usuarios")
 @Tag(name = "Usuários", description = "Clientes e Administradores")
 public class UsuarioController {
-
     private final UsuarioService usuarioService;
 
     private final UsuarioMapper usuarioMapper;

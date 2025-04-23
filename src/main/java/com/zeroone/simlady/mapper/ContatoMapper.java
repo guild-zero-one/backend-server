@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 public interface ContatoMapper {
-
-
     Contato toEntity(ContatoRequestDto contatoRequestDto);
 
     @Mapping(source = "usuario.id", target = "fkUsuario")

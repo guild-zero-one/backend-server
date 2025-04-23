@@ -19,8 +19,6 @@ public class ContatoService {
     private final UsuarioService usuarioService;
     private final UsuarioRepository usuarioRepository;
 
-
-
     public Contato adicionar(Integer clienteId, Contato contato) {
 
         Usuario usuario = usuarioService.buscar(clienteId);

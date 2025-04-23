@@ -27,7 +27,6 @@ import java.util.List;
 @RequestMapping("/pedidos")
 @Tag(name = "Pedidos", description = "Pedido de Vendas de cada Cliente")
 public class PedidoVendaController {
-
     private final PedidoVendaService pedidoVendaService;
 
     private final PedidoVendaMapper pedidoVendaMapper;

@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = LoteItemMapperHelper.class)
 public interface LoteItemMapper {
-
     @Mapping(target = "qtdLoteCompra", source = "qtdLoteCompra")
     @Mapping(target = "valorUnitarioCompra", source = "valorUnitarioCompra")
     @Mapping(target = "dataValidade", source = "dataValidade")
