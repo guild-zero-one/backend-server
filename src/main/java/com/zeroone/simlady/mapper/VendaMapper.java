@@ -12,7 +12,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface VendaMapper {
-
     @Mapping(target = "pedidos", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "valorTotal", ignore = true)

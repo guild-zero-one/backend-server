@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProdutoImagemMapper {
-
     @Mapping(target = "produto.id", source = "produtoId")
     ProdutoImagem toEntity(ProdutoImagemRequestDto request);
 

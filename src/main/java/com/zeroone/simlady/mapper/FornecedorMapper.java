@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 
 @Mapper (componentModel = "spring")
 public interface FornecedorMapper {
-
     Fornecedor toEntity(FornecedorRequestDto dto);
 
     FornecedorResponseDto toResponseDto (Fornecedor fornecedor);

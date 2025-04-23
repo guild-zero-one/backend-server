@@ -10,7 +10,6 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {PedidoVendaMapper.class, ContatoMapper.class})
 public interface UsuarioMapper {
-
     Usuario toEntity (UsuarioRequestDto dto);
 
     UsuarioResponseDto toDto (Usuario entity);

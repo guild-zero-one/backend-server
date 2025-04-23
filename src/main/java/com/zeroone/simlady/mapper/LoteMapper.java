@@ -14,7 +14,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface LoteMapper {
-
     Lote toEntity(LoteRequestDto dto);
 
     @Mapping(target = "valorTotal", source = "valorTotal")
