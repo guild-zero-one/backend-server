@@ -1,6 +1,8 @@
 package com.zeroone.simlady.dto.lote;
 
+import com.zeroone.simlady.dto.loteItem.LoteItemRequestDto;
 import com.zeroone.simlady.dto.loteItem.LoteItemResponseDto;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
@@ -19,7 +21,10 @@ public class LoteResponseItemDto {
     @Schema(description = "Valor total de produtos", example = "120.00")
     private Double valorTotal;
 
-    @Schema(description = "Itens no lote", implementation = LoteItemResponseDto.class)
+    @ArraySchema(
+            schema = @Schema(implementation = LoteItemRequestDto.class),
+            arraySchema = @Schema(description = "Itens no lote")
+    )
     private List<LoteItemResponseDto> loteItems;
 }
 

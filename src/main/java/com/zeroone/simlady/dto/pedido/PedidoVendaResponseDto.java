@@ -1,10 +1,11 @@
 package com.zeroone.simlady.dto.pedido;
 
-import com.zeroone.simlady.dto.item.PedidoItemResponseDto;
+import com.zeroone.simlady.dto.pedidoItem.PedidoItemRequestDto;
+import com.zeroone.simlady.dto.pedidoItem.PedidoItemResponseDto;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -21,6 +22,9 @@ public class PedidoVendaResponseDto {
     @Schema(description = "ID da Venda", example = "1")
     private Integer idVenda;
 
-    @Schema(description = "Itens do pedido", implementation = PedidoItemResponseDto.class)
+    @ArraySchema(
+            schema = @Schema(implementation = PedidoItemRequestDto.class),
+            arraySchema = @Schema(description = "Itens do pedido")
+    )
     private List<PedidoItemResponseDto> itens;
 }
