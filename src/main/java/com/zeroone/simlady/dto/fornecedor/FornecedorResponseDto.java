@@ -13,4 +13,7 @@ public class FornecedorResponseDto {
 
     @Schema(description = "CNPJ", example = "10.164.222/0001-01")
     private String cnpj;
+
+    private String descricao;
+    private String imagemUrl;
 }
