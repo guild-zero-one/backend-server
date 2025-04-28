@@ -120,6 +120,26 @@ public class FornecedorController {
         fornecedorService.excluirPorId(id);
         return ResponseEntity.noContent().build();
     }
+    @Operation(
+            summary = "Listar fornecedores com produtos",
+            description = "Lista os fornecedores junto com os seus respectivos produtos"
+    )
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Fornecedores e produtos listados com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = FornecedorComProdutosResponseDto.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Nenhum fornecedor encontrado com produtos",
+                    content = @Content()
+            )
+    })
     @GetMapping("/com-produtos")
     public ResponseEntity<List<FornecedorComProdutosResponseDto>> listarFornecedoresComProdutos() {
         List<FornecedorComProdutosResponseDto> resposta = fornecedorService.listarFornecedoresComProdutos();
