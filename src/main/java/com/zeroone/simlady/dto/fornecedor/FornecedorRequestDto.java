@@ -16,4 +16,7 @@ public class FornecedorRequestDto {
     private String nome;
     @CNPJ(message = "CNPJ Invalido!")
     private String cnpj;
+    @NotBlank(message = "Descrição não deve ser vazio")
+    private String descricao;
+    private String imagemUrl;
 }

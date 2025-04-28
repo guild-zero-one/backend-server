@@ -1,9 +1,14 @@
 package com.zeroone.simlady.mapper;
 
+import com.zeroone.simlady.dto.fornecedor.FornecedorComProdutosResponseDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorRequestDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorResponseDto;
+import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.entity.Fornecedor;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.List;
 
 @Mapper (componentModel = "spring")
 public interface FornecedorMapper {
@@ -11,4 +16,7 @@ public interface FornecedorMapper {
     Fornecedor toEntity(FornecedorRequestDto dto);
 
     FornecedorResponseDto toResponseDto (Fornecedor fornecedor);
+
+    @Mapping(target = "produtos", source = "produtos")
+    FornecedorComProdutosResponseDto toFornecedorComProdutosResponseDto(Fornecedor fornecedor, List<ProdutoResponseDto> produtos);
 }

@@ -1,5 +1,6 @@
 package com.zeroone.simlady.controller;
 
+import com.zeroone.simlady.dto.fornecedor.FornecedorComProdutosResponseDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorRequestDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorResponseDto;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
@@ -58,5 +59,11 @@ public class FornecedorController {
         Fornecedor fornecedor = fornecedorMapper.toEntity(dto);
         FornecedorResponseDto response = fornecedorMapper.toResponseDto(fornecedorService.atualizar(id,fornecedor));
         return ResponseEntity.status(200).body(response);
+    }
+
+    @GetMapping("/com-produtos")
+    public ResponseEntity<List<FornecedorComProdutosResponseDto>> listarFornecedoresComProdutos() {
+        List<FornecedorComProdutosResponseDto> resposta = fornecedorService.listarFornecedoresComProdutos();
+        return ResponseEntity.ok(resposta);
     }
 }
