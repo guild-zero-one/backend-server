@@ -1,5 +1,6 @@
 package com.zeroone.simlady.controller;
 
+import com.zeroone.simlady.dto.fornecedor.FornecedorComProdutosResponseDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorRequestDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorResponseDto;
 import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
@@ -118,5 +119,10 @@ public class FornecedorController {
     public ResponseEntity<Void> excluirPorId(@PathVariable Integer id) {
         fornecedorService.excluirPorId(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/com-produtos")
+    public ResponseEntity<List<FornecedorComProdutosResponseDto>> listarFornecedoresComProdutos() {
+        List<FornecedorComProdutosResponseDto> resposta = fornecedorService.listarFornecedoresComProdutos();
+        return ResponseEntity.ok(resposta);
     }
 }

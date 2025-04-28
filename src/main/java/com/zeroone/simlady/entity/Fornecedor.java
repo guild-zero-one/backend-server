@@ -22,7 +22,11 @@ public class Fornecedor {
 
     private String nome;
 
+    private String descricao;
+
     private String cnpj;
+
+    private String imagemUrl;
 
     @CreationTimestamp
     private LocalDateTime criadoEm;
