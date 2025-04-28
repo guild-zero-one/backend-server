@@ -7,6 +7,7 @@ import com.zeroone.simlady.entity.PedidoVenda;
 import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.mapper.PedidoVendaMapper;
 import com.zeroone.simlady.service.PedidoVendaService;
+import com.zeroone.simlady.service.RabbitMqService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,9 +28,10 @@ import java.util.List;
 @RequestMapping("/pedidos")
 @Tag(name = "Pedidos", description = "Pedido de Vendas de cada Cliente")
 public class PedidoVendaController {
-    private final PedidoVendaService pedidoVendaService;
 
+    private final PedidoVendaService pedidoVendaService;
     private final PedidoVendaMapper pedidoVendaMapper;
+    private final RabbitMqService rabbitMqService;
 
     @Operation(summary = "Cadastrar um Pedido de Venda", description = "Cadastra um novo Pedido de Venda e seus itens")
     @SecurityRequirement(name = "Bearer")
@@ -42,8 +44,11 @@ public class PedidoVendaController {
     })
     @PostMapping
     public ResponseEntity<PedidoVendaResponseDto> cadastrar(@RequestBody @Valid PedidoVendaRequestDto dto) {
+
         PedidoVenda pedido = pedidoVendaMapper.toEntity(dto);
         pedidoVendaService.cadastrar(pedido);
+
+        rabbitMqService.enviarPedidoCriado(pedido);
         return ResponseEntity.status(201).body(pedidoVendaMapper.toDto(pedido));
     }
 
