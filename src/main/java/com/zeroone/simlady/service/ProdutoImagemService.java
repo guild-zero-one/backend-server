@@ -34,6 +34,8 @@ public class ProdutoImagemService {
         return produtoImagemRepository.findById(id).orElse(null);
     }
 
+    public List<ProdutoImagem> buscarPorProduto(Integer id) { return produtoImagemRepository.findByProdutoId(id); }
+
     public ProdutoImagem atualizarImagem(Integer id, ProdutoImagem produtoImagemAtualizado) {
         ProdutoImagem produtoImagemExistente = buscarImagemPorId(id);
         if (produtoImagemExistente != null) {
