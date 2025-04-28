@@ -14,5 +14,8 @@ public class FornecedorRequestDto {
 
     @CNPJ(message = "CNPJ inválido.")
     @Schema(description = "CNPJ", example = "10.164.222/0001-01")
+    @NotBlank(message = "Descrição não deve ser vazio")
+    private String descricao;
+    private String imagemUrl;
     private String cnpj;
 }

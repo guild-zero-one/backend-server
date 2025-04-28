@@ -1,7 +1,9 @@
 package com.zeroone.simlady.service;
 
+import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.entity.Produto;
+import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import java.util.List;
 public class ProdutoService {
     private final ProdutoRepository produtoRepository;
 
-    private final FornecedorService fornecedorService;
+    private final ProdutoMapper produtoMapper;
 
     public Produto cadastrarProduto(Produto produto) {
         return produtoRepository.save(produto);
@@ -44,5 +46,12 @@ public class ProdutoService {
         produtoBuscado.setCatalogo(produto.getCatalogo());
         produtoBuscado.setValorVenda(produto.getValorVenda());
         return produtoRepository.save(produtoBuscado);
+    }
+
+    public List<ProdutoResponseDto> listarProdutosPorFornecedor(Integer fornecedorId) {
+        List<Produto> produtos = produtoRepository.findByFornecedorId(fornecedorId);
+        return produtos.stream()
+                .map(produtoMapper::toResponseDto)
+                .toList();
     }
 }
