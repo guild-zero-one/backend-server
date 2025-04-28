@@ -15,7 +15,7 @@ public class PedidoVendaRequestDto {
     @Schema(description = "ID do Usuário", example = "1")
     private Integer idUsuario;
 
-    @NotBlank(message = "Um pedido deve obrigatóriamente conter itens.")
+    @NotNull(message = "Um pedido deve obrigatóriamente conter itens.")
     @ArraySchema(
             schema = @Schema(implementation = PedidoItemRequestDto.class),
             arraySchema = @Schema(description = "Itens do pedido")
