@@ -88,6 +88,27 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoMapper.toResponseDto(produto));
     }
 
+    @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProdutoResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado",
+                    content = @Content())
+    })
+    @GetMapping("/fornecedor/{id}")
+    public ResponseEntity<List<ProdutoResponseDto>> buscarPorFornecedor(@PathVariable Integer id) {
+        List<Produto> produtos = produtoService.buscarPorFornecedor(id);
+
+        if (produtos.isEmpty()) {
+            ResponseEntity.notFound().build();
+        }
+
+        List<ProdutoResponseDto> produtosResponseDto = produtos.stream().map(produtoMapper::toResponseDto).toList();
+
+        return ResponseEntity.ok(produtosResponseDto);
+    }
+
     @Operation(summary = "Atualizar produto por id", description = "Atualiza um produto por id, caso exista")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
