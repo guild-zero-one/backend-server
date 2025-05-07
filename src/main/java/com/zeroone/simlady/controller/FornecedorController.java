@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,10 +61,11 @@ public class FornecedorController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<List<FornecedorResponseDto>> listar() {
-        List<FornecedorResponseDto>fornecedores = fornecedorService.listar().stream().map(fornecedorMapper::toResponseDto).toList();
+    public ResponseEntity<Page<FornecedorResponseDto>> listar(Pageable pageable) {
+        Page<FornecedorResponseDto> fornecedores = fornecedorService.listar(pageable)
+                .map(fornecedorMapper::toResponseDto);
 
-        if (fornecedores.isEmpty()){
+        if (fornecedores.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
@@ -120,9 +123,34 @@ public class FornecedorController {
         fornecedorService.excluirPorId(id);
         return ResponseEntity.noContent().build();
     }
+    @Operation(
+            summary = "Listar fornecedores com produtos (paginado)",
+            description = "Lista os fornecedores junto com os seus respectivos produtos de forma paginada"
+    )
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Fornecedores e produtos listados com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = FornecedorComProdutosResponseDto.class))
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Nenhum fornecedor encontrado com produtos",
+                    content = @Content()
+            )
+    })
     @GetMapping("/com-produtos")
-    public ResponseEntity<List<FornecedorComProdutosResponseDto>> listarFornecedoresComProdutos() {
-        List<FornecedorComProdutosResponseDto> resposta = fornecedorService.listarFornecedoresComProdutos();
+    public ResponseEntity<Page<FornecedorComProdutosResponseDto>> listarFornecedoresComProdutos(Pageable pageable) {
+        Page<FornecedorComProdutosResponseDto> resposta = fornecedorService.listarFornecedoresComProdutos(pageable);
+
+        if (resposta.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
         return ResponseEntity.ok(resposta);
     }
 }
