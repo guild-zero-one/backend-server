@@ -18,7 +18,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,17 +64,19 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado",
                     content = @Content())
     })
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioTokenDto> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {
-        final Usuario usuario = usuarioMapper.toEntity(usuarioLoginDto);
 
+    @PostMapping("/login")
+    public ResponseEntity<UsuarioTokenDto> login(
+            @RequestBody UsuarioLoginDto usuarioLoginDto, HttpServletResponse response) {
+
+        Usuario usuario = usuarioMapper.toEntity(usuarioLoginDto);
         UsuarioTokenDto usuarioTokenDto = usuarioMapper.toTokenDto(usuario);
 
-        String token = usuarioService.autenticar(usuario);
+        String token = usuarioService.autenticar(usuario, response);
 
         usuarioTokenDto.setToken(token);
 
-        return ResponseEntity.status(200).body(usuarioTokenDto);
+        return ResponseEntity.ok(usuarioTokenDto);
     }
 
     @Operation(summary = "Listar usuários", description = "Lista todos os usuários do sistema")
@@ -83,6 +88,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "204", description = "Sem usuários na base",
                     content = @Content())
     })
+
     @GetMapping
     public ResponseEntity <List<UsuarioResponseDto>> listarClientes() {
         List<Usuario> usuarios = usuarioService.listar();
@@ -126,6 +132,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "409", description = "Conflito de informações entre usuários",
                     content = @Content())
     })
+
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable Integer id, @Valid @RequestBody UsuarioRequestDto dto) {
        Usuario usuario = usuarioMapper.toEntity(dto);
@@ -134,6 +141,17 @@ public class UsuarioController {
                 .atualizar(id, usuario);
 
        return ResponseEntity.ok(usuarioMapper.toDto(usuario));
+    }
+
+    @GetMapping("/autenticado")
+    public ResponseEntity<UsuarioResponseDto> buscarAutenticado(HttpServletRequest request) {
+
+        return ResponseEntity
+                .status(200)
+                .body(usuarioMapper
+                        .toDto(usuarioService
+                                .buscarAutenticado(request)));
+
     }
 
     @Operation(summary = "Desativar usuário por id", description = "Desativa usuário pelo id, caso exista")
@@ -145,6 +163,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                     content = @Content()),
     })
+
     @PatchMapping("/desativar/{id}")
     public ResponseEntity<Void> desativar(@PathVariable Integer id) {
         usuarioService.desativar(id);
@@ -164,4 +183,7 @@ public class UsuarioController {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
+
+
 }

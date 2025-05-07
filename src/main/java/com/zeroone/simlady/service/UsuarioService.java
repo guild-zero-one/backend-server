@@ -7,6 +7,9 @@ import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.UsuarioRepository;
 import com.zeroone.simlady.config.security.GerenciadorTokenJwt;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,12 +42,14 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public String autenticar(Usuario usuario) {
+    public String autenticar(Usuario usuario, HttpServletResponse response) {
 
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
                 usuario.getEmail(), usuario.getSenha());
 
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
+
+
 
         usuarioRepository.findByEmail(usuario.getEmail())
                 .orElseThrow(
@@ -53,7 +58,18 @@ public class UsuarioService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return gerenciadorTokenJwt.generateToken(authentication);
+        String token =  gerenciadorTokenJwt.generateToken(authentication);
+
+
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(3600);
+
+        response.addCookie(cookie);
+
+        return token;
     }
 
     public void atualizarPermissao( Integer id ,String permissao) {
@@ -98,6 +114,23 @@ public class UsuarioService {
 
         return usuarioRepository.save(usuario);
     }
+
+    public Usuario buscarAutenticado(HttpServletRequest request) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = auth.getName();
+
+        return usuarioRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+
+
+
+    }
+
+
 
     public void desativar(Integer id) {
         Usuario usuario = buscar(id);

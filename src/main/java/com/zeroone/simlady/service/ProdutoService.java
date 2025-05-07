@@ -6,7 +6,6 @@ import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -29,6 +28,10 @@ public class ProdutoService {
 
     public Produto buscarPorId(Integer id) {
         return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado"));
+    }
+
+    public List<Produto> buscarPorFornecedor(Integer id) {
+        return produtoRepository.findByFornecedorId(id);
     }
 
     public void excluirPorId(Integer id) {
