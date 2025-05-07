@@ -6,7 +6,8 @@ import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -23,8 +24,8 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
-    public List<Produto> listar() {
-        return produtoRepository.findAll();
+    public Page<Produto> listar(Pageable pageable) {
+        return produtoRepository.findAll(pageable);
     }
 
     public Produto buscarPorId(Integer id) {
