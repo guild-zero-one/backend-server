@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +55,7 @@ public class ProdutoImagemController {
     }
 
 
-    @Operation(summary = "Listar todas as imagens", description = "Lista todas as imagens de produtos do sistema")
+    @Operation(summary = "Listar todas as imagens", description = "Lista todas as imagens de produtos do sistema de forma paginada")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Imagens listadas na base",
                     content = @Content(mediaType = "application/json",
@@ -63,16 +65,15 @@ public class ProdutoImagemController {
     })
     @SecurityRequirement(name = "Bearer")
     @GetMapping
-    public ResponseEntity<List<ProdutoImagemResponseDto>> listarImagens() {
-        List<ProdutoImagem> imagens = produtoImagemService.listarImagens();
+    public ResponseEntity<Page<ProdutoImagemResponseDto>> listarImagens(Pageable pageable) {
+        Page<ProdutoImagemResponseDto> imagens = produtoImagemService.listarImagens(pageable)
+                .map(produtoImagemMapper::toResponseDto);
 
         if (imagens.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(imagens.stream()
-                .map(produtoImagemMapper::toResponseDto)
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(imagens);
     }
 
     @Operation(summary = "Buscar imagem por id", description = "Busca uma imagem por id, caso exista")
