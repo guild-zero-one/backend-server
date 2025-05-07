@@ -32,6 +32,10 @@ public class ProdutoService {
         return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado"));
     }
 
+    public List<Produto> buscarPorFornecedor(Integer id) {
+        return produtoRepository.findByFornecedorId(id);
+    }
+
     public void excluirPorId(Integer id) {
         produtoRepository.deleteById(id);
     }

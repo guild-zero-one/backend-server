@@ -5,6 +5,7 @@ import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemPatchDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemRequestDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemResponseDto;
 import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
+import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.entity.ProdutoImagem;
 import com.zeroone.simlady.mapper.ProdutoImagemMapper;
 import com.zeroone.simlady.service.ProdutoImagemService;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/produtos/imagens")
+@RequestMapping("/imagens")
 @Tag(name = "Imagens", description = "Imagens de cada Produto")
 public class ProdutoImagemController {
     private final ProdutoImagemService produtoImagemService;
@@ -90,6 +91,27 @@ public class ProdutoImagemController {
         ProdutoImagem imagem = produtoImagemService.buscarImagemPorId(id);
         ProdutoImagemResponseDto imagemResponse = produtoImagemMapper.toResponseDto(imagem);
         return ResponseEntity.ok(imagemResponse);
+    }
+
+    @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProdutoResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado",
+                    content = @Content())
+    })
+    @GetMapping("/produto/{id}")
+    public ResponseEntity<List<ProdutoImagemResponseDto>> buscarPorFornecedor(@PathVariable Integer id) {
+        List<ProdutoImagem> imagens = produtoImagemService.buscarPorProduto(id);
+
+        if (imagens.isEmpty()) {
+            ResponseEntity.notFound().build();
+        }
+
+        List<ProdutoImagemResponseDto> imagemResponseDtos = imagens.stream().map(produtoImagemMapper::toResponseDto).toList();
+
+        return ResponseEntity.ok(imagemResponseDtos);
     }
 
     @Operation(summary = "Atualizar imagem", description = "Atualiza a imagem pelo id, caso exista")
