@@ -7,6 +7,8 @@ import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.mapper.FornecedorMapper;
 import com.zeroone.simlady.repository.FornecedorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +27,8 @@ public class FornecedorService {
         return fornecedorRepository.save(fornecedor);
     }
 
-    public List<Fornecedor> listar() {
-        return fornecedorRepository.findAll();
+    public Page<Fornecedor> listar(Pageable pageable) {
+        return fornecedorRepository.findAll(pageable);
     }
 
     public void excluirPorId(Integer id) {
@@ -43,14 +45,12 @@ public class FornecedorService {
         return fornecedorRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Fornecedor Não Encontrado"));
     }
 
-    public List<FornecedorComProdutosResponseDto> listarFornecedoresComProdutos() {
-        List<Fornecedor> fornecedores = fornecedorRepository.findAll();
+    public Page<FornecedorComProdutosResponseDto> listarFornecedoresComProdutos(Pageable pageable) {
+        Page<Fornecedor> fornecedores = fornecedorRepository.findAll(pageable);
 
-        return fornecedores.stream()
-                .map(fornecedor -> {
-                    List<ProdutoResponseDto> produtos = produtoService.listarProdutosPorFornecedor(fornecedor.getId());
-                    return fornecedorMapper.toFornecedorComProdutosResponseDto(fornecedor, produtos);
-                })
-                .toList();
+        return fornecedores.map(fornecedor -> {
+            List<ProdutoResponseDto> produtos = produtoService.listarProdutosPorFornecedor(fornecedor.getId());
+            return fornecedorMapper.toFornecedorComProdutosResponseDto(fornecedor, produtos);
+        });
     }
 }
