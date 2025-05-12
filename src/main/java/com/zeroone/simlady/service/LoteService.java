@@ -15,10 +15,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LoteService {
+
     private final LoteRepository loteRepository;
-
     private final LoteItemRepository loteItemRepository;
-
     private final ProdutoService produtoService;
 
     public Page<Lote> listar(Pageable pageable) {

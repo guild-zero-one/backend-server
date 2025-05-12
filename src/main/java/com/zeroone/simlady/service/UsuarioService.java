@@ -30,7 +30,6 @@ public class UsuarioService {
     private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AuthenticationManager authenticationManager;
 
-
     public Usuario cadastrar(Usuario usuario) {
 
         validarCpf(usuario.getCpf());

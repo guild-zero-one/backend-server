@@ -33,8 +33,8 @@ import java.util.List;
 @RequestMapping("/usuarios")
 @Tag(name = "Usuários", description = "Clientes e Administradores")
 public class UsuarioController {
-    private final UsuarioService usuarioService;
 
+    private final UsuarioService usuarioService;
     private final UsuarioMapper usuarioMapper;
 
     @Operation(summary = "Cadastrar usuários", description = "Cadastra usuário sendo clientes ou administradores")
@@ -183,7 +183,4 @@ public class UsuarioController {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 }

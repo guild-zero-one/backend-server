@@ -31,8 +31,8 @@ import java.util.List;
 @RequestMapping("/fornecedores")
 @Tag(name = "Fornecedores", description = "Marcas e Fornecedores")
 public class FornecedorController {
-    private final FornecedorService fornecedorService;
 
+    private final FornecedorService fornecedorService;
     private final FornecedorMapper fornecedorMapper;
 
     @Operation(summary = "Cadastrar fornecedor", description = "Cadastra um novo fornecedor/marca")
@@ -123,6 +123,7 @@ public class FornecedorController {
         fornecedorService.excluirPorId(id);
         return ResponseEntity.noContent().build();
     }
+
     @Operation(
             summary = "Listar fornecedores com produtos (paginado)",
             description = "Lista os fornecedores junto com os seus respectivos produtos de forma paginada"

@@ -16,8 +16,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProdutoService {
-    private final ProdutoRepository produtoRepository;
 
+    private final ProdutoRepository produtoRepository;
     private final ProdutoMapper produtoMapper;
 
     public Produto cadastrarProduto(Produto produto) {

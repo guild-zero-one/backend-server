@@ -31,10 +31,9 @@ import java.util.List;
 @RequestMapping("/produtos")
 @Tag(name = "Produtos", description = "Gerenciamento de Produtos")
 public class ProdutoController {
+
     private final ProdutoService produtoService;
-
     private final ProdutoMapper produtoMapper;
-
     private final FornecedorService fornecedorService;
 
     @Operation(summary = "Cadastrar produto", description = "Cadastra um novo produto no sistema")

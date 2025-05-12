@@ -32,10 +32,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Lotes", description = "Estoque de Produto")
 public class LoteController {
+
     private final LoteService loteService;
-
     private final LoteMapper loteMapper;
-
     private final LoteItemMapper loteItemMapper;
 
     @Operation(summary = "Cadastrar lote", description = "Cadastra um novo lote e seus itens")
