@@ -16,7 +16,7 @@ public class ProdutoResponseDto {
     private String sku;
 
     @Schema(description = "Descrição do produto", example = "O melhor perfume do Brasil")
-    private String desc;
+    private String descricao;
 
     @Schema(description = "TAG do produto", example = "Lançamento")
     private String tag;
