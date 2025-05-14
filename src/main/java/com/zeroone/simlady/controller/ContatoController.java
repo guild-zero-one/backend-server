@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/contatos")
 @Tag(name = "Contatos", description = "Telefone de Contato com Clientes")
 public class ContatoController {
-    private final ContatoService contatoService;
 
+    private final ContatoService contatoService;
     private final ContatoMapper contatoMapper;
 
     @Operation(summary = "Cadastrar um contato", description = "Cadastra um novo contato de um determinado cliente")

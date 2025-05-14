@@ -15,8 +15,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProdutoImagemService {
-    private final ProdutoImagemRepository produtoImagemRepository;
 
+    private final ProdutoImagemRepository produtoImagemRepository;
     private final ProdutoRepository produtoRepository;
 
     public ProdutoImagem cadastrarImagem(ProdutoImagem produtoImagem) {

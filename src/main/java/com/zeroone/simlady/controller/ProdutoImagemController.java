@@ -8,6 +8,7 @@ import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
 import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.entity.ProdutoImagem;
 import com.zeroone.simlady.mapper.ProdutoImagemMapper;
+import com.zeroone.simlady.service.AzureBlobStorageService;
 import com.zeroone.simlady.service.ProdutoImagemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +34,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/imagens")
 @Tag(name = "Imagens", description = "Imagens de cada Produto")
 public class ProdutoImagemController {
-    private final ProdutoImagemService produtoImagemService;
 
+    private final ProdutoImagemService produtoImagemService;
+    private AzureBlobStorageService azureBlobService;
     private final ProdutoImagemMapper produtoImagemMapper;
 
     @Operation(summary = "Cadastrar imagens", description = "Cadastra uma nova imagem de um determinado produto")
@@ -53,6 +56,21 @@ public class ProdutoImagemController {
 
         ProdutoImagemResponseDto imagemResponse = produtoImagemMapper.toResponseDto(imagemCadastrada);
         return ResponseEntity.status(201).body(imagemResponse);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadImagem(@RequestParam("arquivo") MultipartFile arquivo) {
+        try {
+            String url = azureBlobService.uploadImagem(
+                    arquivo.getInputStream(),
+                    arquivo.getSize(),
+                    arquivo.getOriginalFilename(),
+                    arquivo.getContentType()
+            );
+            return ResponseEntity.ok(url);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao fazer upload: " + e.getMessage());
+        }
     }
 
 

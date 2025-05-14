@@ -21,7 +21,6 @@ public class RabbitMqService {
     private final PedidoMensagemMapper pedidoMensagemMapper;
     private final UsuarioService usuarioService;
 
-
     public void enviarPedidoCriado(PedidoVenda pedido) {
         Usuario usuario = usuarioService.buscar(pedido.getUsuario().getId());
 

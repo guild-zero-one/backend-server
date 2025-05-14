@@ -17,10 +17,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FornecedorService {
+
     private final FornecedorRepository fornecedorRepository;
-
     private final ProdutoService produtoService;
-
     private final FornecedorMapper fornecedorMapper;
 
     public Fornecedor cadastrarFornecedor(Fornecedor fornecedor) {
