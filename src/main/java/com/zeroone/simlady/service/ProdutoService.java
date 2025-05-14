@@ -44,7 +44,7 @@ public class ProdutoService {
         Produto produtoBuscado = buscarPorId(id);
         produtoBuscado.setNome(produto.getNome());
         produtoBuscado.setSku(produto.getSku());
-        produtoBuscado.setDesc(produto.getDesc());
+        produtoBuscado.setDescricao(produto.getDescricao());
         produtoBuscado.setTag(produto.getTag());
         produtoBuscado.setQuantidade(produto.getQuantidade());
         produtoBuscado.setPrecoUnitario(produto.getPrecoUnitario());
