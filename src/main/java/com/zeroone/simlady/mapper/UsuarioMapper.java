@@ -1,8 +1,5 @@
 package com.zeroone.simlady.mapper;
-import com.zeroone.simlady.dto.usuario.UsuarioLoginDto;
-import com.zeroone.simlady.dto.usuario.UsuarioRequestDto;
-import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
-import com.zeroone.simlady.dto.usuario.UsuarioTokenDto;
+import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
@@ -11,6 +8,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring", uses = {PedidoVendaMapper.class, ContatoMapper.class})
 public interface UsuarioMapper {
     Usuario toEntity (UsuarioRequestDto dto);
+
+    Usuario toEntity (UsuarioAtualizacaoDto dto);
 
     UsuarioResponseDto toDto (Usuario entity);
 

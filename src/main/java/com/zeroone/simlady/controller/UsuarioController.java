@@ -1,9 +1,7 @@
 package com.zeroone.simlady.controller;
 
-import com.zeroone.simlady.dto.usuario.UsuarioLoginDto;
-import com.zeroone.simlady.dto.usuario.UsuarioRequestDto;
-import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
-import com.zeroone.simlady.dto.usuario.UsuarioTokenDto;
+import com.azure.core.annotation.Patch;
+import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.exception.BadRequestException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
@@ -133,8 +131,8 @@ public class UsuarioController {
                     content = @Content())
     })
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable Integer id, @Valid @RequestBody UsuarioRequestDto dto) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable Integer id, @Valid @RequestBody UsuarioAtualizacaoDto dto) {
        Usuario usuario = usuarioMapper.toEntity(dto);
 
         usuarioService
