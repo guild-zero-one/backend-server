@@ -32,6 +32,8 @@ public class Usuario {
 
     private String senha;
 
+    private String urlImagem;
+
     @Enumerated(EnumType.STRING)
     private Permissao permissao;
 
