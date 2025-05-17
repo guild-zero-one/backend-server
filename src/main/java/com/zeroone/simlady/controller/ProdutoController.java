@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +31,9 @@ import java.util.List;
 @RequestMapping("/produtos")
 @Tag(name = "Produtos", description = "Gerenciamento de Produtos")
 public class ProdutoController {
+
     private final ProdutoService produtoService;
-
     private final ProdutoMapper produtoMapper;
-
     private final FornecedorService fornecedorService;
 
     @Operation(summary = "Cadastrar produto", description = "Cadastra um novo produto no sistema")
@@ -64,10 +65,11 @@ public class ProdutoController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<List<ProdutoResponseDto>> listar() {
-        List<ProdutoResponseDto> produtos = produtoService.listar().stream().map(produtoMapper::toResponseDto).toList();
+    public ResponseEntity<Page<ProdutoResponseDto>> listar(Pageable pageable) {
+        Page<ProdutoResponseDto> produtos = produtoService.listar(pageable)
+                .map(produtoMapper::toResponseDto);
 
-        if (produtos.isEmpty()){
+        if (produtos.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 

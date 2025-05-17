@@ -4,8 +4,6 @@ import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemPatchDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemRequestDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemResponseDto;
-import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
-import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.entity.ProdutoImagem;
 import com.zeroone.simlady.mapper.ProdutoImagemMapper;
 import com.zeroone.simlady.service.ProdutoImagemService;
@@ -18,20 +16,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/imagens")
 @Tag(name = "Imagens", description = "Imagens de cada Produto")
 public class ProdutoImagemController {
-    private final ProdutoImagemService produtoImagemService;
 
+    private final ProdutoImagemService produtoImagemService;
     private final ProdutoImagemMapper produtoImagemMapper;
 
     @Operation(summary = "Cadastrar imagens", description = "Cadastra uma nova imagem de um determinado produto")
@@ -54,7 +53,8 @@ public class ProdutoImagemController {
     }
 
 
-    @Operation(summary = "Listar todas as imagens", description = "Lista todas as imagens de produtos do sistema")
+
+    @Operation(summary = "Listar todas as imagens", description = "Lista todas as imagens de produtos do sistema de forma paginada")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Imagens listadas na base",
                     content = @Content(mediaType = "application/json",
@@ -64,16 +64,15 @@ public class ProdutoImagemController {
     })
     @SecurityRequirement(name = "Bearer")
     @GetMapping
-    public ResponseEntity<List<ProdutoImagemResponseDto>> listarImagens() {
-        List<ProdutoImagem> imagens = produtoImagemService.listarImagens();
+    public ResponseEntity<Page<ProdutoImagemResponseDto>> listarImagens(Pageable pageable) {
+        Page<ProdutoImagemResponseDto> imagens = produtoImagemService.listarImagens(pageable)
+                .map(produtoImagemMapper::toResponseDto);
 
         if (imagens.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(imagens.stream()
-                .map(produtoImagemMapper::toResponseDto)
-                .collect(Collectors.toList()));
+        return ResponseEntity.ok(imagens);
     }
 
     @Operation(summary = "Buscar imagem por id", description = "Busca uma imagem por id, caso exista")

@@ -24,7 +24,7 @@ public class Produto {
 
     private String sku;
 
-    private String desc;
+    private String descricao;
 
     private String tag;
 

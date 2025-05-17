@@ -6,6 +6,8 @@ import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.ProdutoImagemRepository;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +15,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProdutoImagemService {
-    private final ProdutoImagemRepository produtoImagemRepository;
 
+    private final ProdutoImagemRepository produtoImagemRepository;
     private final ProdutoRepository produtoRepository;
 
     public ProdutoImagem cadastrarImagem(ProdutoImagem produtoImagem) {
@@ -26,8 +28,8 @@ public class ProdutoImagemService {
         return produtoImagemRepository.save(produtoImagem);
     }
 
-    public List<ProdutoImagem> listarImagens() {
-        return produtoImagemRepository.findAll();
+    public Page<ProdutoImagem> listarImagens(Pageable pageable) {
+        return produtoImagemRepository.findAll(pageable);
     }
 
     public ProdutoImagem buscarImagemPorId(Integer id) {

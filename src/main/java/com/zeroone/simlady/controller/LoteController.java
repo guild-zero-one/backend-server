@@ -21,6 +21,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -30,10 +32,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Lotes", description = "Estoque de Produto")
 public class LoteController {
+
     private final LoteService loteService;
-
     private final LoteMapper loteMapper;
-
     private final LoteItemMapper loteItemMapper;
 
     @Operation(summary = "Cadastrar lote", description = "Cadastra um novo lote e seus itens")
@@ -75,16 +76,15 @@ public class LoteController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<List<LoteResponseDto>> listarSemItems() {
-        List<Lote> lotes = loteService.listar();
+    public ResponseEntity<Page<LoteResponseDto>> listar(Pageable pageable) {
+        Page<LoteResponseDto> lotes = loteService.listar(pageable)
+                .map(loteMapper::toResponseDto);
 
         if (lotes.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(lotes.stream()
-                .map(loteMapper::toResponseDto)
-                .toList());
+        return ResponseEntity.ok(lotes);
     }
 
     @Operation(summary = "Buscar lote por id", description = "Busca lote pelo id, caso exista")

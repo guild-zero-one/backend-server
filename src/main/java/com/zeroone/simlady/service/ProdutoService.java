@@ -6,6 +6,8 @@ import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
@@ -14,16 +16,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProdutoService {
-    private final ProdutoRepository produtoRepository;
 
+    private final ProdutoRepository produtoRepository;
     private final ProdutoMapper produtoMapper;
 
     public Produto cadastrarProduto(Produto produto) {
         return produtoRepository.save(produto);
     }
 
-    public List<Produto> listar() {
-        return produtoRepository.findAll();
+    public Page<Produto> listar(Pageable pageable) {
+        return produtoRepository.findAll(pageable);
     }
 
     public Produto buscarPorId(Integer id) {
@@ -42,7 +44,7 @@ public class ProdutoService {
         Produto produtoBuscado = buscarPorId(id);
         produtoBuscado.setNome(produto.getNome());
         produtoBuscado.setSku(produto.getSku());
-        produtoBuscado.setDesc(produto.getDesc());
+        produtoBuscado.setDescricao(produto.getDescricao());
         produtoBuscado.setTag(produto.getTag());
         produtoBuscado.setQuantidade(produto.getQuantidade());
         produtoBuscado.setPrecoUnitario(produto.getPrecoUnitario());
