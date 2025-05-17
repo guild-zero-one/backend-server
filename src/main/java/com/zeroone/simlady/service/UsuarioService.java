@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -81,6 +82,10 @@ public class UsuarioService {
     public Usuario buscar(Integer id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+    }
+
+    public List<Usuario> listarClientes() {
+        return usuarioRepository.findAllByPermissao((Permissao.COMUM));
     }
 
     public Usuario atualizar(Integer id, Usuario usuario) {
