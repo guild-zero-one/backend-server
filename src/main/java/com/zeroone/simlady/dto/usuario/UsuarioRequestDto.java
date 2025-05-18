@@ -1,11 +1,9 @@
 package com.zeroone.simlady.dto.usuario;
 
+import com.zeroone.simlady.entity.enums.Permissao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -21,13 +19,7 @@ public class UsuarioRequestDto {
     @Schema(description = "Sobrenome do usuário", example = "Silva")
     private String sobrenome;
 
-    @Size(min = 2, max = 15, message = "Apelido deve ter entre 2 e 15 caracteres.")
-    @Schema(description = "Apelido do usuário", example = "Andy")
-    private String apelido;
-
     @CPF(message = "CPF inválido.")
-    @Column(unique = true, nullable = false)
-    @NotEmpty
     @Schema(description = "CPF", example = "451.967.950-81")
     private String cpf;
 
@@ -41,7 +33,7 @@ public class UsuarioRequestDto {
     @Schema(description = "Senha do usuário", example = "12345678")
     private String senha;
 
-    @NotBlank(message = "Permissão não pode ser vazio.")
+    @NotNull(message = "Permissão é obrigatória")
     @Schema(description = "Permissão do usuário", example = "COMUM")
-    private String permissao;
+    private Permissao permissao;
 }

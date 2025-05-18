@@ -3,8 +3,11 @@ package com.zeroone.simlady.dto.usuario;
 import com.zeroone.simlady.dto.contato.ContatoResponseDto;
 import com.zeroone.simlady.dto.pedidoItem.PedidoItemRequestDto;
 import com.zeroone.simlady.entity.Contato;
+import com.zeroone.simlady.entity.enums.Permissao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Data
 public class UsuarioClienteDto {
@@ -13,6 +16,9 @@ public class UsuarioClienteDto {
 
     @Schema(description = "Nome do usuário", example = "André")
     private String nome;
+
+    @Schema(description = "Sobrenome do usuário", example = "Silva")
+    private String sobrenome;
 
     @Schema(description = "E-mail do usuário", example = "andre@gmail.com")
     private String email;
@@ -28,4 +34,10 @@ public class UsuarioClienteDto {
 
     @Schema(description = "Contato do Usuário", implementation = PedidoItemRequestDto.class)
     private ContatoResponseDto contato;
+
+    @Schema(description = "Permissão do usuário", example = "COMUM")
+    private Permissao permissao;
+
+    @Schema(description = "Data de criação de usuário", example = "12-12-2012")
+    private LocalDate criadoEm;
 }
