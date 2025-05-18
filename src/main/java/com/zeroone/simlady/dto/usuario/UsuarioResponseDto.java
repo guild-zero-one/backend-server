@@ -33,4 +33,7 @@ public class UsuarioResponseDto {
 
     @Schema(description = "Usuário ativo", example = "true")
     private Boolean ativo;
+
+    @Schema(description = "Imagem de Perfil", example = "blob.url.com")
+    private String urlImagem;
 }
