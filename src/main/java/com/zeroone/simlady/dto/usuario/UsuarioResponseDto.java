@@ -22,9 +22,6 @@ public class UsuarioResponseDto {
     @Schema(description = "Sobrenome do usuário", example = "Silva")
     private String sobrenome;
 
-    @Schema(description = "Apelido do usuário", example = "Andy")
-    private String apelido;
-
     @Schema(description = "CPF", example = "12345678910")
     private String cpf;
 
