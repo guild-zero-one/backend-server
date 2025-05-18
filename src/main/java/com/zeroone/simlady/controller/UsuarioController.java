@@ -128,7 +128,7 @@ public class UsuarioController {
     })
     @GetMapping("/clientes")
     public ResponseEntity<List<UsuarioClienteDto>> listarClientes() {
-        List<Usuario> clientes = usuarioService.listarClientes();
+        List<Usuario> clientes = usuarioService.listar();
 
         if (clientes.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -138,6 +138,21 @@ public class UsuarioController {
                 clientes.stream()
                         .map(usuarioMapper::toClienteDto)
                         .toList());
+    }
+
+    @Operation(summary = "Buscar cliente por id", description = "Busca cliente por id, caso exista")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clientes encontrados",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado",
+                    content = @Content())
+    })
+    @GetMapping("/clientes/{id}")
+    public ResponseEntity<UsuarioClienteDto> buscarClientePorId(@PathVariable Integer id) {
+        Usuario cliente = usuarioService.buscar(id);
+        return ResponseEntity.ok().body(usuarioMapper.toClienteDto(cliente));
     }
 
     @Operation(summary = "Atualizar usuário por id", description = "Atualiza usuário pelo id, caso exista")

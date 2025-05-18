@@ -99,10 +99,6 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 
-    public List<Usuario> listarClientes() {
-        return usuarioRepository.findAllByPermissao((Permissao.COMUM));
-    }
-
     public Usuario atualizar(Integer id, Usuario usuario) {
 
         buscar(id);
@@ -128,13 +124,7 @@ public class UsuarioService {
         return usuarioRepository
                 .findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-
-
-
-
     }
-
-
 
     public void desativar(Integer id) {
         Usuario usuario = buscar(id);
@@ -151,6 +141,10 @@ public class UsuarioService {
     }
 
     private void validarCpf(String cpf) {
+        if (cpf == null) {
+            return;
+        }
+
         if(usuarioRepository.existsByCpf(cpf)) {
             throw new ResourceAlreadyExistsException("CPF já cadastrado!");
         }
