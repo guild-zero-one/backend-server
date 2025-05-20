@@ -34,10 +34,23 @@ public class FornecedorService {
         fornecedorRepository.deleteById(id);
     }
 
-    public Fornecedor atualizar(Integer id, Fornecedor fornecedor){
-       Fornecedor fornecedorBuscado = buscarPorId(id);
-       fornecedorBuscado.setNome(fornecedor.getNome());
-       return fornecedorRepository.save(fornecedorBuscado);
+    public Fornecedor atualizar(Integer id, Fornecedor fornecedor) {
+        Fornecedor fornecedorBuscado = buscarPorId(id);
+
+        if (fornecedor.getNome() != null) {
+            fornecedorBuscado.setNome(fornecedor.getNome());
+        }
+        if (fornecedor.getCnpj() != null) {
+            fornecedorBuscado.setCnpj(fornecedor.getCnpj());
+        }
+        if (fornecedor.getDescricao() != null) {
+            fornecedorBuscado.setDescricao(fornecedor.getDescricao());
+        }
+        if (fornecedor.getImagemUrl() != null) {
+            fornecedorBuscado.setImagemUrl(fornecedor.getImagemUrl());
+        }
+
+        return fornecedorRepository.save(fornecedorBuscado);
     }
 
     public Fornecedor buscarPorId(Integer id){
