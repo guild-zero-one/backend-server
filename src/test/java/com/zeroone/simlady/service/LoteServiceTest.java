@@ -33,9 +33,6 @@ class LoteServiceTest {
     @Mock
     private LoteItemRepository loteItemRepository;
 
-    @Mock
-    private ProdutoService produtoService;
-
     @InjectMocks
     private LoteService loteService;
 
@@ -334,9 +331,9 @@ class LoteServiceTest {
         // Assert
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(15, resultado.get(0).getQtdLoteCompra()); // verifica se a quantidade foi atualizada
-        assertEquals(100.0, resultado.get(0).getValorUnitarioCompra()); // verifica se manteve valor original
-        assertEquals(lote.getId(), resultado.get(0).getLote().getId()); // verifica se manteve lote original
+        assertEquals(15, resultado.get(0).getQtdLoteCompra());
+        assertEquals(100.0, resultado.get(0).getValorUnitarioCompra());
+        assertEquals(lote.getId(), resultado.get(0).getLote().getId());
         verify(loteItemRepository).save(any(LoteItem.class));
     }
 
@@ -363,7 +360,6 @@ class LoteServiceTest {
         LoteItem itemAtualizado = new LoteItem();
         itemAtualizado.setId(1);
         itemAtualizado.setQtdLoteCompra(15);
-        // Outros campos não fornecidos para atualização
 
         List<LoteItem> itensExistentes = List.of(itemExistente);
         List<LoteItem> itensAtualizados = List.of(itemAtualizado);
@@ -379,10 +375,10 @@ class LoteServiceTest {
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
         assertEquals(15, resultado.get(0).getQtdLoteCompra());
-        assertEquals(100.0, resultado.get(0).getValorUnitarioCompra()); // manteve valor original
-        assertEquals(produto.getId(), resultado.get(0).getProduto().getId()); // manteve valor original
-        assertEquals(lote.getId(), resultado.get(0).getLote().getId()); // manteve valor original
-        assertNotNull(resultado.get(0).getDataValidade()); // manteve data original
+        assertEquals(100.0, resultado.get(0).getValorUnitarioCompra());
+        assertEquals(produto.getId(), resultado.get(0).getProduto().getId());
+        assertEquals(lote.getId(), resultado.get(0).getLote().getId());
+        assertNotNull(resultado.get(0).getDataValidade());
         verify(loteItemRepository).save(any(LoteItem.class));
     }
 }
