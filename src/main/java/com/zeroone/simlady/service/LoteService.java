@@ -43,12 +43,41 @@ public class LoteService {
         return loteRepository.save(lote);
     }
 
-    public List<LoteItem>atualizarLoteItem(Integer id, List<LoteItem> loteItem) {
-        List<LoteItem> loteItemExistente = loteItemRepository.findAllByLoteId(id);
-        if (loteItemExistente.isEmpty()) {
+    public List<LoteItem> atualizarLoteItem(Integer id, List<LoteItem> loteItemsAtualizados) {
+        List<LoteItem> loteItemsExistentes = loteItemRepository.findAllByLoteId(id);
+        if (loteItemsExistentes.isEmpty()) {
             throw new ResourceNotFoundException("Lote Item não encontrado");
         }
-        return loteItemRepository.saveAll(loteItem);
+
+        return loteItemsExistentes.stream()
+                .map(itemExistente -> {
+                    // Procura o item atualizado correspondente pelo ID
+                    return loteItemsAtualizados.stream()
+                            .filter(itemAtualizado -> itemAtualizado.getId().equals(itemExistente.getId()))
+                            .findFirst()
+                            .map(itemAtualizado -> {
+                                // Atualiza apenas os campos não nulos
+                                if (itemAtualizado.getQtdLoteCompra() != null) {
+                                    itemExistente.setQtdLoteCompra(itemAtualizado.getQtdLoteCompra());
+                                }
+                                if (itemAtualizado.getValorUnitarioCompra() != null) {
+                                    itemExistente.setValorUnitarioCompra(itemAtualizado.getValorUnitarioCompra());
+                                }
+                                if (itemAtualizado.getDataValidade() != null) {
+                                    itemExistente.setDataValidade(itemAtualizado.getDataValidade());
+                                }
+                                if (itemAtualizado.getProduto() != null) {
+                                    itemExistente.setProduto(itemAtualizado.getProduto());
+                                }
+                                if (itemAtualizado.getLote() != null) {
+                                    itemExistente.setLote(itemAtualizado.getLote());
+                                }
+                                return itemExistente;
+                            })
+                            .orElse(itemExistente); // Mantém o item original se não houver atualização
+                })
+                .map(loteItemRepository::save)
+                .toList();
     }
 
     public void deletarLote(Integer id) {
