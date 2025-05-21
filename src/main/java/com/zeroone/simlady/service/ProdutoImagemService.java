@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -45,7 +46,8 @@ public class ProdutoImagemService {
                     .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com o ID: " + produtoImagemAtualizado.getProduto().getId()));
 
             produtoImagemAtualizado.setDataCriacao(produtoImagemExistente.getDataCriacao());
-            produtoImagemAtualizado.setDataAtualizacao(produtoImagemExistente.getDataAtualizacao());
+
+            produtoImagemAtualizado.setDataAtualizacao(LocalDate.now());
 
             produtoImagemAtualizado.setId(id);
             produtoImagemAtualizado.setProduto(produtoPersistido);

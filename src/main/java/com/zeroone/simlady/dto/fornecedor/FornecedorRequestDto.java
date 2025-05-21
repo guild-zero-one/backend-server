@@ -13,11 +13,12 @@ public class FornecedorRequestDto {
     private String nome;
 
 
-    @Schema(description = "CNPJ", example = "10.164.222/0001-01")
+
     @NotBlank(message = "Descrição não deve ser vazio")
     private String descricao;
     private String imagemUrl;
 
+    @Schema(description = "CNPJ", example = "10.164.222/0001-01")
     @CNPJ(message = "CNPJ inválido.")
     private String cnpj;
 }
