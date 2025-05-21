@@ -40,16 +40,34 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
-    public Produto atualizar(Integer id, Produto produto){
+    public Produto atualizar(Integer id, Produto produto) {
         Produto produtoBuscado = buscarPorId(id);
-        produtoBuscado.setNome(produto.getNome());
-        produtoBuscado.setSku(produto.getSku());
-        produtoBuscado.setDescricao(produto.getDescricao());
-        produtoBuscado.setTag(produto.getTag());
-        produtoBuscado.setQuantidade(produto.getQuantidade());
-        produtoBuscado.setPrecoUnitario(produto.getPrecoUnitario());
-        produtoBuscado.setCatalogo(produto.getCatalogo());
-        produtoBuscado.setValorVenda(produto.getValorVenda());
+
+        if (produto.getNome() != null) {
+            produtoBuscado.setNome(produto.getNome());
+        }
+        if (produto.getSku() != null) {
+            produtoBuscado.setSku(produto.getSku());
+        }
+        if (produto.getDescricao() != null) {
+            produtoBuscado.setDescricao(produto.getDescricao());
+        }
+        if (produto.getTag() != null) {
+            produtoBuscado.setTag(produto.getTag());
+        }
+        if (produto.getQuantidade() != null) {
+            produtoBuscado.setQuantidade(produto.getQuantidade());
+        }
+        if (produto.getPrecoUnitario() != null) {
+            produtoBuscado.setPrecoUnitario(produto.getPrecoUnitario());
+        }
+        if (produto.getCatalogo() != null) {
+            produtoBuscado.setCatalogo(produto.getCatalogo());
+        }
+        if (produto.getValorVenda() != null) {
+            produtoBuscado.setValorVenda(produto.getValorVenda());
+        }
+
         return produtoRepository.save(produtoBuscado);
     }
 
