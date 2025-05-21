@@ -19,7 +19,7 @@ public class ProdutoRequestDto {
     @NotEmpty(message = "Descrição não pode ser vazia, apenas.")
     @Size(min = 3, max = 255, message = "A descrição deve ter entre 3 e 255 caracteres")
     @Schema(description = "Descrição do produto", example = "O melhor perfume do Brasil")
-    private String desc;
+    private String descricao;
 
     @NotEmpty(message = "Tag não pode ser vazia, apenas.")
     @Size(min = 3, max = 50, message = "A tag deve ter entre 3 e 50 caracteres")
