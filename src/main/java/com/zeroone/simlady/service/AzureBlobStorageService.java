@@ -2,6 +2,7 @@ package com.zeroone.simlady.service;
 
 import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -11,9 +12,7 @@ public class AzureBlobStorageService {
 
     private final BlobContainerClient containerClient;
 
-    public AzureBlobStorageService() {
-        String connectionString = "";
-        String containerName = "imagens";
+    public AzureBlobStorageService(@Value("${azure.storage.connection-string}") String connectionString, @Value("${azure.storage.container-name}") String containerName) {
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(connectionString)
                 .buildClient();
