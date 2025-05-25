@@ -77,4 +77,8 @@ public class ProdutoService {
                 .map(produtoMapper::toResponseDto)
                 .toList();
     }
+
+    public List<Produto> buscarListaPorId(List<Integer> ids) {
+        return produtoRepository.findAllById(ids);
+    }
 }
