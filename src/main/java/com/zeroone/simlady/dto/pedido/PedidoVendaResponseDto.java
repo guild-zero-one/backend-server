@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -21,6 +22,9 @@ public class PedidoVendaResponseDto {
 
     @Schema(description = "ID da Venda", example = "1")
     private Integer idVenda;
+
+    @Schema(description = "Data de criação do pedido", example = "2023-10-01T10:15:30")
+    private LocalDateTime criadoEm;
 
     @ArraySchema(
             schema = @Schema(implementation = PedidoItemRequestDto.class),

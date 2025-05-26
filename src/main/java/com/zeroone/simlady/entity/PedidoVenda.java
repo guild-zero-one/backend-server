@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -33,7 +34,7 @@ public class PedidoVenda{
     private List<PedidoItem> itens;
 
     @CreationTimestamp
-    private LocalDate criadoEm;
+    private LocalDateTime criadoEm;
 
     @UpdateTimestamp
     private LocalDate atualizadoEm;
