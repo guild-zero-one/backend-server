@@ -4,6 +4,7 @@ import com.zeroone.simlady.service.AutenticacaoService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -31,28 +32,38 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
         String username = null;
         String jwtToken = null;
 
         String requestTokenHeader = request.getHeader("Authorization");
-
         if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
+        }
 
+        if (jwtToken == null && request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (jwtToken != null) {
             try {
                 username = jwtTokenManager.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException exception) {
-
                 LOGGER.info("[FALHA AUTENTICACAO] - Token expirado, usuario: {} - {}",
                         exception.getClaims().getSubject(), exception.getMessage());
 
                 LOGGER.trace("[FALHA AUTENTICACAO] - stack trace: %s", exception);
-
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
-
         }
+
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             addUsernameInContext(request, username, jwtToken);
