@@ -13,4 +13,6 @@ public interface PedidoVendaRepository extends JpaRepository<PedidoVenda, Intege
     List<PedidoVenda> findAllByStatus(StatusPedido status);
 
     List<PedidoVenda> findAllByUsuario(Usuario usuario);
+
+    Integer countPedidoVendaByUsuario_Id(Integer usuarioId);
 }

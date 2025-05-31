@@ -17,10 +17,6 @@ public class UsuarioAtualizacaoDto {
     @Schema(description = "Sobrenome do usuário", example = "Silva")
     private String sobrenome;
 
-    @Size(min = 2, max = 15, message = "Apelido deve ter entre 2 e 15 caracteres.")
-    @Schema(description = "Apelido do usuário", example = "Andy")
-    private String apelido;
-
     @Email(message = "E-mail inválido.")
     @Schema(description = "E-mail do usuário", example = "andre@gmail.com")
     private String email;

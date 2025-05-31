@@ -14,7 +14,6 @@ public interface PedidoVendaMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "venda", ignore = true)
-    @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
     @Mapping(target = "usuario.id", source = "idUsuario")
     @Mapping(target = "itens", source = "itens")

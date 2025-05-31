@@ -2,10 +2,8 @@ package com.zeroone.simlady.controller;
 
 import com.azure.core.annotation.Patch;
 import com.zeroone.simlady.dto.usuario.*;
+import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.entity.Usuario;
-import com.zeroone.simlady.exception.BadRequestException;
-import com.zeroone.simlady.exception.ResourceNotFoundException;
-import com.zeroone.simlady.exception.UnauthorizedException;
 import com.zeroone.simlady.mapper.UsuarioMapper;
 import com.zeroone.simlady.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -88,7 +86,7 @@ public class UsuarioController {
     })
 
     @GetMapping
-    public ResponseEntity <List<UsuarioResponseDto>> listarClientes() {
+    public ResponseEntity <List<UsuarioResponseDto>> listar() {
         List<Usuario> usuarios = usuarioService.listar();
 
         if(usuarios.isEmpty()) {
@@ -117,6 +115,44 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDto> buscar(@PathVariable Integer id) {
         Usuario usuario = usuarioService.buscar(id);
         return ResponseEntity.ok(usuarioMapper.toDto(usuario));
+    }
+
+    @Operation(summary = "Buscar clientes", description = "Busca todos clientes cadastrados na base")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clientes encontrados",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponseDto.class))),
+            @ApiResponse(responseCode = "204", description = "Sem clientes na base",
+                    content = @Content())
+    })
+    @GetMapping("/clientes")
+    public ResponseEntity<List<UsuarioClienteDto>> listarClientes() {
+        List<Usuario> clientes = usuarioService.listar();
+
+        if (clientes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().body(
+                clientes.stream()
+                        .map(usuarioMapper::toClienteDto)
+                        .toList());
+    }
+
+    @Operation(summary = "Buscar cliente por id", description = "Busca cliente por id, caso exista")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Clientes encontrados",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UsuarioResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado",
+                    content = @Content())
+    })
+    @GetMapping("/clientes/{id}")
+    public ResponseEntity<UsuarioClienteDto> buscarClientePorId(@PathVariable Integer id) {
+        Usuario cliente = usuarioService.buscar(id);
+        return ResponseEntity.ok().body(usuarioMapper.toClienteDto(cliente));
     }
 
     @Operation(summary = "Atualizar usuário por id", description = "Atualiza usuário pelo id, caso exista")
@@ -165,7 +201,7 @@ public class UsuarioController {
     @PatchMapping("/desativar/{id}")
     public ResponseEntity<Void> desativar(@PathVariable Integer id) {
         usuarioService.desativar(id);
-         return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Deletar usuário por id", description = "Deleta usuário pelo id, caso exista")

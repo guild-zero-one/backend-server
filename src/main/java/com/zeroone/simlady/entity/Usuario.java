@@ -24,13 +24,13 @@ public class Usuario {
 
     private String sobrenome;
 
-    private String apelido;
-
     private String cpf;
 
     private String email;
 
     private String senha;
+
+    private String urlImagem;
 
     @Enumerated(EnumType.STRING)
     private Permissao permissao;
@@ -45,7 +45,6 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contato> contatos = new HashSet<>();
-
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PedidoVenda> pedidos = new HashSet<>();
