@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,6 +44,8 @@ public class PedidoVendaService {
 
         existente.setUsuario(pedidoAtualizado.getUsuario());
         existente.setItens(pedidoAtualizado.getItens());
+        existente.getItens().forEach(item -> item.setPedidoVenda(existente));
+
         existente.setStatus(pedidoAtualizado.getStatus());
 
         return pedidoVendaRepository.save(existente);
