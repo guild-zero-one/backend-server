@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class VendaRequestDto {
     @Schema(description = "Desconto da venda", example = "30.00")
+    @NotNull
+    @Positive
     private Double desconto;
 
     @NotNull(message = "Pagamento realizado não pode ser nulo.")

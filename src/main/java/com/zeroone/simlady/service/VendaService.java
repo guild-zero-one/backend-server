@@ -30,7 +30,7 @@ public class VendaService {
 
         pedidos.forEach(pedido -> {pedido.setVenda(venda);});
         venda.setPedidos(pedidos);
-        venda.setValorTotal(calcularTotal(venda));
+        venda.setValorTotal(calcularTotal(venda).subtract(venda.getDesconto()));
 
         return vendaRepository.save(venda);
     }
