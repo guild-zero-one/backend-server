@@ -6,7 +6,7 @@ import com.zeroone.simlady.repository.PedidoItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -22,10 +22,17 @@ public class RelatorioService {
     public ResumoVendasProdutoResponseDto obterResumoVendasProduto(Integer produtoId) {
         produtoService.buscarPorId(produtoId);
 
-        LocalDateTime inicioMesAtual = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-        LocalDateTime fimMesAtual = LocalDateTime.now().withDayOfMonth(LocalDateTime.now().getMonth().length(LocalDateTime.now().toLocalDate().isLeapYear()));
+        LocalDate inicioMesAtual = LocalDate.now().withDayOfMonth(1);
+        LocalDate fimMesAtual = LocalDate.now().withDayOfMonth(
+                LocalDate.now().lengthOfMonth()
+        );
 
-        Integer vendasMesAtual = pedidoItemRepository.countVendasProdutoPeriodo(produtoId, inicioMesAtual, fimMesAtual);
+        Integer vendasMesAtual = pedidoItemRepository.countVendasProdutoPeriodo(
+                produtoId,
+                inicioMesAtual,
+                fimMesAtual
+        );
+
         Integer vendasTotais = pedidoItemRepository.countVendasTotaisProduto(produtoId);
 
         ResumoVendasProdutoResponseDto resumo = new ResumoVendasProdutoResponseDto();

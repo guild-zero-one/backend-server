@@ -152,7 +152,7 @@ public class ProdutoController {
             @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado",
                     content = @Content())
     })
-    @GetMapping()
+    @GetMapping("/lista")
     public ResponseEntity<List<ProdutoResponseDto>> buscarListaPorId(@RequestParam List<Integer> ids) {
         List<ProdutoResponseDto> produtos = produtoService.buscarListaPorId(ids)
                 .stream()
