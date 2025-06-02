@@ -1,22 +1,18 @@
-package com.zeroone.simlady.service;
+package com.zeroone.simlady.service.bucket;
 
 import com.azure.storage.blob.*;
 import com.azure.storage.blob.models.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 
 @Service
-public class AzureBlobStorageService {
+public class AzureBlobStorageService implements BucketService {
 
     private final BlobContainerClient containerClient;
 
-    public AzureBlobStorageService(@Value("${azure.storage.connection-string}") String connectionString, @Value("${azure.storage.container-name}") String containerName) {
-        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                .connectionString(connectionString)
-                .buildClient();
-        this.containerClient = blobServiceClient.getBlobContainerClient(containerName);
+    public AzureBlobStorageService(BlobContainerClient containerClient) {
+        this.containerClient = containerClient;
     }
 
     public String uploadImagem(InputStream imagemStream, long tamanho, String nomeArquivo, String contentType) {
