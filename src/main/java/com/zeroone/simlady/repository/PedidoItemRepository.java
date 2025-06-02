@@ -4,7 +4,9 @@ import com.zeroone.simlady.dto.produto.ProdutosMaisVendidosResponseDto;
 import com.zeroone.simlady.entity.PedidoItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface PedidoItemRepository extends JpaRepository<PedidoItem, Integer> {
@@ -26,4 +28,18 @@ public interface PedidoItemRepository extends JpaRepository<PedidoItem, Integer>
     ORDER BY SUM(pi.quantidade) DESC
 """)
     List<ProdutosMaisVendidosResponseDto> buscarProdutosMaisVendidos();
+
+    @Query("""
+        SELECT COUNT(pi) FROM PedidoItem pi 
+        WHERE pi.produto.id = :produtoId 
+        AND pi.pedidoVenda.criadoEm BETWEEN :inicio AND :fim
+    """)
+    Integer countVendasProdutoPeriodo(
+            @Param("produtoId") Integer produtoId,
+            @Param("inicio") LocalDate inicio,
+            @Param("fim") LocalDate fim
+    );
+
+    @Query("SELECT COUNT(pi) FROM PedidoItem pi WHERE pi.produto.id = :produtoId")
+    Integer countVendasTotaisProduto(@Param("produtoId") Integer produtoId);
 }
