@@ -9,9 +9,8 @@ import lombok.Setter;
 
 @Data
 public class ProdutoImagemRequestDto {
-    @NotBlank(message = "URL da imagem não pode ser vazia.")
-    @Schema(description = "URL da imagem", example = "https://boticario-malbec.png")
-    private String urlImagem;
+//    @Schema(description = "URL da imagem", example = "https://boticario-malbec.png")
+//    private String urlImagem;
 
     @NotNull(message = "Imagem principal não pode ser nula.")
     @Schema(description = "Imagem vai ser exibida no site", example = "true")

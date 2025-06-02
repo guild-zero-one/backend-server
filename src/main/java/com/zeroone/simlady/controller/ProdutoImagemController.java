@@ -1,5 +1,6 @@
 package com.zeroone.simlady.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemPatchDto;
 import com.zeroone.simlady.dto.produtoImagem.ProdutoImagemRequestDto;
@@ -16,10 +17,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,8 +33,38 @@ import java.util.List;
 @Tag(name = "Imagens", description = "Imagens de cada Produto")
 public class ProdutoImagemController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProdutoImagemController.class);
     private final ProdutoImagemService produtoImagemService;
     private final ProdutoImagemMapper produtoImagemMapper;
+
+
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<ProdutoImagemResponseDto> cadastrarImagemComUpload(
+            @RequestPart("imagem") MultipartFile imagem,
+            @RequestPart(value = "dados") String dadosJson
+    ) {
+        try {
+            ProdutoImagemRequestDto produtoImagemDto = new ObjectMapper().readValue(dadosJson, ProdutoImagemRequestDto.class);
+            ProdutoImagem produtoImagem = produtoImagemMapper.toEntity(produtoImagemDto);
+
+            String nomeArquivo = imagem.getOriginalFilename();
+            String contentType = imagem.getContentType();
+
+            ProdutoImagem imagemCadastrada = produtoImagemService.cadastrarImagemComUpload(
+                    produtoImagem,
+                    imagem.getInputStream(),
+                    imagem.getSize(),
+                    nomeArquivo,
+                    contentType
+            );
+
+            ProdutoImagemResponseDto imagemResponse = produtoImagemMapper.toResponseDto(imagemCadastrada);
+            return ResponseEntity.status(201).body(imagemResponse);
+        } catch (Exception e) {
+            log.error("Erro ao cadastrar imagem com upload: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
     @Operation(summary = "Cadastrar imagens", description = "Cadastra uma nova imagem de um determinado produto")
     @SecurityRequirement(name = "Bearer")
