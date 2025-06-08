@@ -4,6 +4,7 @@ import com.zeroone.simlady.dto.produto.ProdutosMaisVendidosResponseDto;
 import com.zeroone.simlady.dto.relatorio.ResumoVendasProdutoResponseDto;
 import com.zeroone.simlady.service.RelatorioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -24,6 +26,13 @@ public class RelatorioController {
 
     private final RelatorioService relatorioService;
 
+    @Operation(summary = "Listar vendas por produto",
+            description = "Retorna uma lista dos produtos mais vendidos com suas quantidades")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ProdutosMaisVendidosResponseDto.class))))
+    })
     @GetMapping("/vendas-por-produto")
     public ResponseEntity<List<ProdutosMaisVendidosResponseDto>> getVendasPorProduto() {
         List<ProdutosMaisVendidosResponseDto> relatorio = relatorioService.listarVendasPorProduto();
@@ -43,5 +52,44 @@ public class RelatorioController {
     public ResponseEntity<ResumoVendasProdutoResponseDto> getResumoVendasProduto(@PathVariable Integer id) {
         ResumoVendasProdutoResponseDto resumo = relatorioService.obterResumoVendasProduto(id);
         return ResponseEntity.ok(resumo);
+    }
+
+    @Operation(summary = "Total de vendas do mês atual",
+            description = "Retorna o valor total das vendas realizadas no mês atual")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Total retornado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BigDecimal.class)))
+    })
+    @GetMapping("/total-vendas-mensal")
+    public ResponseEntity<BigDecimal> totalVendasMensal() {
+        BigDecimal total = relatorioService.totalVendasMesAtual();
+        return ResponseEntity.ok(total);
+    }
+
+    @Operation(summary = "Top 3 produtos mais vendidos do mês",
+            description = "Retorna os nomes dos 3 produtos mais vendidos no mês atual")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de nomes retornada com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = String.class))))
+    })
+    @GetMapping("/top3-produtos-mes")
+    public ResponseEntity<List<String>> getTop3NomesProdutosMaisVendidosMesAtual() {
+        List<String> nomes = relatorioService.top3NomesProdutosMaisVendidosMesAtual();
+        return ResponseEntity.ok(nomes);
+    }
+
+    @Operation(summary = "Quantidade de produtos vendidos nos últimos 6 meses",
+            description = "Retorna a soma da quantidade de produtos vendidos nos últimos 6 meses")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quantidade retornada com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class)))
+    })
+    @GetMapping("/quantidade-produtos-ultimos-6-meses")
+    public ResponseEntity<Integer> getQuantidadeProdutosVendidosUltimos6Meses() {
+        Integer quantidade = relatorioService.quantidadeProdutosVendidosUltimos6Meses();
+        return ResponseEntity.ok(quantidade);
     }
 }
