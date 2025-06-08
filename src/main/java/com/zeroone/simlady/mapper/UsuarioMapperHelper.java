@@ -2,6 +2,7 @@ package com.zeroone.simlady.mapper;
 
 import com.zeroone.simlady.dto.contato.ContatoResponseDto;
 import com.zeroone.simlady.entity.Usuario;
+import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.repository.ContatoRepository;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UsuarioMapperHelper {
 
     @Named("mapQtdPedidos")
     public Integer mapQtdPedidos(Usuario usuario) {
-        return usuario == null ? 0 : pedidoVendaRepository.countPedidoVendaByUsuario_Id(usuario.getId());
+        return usuario == null ? 0 : pedidoVendaRepository.countPedidoVendasByUsuario_IdAndStatus(usuario.getId(), StatusPedido.PENDENTE);
     }
 
     @Named("mapContato")
