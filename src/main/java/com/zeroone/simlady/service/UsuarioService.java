@@ -101,7 +101,8 @@ public class UsuarioService {
 
     public Usuario atualizar(Integer id, Usuario usuario) {
 
-        buscar(id);
+        Usuario usuarioAntigo = buscar(id);
+
 
         boolean existePorCpf = usuarioRepository.existsByCpfAndIdNot(usuario.getCpf(), id);
         boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
@@ -109,6 +110,17 @@ public class UsuarioService {
         if(existePorCpf && existePorEmail) {
             throw new ResourceAlreadyExistsException("Dados inválidos, email e/ou cpf já cadastrados");
         }
+
+        usuarioAntigo.setNome(usuario.getNome());
+        usuarioAntigo.setSobrenome(usuario.getSobrenome());
+        usuarioAntigo.setCpf(usuario.getCpf());
+        usuarioAntigo.setEmail(usuario.getEmail());
+        usuarioAntigo.setSenha(usuario.getSenha());
+        usuarioAntigo.setUrlImagem(usuario.getUrlImagem());
+        usuarioAntigo.setPermissao(usuario.getPermissao());
+        usuarioAntigo.setAtivo(usuario.getAtivo());
+        usuarioAntigo.setContatos(usuario.getContatos());
+        usuarioAntigo.setPedidos(usuario.getPedidos());
 
         usuario.setId(id);
 
