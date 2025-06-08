@@ -43,34 +43,34 @@ public class UsuarioService {
     }
 
     public String autenticar(Usuario usuario, HttpServletResponse response) {
-
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
                 usuario.getEmail(), usuario.getSenha());
 
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
-
-
         usuarioRepository.findByEmail(usuario.getEmail())
-                .orElseThrow(
-                        () -> new ResponseStatusException(404, "Email do usuário não cadastrado", null)
-                );
+                .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token =  gerenciadorTokenJwt.generateToken(authentication);
+        // ✅ Gere o token ANTES de usá-lo
+        String token = gerenciadorTokenJwt.generateToken(authentication);
 
-
+        // ✅ Crie o cookie com o token real
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true); // ✅ deve ser true, já que o backend está em HTTPS
         cookie.setPath("/");
         cookie.setMaxAge(3600);
 
-        response.addCookie(cookie);
+        // ✅ Adicione SameSite=None manualmente (Spring não tem API direta até versões mais novas)
+        // Precisamos sobrescrever o header Set-Cookie diretamente para incluir SameSite
+        String cookieHeader = String.format("token=%s; Max-Age=3600; Path=/; Secure; HttpOnly; SameSite=None", token);
+        response.setHeader("Set-Cookie", cookieHeader);
 
         return token;
     }
+
 
     public void atualizarPermissao( Integer id ,String permissao) {
 
