@@ -1,15 +1,20 @@
 package com.zeroone.simlady.service;
 
+import com.zeroone.simlady.entity.PedidoItem;
 import com.zeroone.simlady.entity.PedidoVenda;
+import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
+import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +23,7 @@ public class PedidoVendaService {
     private final PedidoVendaRepository pedidoVendaRepository;
     private final UsuarioService usuarioService;
     private final ProdutoService produtoService;
+    private final ProdutoRepository produtoRepository;
 
     public PedidoVenda cadastrar(PedidoVenda pedido) {
         Integer idUsuario = pedido.getUsuario().getId();
@@ -43,10 +49,35 @@ public class PedidoVendaService {
         PedidoVenda existente = buscar(id);
 
         existente.setUsuario(pedidoAtualizado.getUsuario());
-        existente.setItens(pedidoAtualizado.getItens());
-        existente.getItens().forEach(item -> item.setPedidoVenda(existente));
-
         existente.setStatus(pedidoAtualizado.getStatus());
+
+        Map<Integer, PedidoItem> itensExistentes = existente.getItens().stream()
+                .collect(Collectors.toMap(item -> item.getProduto().getId(), item -> item));
+
+        List<PedidoItem> novaLista = new ArrayList<>();
+
+        for (PedidoItem itemAtualizado : pedidoAtualizado.getItens()) {
+            Integer idProduto = itemAtualizado.getProduto().getId();
+
+            PedidoItem itemExistente = itensExistentes.get(idProduto);
+
+            if (itemExistente != null) {
+                itemExistente.setQuantidade(itemAtualizado.getQuantidade());
+                itemExistente.setPrecoUnitario(itemAtualizado.getPrecoUnitario());
+                novaLista.add(itemExistente);
+            } else {
+                Produto produto = produtoRepository.findById(idProduto)
+                        .orElseThrow(() -> new RuntimeException("Produto não encontrado: " + idProduto));
+                PedidoItem novoItem = new PedidoItem();
+                novoItem.setProduto(produto);
+                novoItem.setQuantidade(itemAtualizado.getQuantidade());
+                novoItem.setPrecoUnitario(itemAtualizado.getPrecoUnitario());
+                novoItem.setPedidoVenda(existente);
+                novaLista.add(novoItem);
+            }
+        }
+
+        existente.setItens(novaLista);
 
         return pedidoVendaRepository.save(existente);
     }

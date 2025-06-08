@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import java.util.List;
 public class VendaRequestDto {
     @Schema(description = "Desconto da venda", example = "30.00")
     @NotNull
-    @Positive
+    @PositiveOrZero
     private Double desconto;
 
     @NotNull(message = "Pagamento realizado não pode ser nulo.")
