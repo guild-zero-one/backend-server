@@ -25,4 +25,6 @@ public class VendaRequestDto {
     @NotEmpty(message = "Lista de pedidos não pode ser vazia.")
     @Schema(description = "Lista de ID de Pedidos de venda")
     private List<Integer> pedidos;
+
+    private LocalDate dataVenda;
 }

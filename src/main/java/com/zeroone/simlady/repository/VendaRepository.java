@@ -42,12 +42,22 @@ public interface VendaRepository extends JpaRepository<Venda, Integer> {
     );
 
     @Query("""
-    SELECT COALESCE(SUM(v.valorTotal), 0)
+    SELECT FUNCTION('TO_CHAR', v.dataVenda, 'Month') as mes, COALESCE(SUM(v.valorTotal), 0) as total
     FROM Venda v
     WHERE v.dataVenda >= :start
-    GROUP BY FUNCTION('YEAR', v.dataVenda), FUNCTION('MONTH', v.dataVenda)
+    GROUP BY FUNCTION('TO_CHAR', v.dataVenda, 'Month'), FUNCTION('YEAR', v.dataVenda), FUNCTION('MONTH', v.dataVenda)
     ORDER BY FUNCTION('YEAR', v.dataVenda) DESC, FUNCTION('MONTH', v.dataVenda) DESC
 """)
-    List<BigDecimal> sumValorTotalUltimos6Meses(@Param("start") LocalDate start);
+    List<Object[]> sumValorTotalPorMesUltimos6Meses(@Param("start") LocalDate start);
+
+
+    @Query("""
+    SELECT FUNCTION('TO_CHAR', v.dataVenda, 'Month') as mes, COALESCE(SUM(SIZE(v.pedidos)), 0) as quantidade
+    FROM Venda v
+    WHERE v.dataVenda >= :start
+    GROUP BY FUNCTION('TO_CHAR', v.dataVenda, 'Month'), FUNCTION('YEAR', v.dataVenda), FUNCTION('MONTH', v.dataVenda)
+    ORDER BY FUNCTION('YEAR', v.dataVenda) DESC, FUNCTION('MONTH', v.dataVenda) DESC
+""")
+    List<Object[]> countPedidosPorMesUltimos6Meses(@Param("start") LocalDate start);
 
 }

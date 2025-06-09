@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -62,16 +64,31 @@ public class RelatorioService {
         return nomes.size() > 3 ? nomes.subList(0, 3) : nomes;
     }
 
-    public Integer quantidadeProdutosVendidosUltimos6Meses() {
-        LocalDate end = LocalDate.now();
-        LocalDate start = end.minusMonths(6).withDayOfMonth(1);
-        Integer quantidade = vendaRepository.quantidadeProdutosVendidosUltimos6Meses(start, end);
-        return quantidade != null ? quantidade : 0;
+    public Map<String, Integer> getQuantidadePedidosUltimos6Meses() {
+        LocalDate start = LocalDate.now().minusMonths(5).withDayOfMonth(1);
+        List<Object[]> results = vendaRepository.countPedidosPorMesUltimos6Meses(start);
+        Map<String, Integer> quantidadePorMes = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            String mes = ((String) row[0]).trim();
+            Integer quantidade = ((Number) row[1]).intValue();
+            quantidadePorMes.put(mes, quantidade);
+        }
+        return quantidadePorMes;
     }
 
-    public List<BigDecimal> valoresVendasUltimos6Meses() {
+    public Map<String, BigDecimal> getFaturamentoUltimos6Meses() {
+
         LocalDate start = LocalDate.now().minusMonths(5).withDayOfMonth(1);
-        return vendaRepository.sumValorTotalUltimos6Meses(start);
+
+        List<Object[]> results = vendaRepository.sumValorTotalPorMesUltimos6Meses(start);
+        Map<String, BigDecimal> faturamentoPorMes = new LinkedHashMap<>();
+
+        for (Object[] row : results) {
+            String mes = ((String) row[0]).trim();
+            BigDecimal total = (BigDecimal) row[1];
+            faturamentoPorMes.put(mes, total);
+        }
+        return faturamentoPorMes;
     }
 
     public Integer pedidosEmAberto() {

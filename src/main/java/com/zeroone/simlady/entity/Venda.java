@@ -28,7 +28,6 @@ public class Venda {
 
     private Boolean pagamentoRealizado;
 
-    @CreationTimestamp
     private LocalDate dataVenda;
 
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)

@@ -17,6 +17,7 @@ public interface VendaMapper {
     @Mapping(target = "valorTotal", ignore = true)
     @Mapping(target = "criadoEm", ignore = true)
     @Mapping(target = "atualizadoEm", ignore = true)
+    @Mapping(target = "dataVenda", source = "dto.dataVenda")
     Venda toEntity(VendaRequestDto dto);
 
 

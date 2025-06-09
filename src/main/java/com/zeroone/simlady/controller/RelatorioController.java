@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/relatorios")
@@ -87,9 +88,9 @@ public class RelatorioController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Integer.class)))
     })
-    @GetMapping("/quantidade-produtos-ultimos-6-meses")
-    public ResponseEntity<Integer> getQuantidadeProdutosVendidosUltimos6Meses() {
-        Integer quantidade = relatorioService.quantidadeProdutosVendidosUltimos6Meses();
+    @GetMapping("/quantidade-pedidos-ultimos-6-meses")
+    public ResponseEntity<Map<String, Integer>> getQuantidadePedidosUltimos6Meses() {
+        Map<String, Integer> quantidade = relatorioService.getQuantidadePedidosUltimos6Meses();
         return ResponseEntity.ok(quantidade);
     }
 
@@ -100,10 +101,10 @@ public class RelatorioController {
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = BigDecimal.class))))
     })
-    @GetMapping("/valores-vendas-ultimos-6-meses")
-    public ResponseEntity<List<BigDecimal>> getValoresVendasUltimos6Meses() {
-        List<BigDecimal> valores = relatorioService.valoresVendasUltimos6Meses();
-        return ResponseEntity.ok(valores);
+    @GetMapping("/faturamento-ultimos-6-meses")
+    public ResponseEntity<Map<String, BigDecimal>> getFaturamentoUltimos6Meses() {
+        Map<String, BigDecimal> faturamento = relatorioService.getFaturamentoUltimos6Meses();
+        return ResponseEntity.ok(faturamento);
     }
 
     @Operation(summary = "Quantidade de pedidos em aberto",
