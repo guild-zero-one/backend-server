@@ -2,10 +2,11 @@ package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.dto.produto.ProdutosMaisVendidosResponseDto;
 import com.zeroone.simlady.dto.relatorio.ResumoVendasProdutoResponseDto;
+import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.repository.PedidoItemRepository;
+import com.zeroone.simlady.repository.PedidoVendaRepository;
 import com.zeroone.simlady.repository.VendaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,6 +19,7 @@ public class RelatorioService {
     private final PedidoItemRepository pedidoItemRepository;
     private final ProdutoService produtoService;
     private final VendaRepository vendaRepository;
+    private final PedidoVendaRepository pedidoVendaRepository;
 
     public List<ProdutosMaisVendidosResponseDto> listarVendasPorProduto() {
         return pedidoItemRepository.buscarProdutosMaisVendidos();
@@ -65,5 +67,14 @@ public class RelatorioService {
         LocalDate start = end.minusMonths(6).withDayOfMonth(1);
         Integer quantidade = vendaRepository.quantidadeProdutosVendidosUltimos6Meses(start, end);
         return quantidade != null ? quantidade : 0;
+    }
+
+    public List<BigDecimal> valoresVendasUltimos6Meses() {
+        LocalDate start = LocalDate.now().minusMonths(5).withDayOfMonth(1);
+        return vendaRepository.sumValorTotalUltimos6Meses(start);
+    }
+
+    public Integer pedidosEmAberto() {
+        return pedidoVendaRepository.countByStatus(StatusPedido.PENDENTE);
     }
 }

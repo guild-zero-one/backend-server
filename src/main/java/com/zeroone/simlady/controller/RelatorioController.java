@@ -92,4 +92,30 @@ public class RelatorioController {
         Integer quantidade = relatorioService.quantidadeProdutosVendidosUltimos6Meses();
         return ResponseEntity.ok(quantidade);
     }
+
+    @Operation(summary = "Valores totais de vendas dos últimos 6 meses",
+            description = "Retorna uma lista com o valor total vendido em cada um dos últimos 6 meses")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Valores retornados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = BigDecimal.class))))
+    })
+    @GetMapping("/valores-vendas-ultimos-6-meses")
+    public ResponseEntity<List<BigDecimal>> getValoresVendasUltimos6Meses() {
+        List<BigDecimal> valores = relatorioService.valoresVendasUltimos6Meses();
+        return ResponseEntity.ok(valores);
+    }
+
+    @Operation(summary = "Quantidade de pedidos em aberto",
+            description = "Retorna a quantidade de pedidos com status em aberto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quantidade retornada com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Integer.class)))
+    })
+    @GetMapping("/quantidade-pedidos-em-aberto")
+    public ResponseEntity<Integer> getQuantidadePedidosEmAberto() {
+        Integer quantidade = relatorioService.pedidosEmAberto();
+        return ResponseEntity.ok(quantidade);
+    }
 }

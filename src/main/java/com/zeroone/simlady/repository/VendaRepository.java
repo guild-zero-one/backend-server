@@ -41,4 +41,13 @@ public interface VendaRepository extends JpaRepository<Venda, Integer> {
             @Param("end") LocalDate end
     );
 
+    @Query("""
+    SELECT COALESCE(SUM(v.valorTotal), 0)
+    FROM Venda v
+    WHERE v.dataVenda >= :start
+    GROUP BY FUNCTION('YEAR', v.dataVenda), FUNCTION('MONTH', v.dataVenda)
+    ORDER BY FUNCTION('YEAR', v.dataVenda) DESC, FUNCTION('MONTH', v.dataVenda) DESC
+""")
+    List<BigDecimal> sumValorTotalUltimos6Meses(@Param("start") LocalDate start);
+
 }
