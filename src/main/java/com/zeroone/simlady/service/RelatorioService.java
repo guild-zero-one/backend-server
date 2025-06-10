@@ -11,9 +11,14 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import static java.util.Locale.forLanguageTag;
 
 @Service
 @RequiredArgsConstructor
@@ -68,10 +73,17 @@ public class RelatorioService {
         LocalDate start = LocalDate.now().minusMonths(5).withDayOfMonth(1);
         List<Object[]> results = vendaRepository.countPedidosPorMesUltimos6Meses(start);
         Map<String, Integer> quantidadePorMes = new LinkedHashMap<>();
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM");
+        DateTimeFormatter mesFormatter = DateTimeFormatter.ofPattern("MMMM", forLanguageTag("pt-BR"));
+
         for (Object[] row : results) {
-            String mes = ((String) row[0]).trim();
+            String mesAno = ((String) row[0]).trim();
             Integer quantidade = ((Number) row[1]).intValue();
-            quantidadePorMes.put(mes, quantidade);
+
+            String mesBonito = YearMonth.parse(mesAno, parser).format(mesFormatter);
+            mesBonito = mesBonito.substring(0, 1).toUpperCase() + mesBonito.substring(1);
+
+            quantidadePorMes.put(mesBonito, quantidade);
         }
         return quantidadePorMes;
     }
