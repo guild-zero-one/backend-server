@@ -113,10 +113,24 @@ public class ProdutoController {
         return ResponseEntity.ok(produtos);
     }
 
-    @GetMapping("/nome")
-    public ResponseEntity<Boolean> existeProdutoPorNome(@RequestParam String nome) {
-        Boolean existeProduto = produtoService.buscarPorNome(nome);
-        return ResponseEntity.ok(existeProduto);
+    @Operation(summary = "Buscar produto por sku", description = "Busca produto pelo sku, caso existam")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(type = "array", implementation = ProdutoResponseDto.class)))),
+            @ApiResponse(responseCode = "204", description = "Nenhum produto encontrado",
+                    content = @Content())
+    })
+    @GetMapping("/sku")
+    public ResponseEntity<ProdutoResponseDto> buscarProdutoPorSku(@RequestParam String sku) {
+        Produto produtoExistente = produtoService.buscarProdutoPorSku(sku);
+
+        if (produtoExistente != null) {
+            return ResponseEntity.ok(produtoMapper.toResponseDto(produtoExistente));
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
