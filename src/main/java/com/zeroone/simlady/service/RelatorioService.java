@@ -89,16 +89,21 @@ public class RelatorioService {
     }
 
     public Map<String, BigDecimal> getFaturamentoUltimos6Meses() {
-
         LocalDate start = LocalDate.now().minusMonths(5).withDayOfMonth(1);
-
         List<Object[]> results = vendaRepository.sumValorTotalPorMesUltimos6Meses(start);
         Map<String, BigDecimal> faturamentoPorMes = new LinkedHashMap<>();
 
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM");
+        DateTimeFormatter mesFormatter = DateTimeFormatter.ofPattern("MMMM", Locale.forLanguageTag("pt-BR"));
+
         for (Object[] row : results) {
-            String mes = ((String) row[0]).trim();
+            String mesAno = ((String) row[0]).trim(); // Exemplo: "2025-06"
             BigDecimal total = (BigDecimal) row[1];
-            faturamentoPorMes.put(mes, total);
+
+            String mesBonito = YearMonth.parse(mesAno, parser).format(mesFormatter);
+            mesBonito = mesBonito.substring(0, 1).toUpperCase() + mesBonito.substring(1);
+
+            faturamentoPorMes.put(mesBonito, total);
         }
         return faturamentoPorMes;
     }
