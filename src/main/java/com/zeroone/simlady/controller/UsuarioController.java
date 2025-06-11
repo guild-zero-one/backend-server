@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,7 +62,6 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado",
                     content = @Content())
     })
-
     @PostMapping("/login")
     public ResponseEntity<UsuarioTokenDto> login(
             @RequestBody UsuarioLoginDto usuarioLoginDto, HttpServletResponse response) {
@@ -73,6 +74,25 @@ public class UsuarioController {
         usuarioTokenDto.setToken(token);
 
         return ResponseEntity.ok(usuarioTokenDto);
+    }
+
+    @Operation(summary = "Logout de usuários", description = "Realiza o logout de um usuário no sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sessão encerrada com sucesso",
+                    content = @Content()),
+            @ApiResponse(responseCode = "400", description = "Erro ao encerrar a sessão",
+                    content = @Content())
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Listar usuários", description = "Lista todos os usuários do sistema")
