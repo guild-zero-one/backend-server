@@ -9,5 +9,5 @@ import java.util.List;
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
     List<Produto> findByFornecedorId(Integer fornecedorId);
 
-    Boolean existsProdutoByNomeContainingIgnoreCase(String nome);
+    Produto findProdutoBySkuIgnoreCase(String sku);
 }
