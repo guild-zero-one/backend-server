@@ -32,6 +32,10 @@ public class ProdutoService {
         return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado"));
     }
 
+    public Boolean buscarPorNome(String nome) {
+        return produtoRepository.existsProdutoByNomeContainingIgnoreCase(nome);
+    }
+
     public List<Produto> buscarPorFornecedor(Integer id) {
         return produtoRepository.findByFornecedorId(id);
     }
