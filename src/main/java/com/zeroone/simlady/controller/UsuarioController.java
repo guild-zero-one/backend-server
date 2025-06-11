@@ -62,7 +62,6 @@ public class UsuarioController {
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado",
                     content = @Content())
     })
-
     @PostMapping("/login")
     public ResponseEntity<UsuarioTokenDto> login(
             @RequestBody UsuarioLoginDto usuarioLoginDto, HttpServletResponse response) {
@@ -77,6 +76,13 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioTokenDto);
     }
 
+    @Operation(summary = "Logout de usuários", description = "Realiza o logout de um usuário no sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Sessão encerrada com sucesso",
+                    content = @Content()),
+            @ApiResponse(responseCode = "400", description = "Erro ao encerrar a sessão",
+                    content = @Content())
+    })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("token", "")
