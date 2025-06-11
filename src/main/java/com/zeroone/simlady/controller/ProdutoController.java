@@ -90,6 +90,35 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoMapper.toResponseDto(produto));
     }
 
+    @Operation(summary = "Buscar produtos por lista de ids", description = "Busca produtos por uma lista de ids, caso existam")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(type = "array", implementation = ProdutoResponseDto.class)))),
+            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado",
+                    content = @Content())
+    })
+    @GetMapping("/lista")
+    public ResponseEntity<List<ProdutoResponseDto>> buscarListaPorId(@RequestParam List<Integer> ids) {
+        List<ProdutoResponseDto> produtos = produtoService.buscarListaPorId(ids)
+                .stream()
+                .map(produtoMapper::toResponseDto)
+                .toList();
+
+        if (produtos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(produtos);
+    }
+
+    @GetMapping("/nome")
+    public ResponseEntity<Boolean> existeProdutoPorNome(@RequestParam String nome) {
+        Boolean existeProduto = produtoService.buscarPorNome(nome);
+        return ResponseEntity.ok(existeProduto);
+    }
+
     @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
@@ -141,28 +170,5 @@ public class ProdutoController {
     public ResponseEntity<Void> excluirProduto(@PathVariable Integer id) {
         produtoService.excluirPorId(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @Operation(summary = "Buscar produtos por lista de ids", description = "Busca produtos por uma lista de ids, caso existam")
-    @SecurityRequirement(name = "Bearer")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(type = "array", implementation = ProdutoResponseDto.class)))),
-            @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado",
-                    content = @Content())
-    })
-    @GetMapping("/lista")
-    public ResponseEntity<List<ProdutoResponseDto>> buscarListaPorId(@RequestParam List<Integer> ids) {
-        List<ProdutoResponseDto> produtos = produtoService.buscarListaPorId(ids)
-                .stream()
-                .map(produtoMapper::toResponseDto)
-                .toList();
-
-        if (produtos.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(produtos);
     }
 }
