@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -215,6 +217,18 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         usuarioService.deletar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.noContent().build();
     }
 }
