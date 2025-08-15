@@ -1,6 +1,5 @@
 package com.zeroone.simlady.dto.pedido;
 
-import com.zeroone.simlady.dto.contato.ContatoResponseDto;
 import com.zeroone.simlady.dto.pedidoItem.PedidoItemResponseDto;
 import lombok.Data;
 
