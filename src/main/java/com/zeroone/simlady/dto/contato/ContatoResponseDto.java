@@ -1,7 +1,7 @@
 package com.zeroone.simlady.dto.contato;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class ContatoResponseDto {

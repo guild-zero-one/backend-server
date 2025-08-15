@@ -2,7 +2,6 @@ package com.zeroone.simlady.dto.lote;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.*;
 
 @Data
 public class LoteResponseDto {

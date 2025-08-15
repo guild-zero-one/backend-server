@@ -2,7 +2,6 @@ package com.zeroone.simlady.dto.usuario;
 
 import com.zeroone.simlady.dto.contato.ContatoResponseDto;
 import com.zeroone.simlady.dto.pedidoItem.PedidoItemRequestDto;
-import com.zeroone.simlady.entity.Contato;
 import com.zeroone.simlady.entity.enums.Permissao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

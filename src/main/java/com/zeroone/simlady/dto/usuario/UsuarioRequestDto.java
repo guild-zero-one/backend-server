@@ -2,7 +2,6 @@ package com.zeroone.simlady.dto.usuario;
 
 import com.zeroone.simlady.entity.enums.Permissao;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.br.CPF;

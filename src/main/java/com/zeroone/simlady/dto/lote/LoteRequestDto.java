@@ -1,15 +1,12 @@
 package com.zeroone.simlady.dto.lote;
 
 import com.zeroone.simlady.dto.loteItem.LoteItemRequestDto;
-import com.zeroone.simlady.dto.loteItem.LoteItemResponseDto;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
 package com.zeroone.simlady.dto.usuario;
+
 import com.zeroone.simlady.entity.Usuario;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 import java.util.Collection;
 
