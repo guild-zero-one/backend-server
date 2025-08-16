@@ -23,11 +23,6 @@ public class RabbitMqService {
 
     @CircuitBreaker(name = "rabbitMq", fallbackMethod = "fallbackEnviarPedidoCriado")
     public void enviarPedidoCriado(PedidoVenda pedido) {
-        if (rabbitTemplate == null) {
-            System.err.println("RabbitTemplate indisponível. Pedido não enviado para RabbitMQ.");
-            return;
-        }
-
         Usuario usuario = usuarioService.buscar(pedido.getUsuario().getId());
 
         PedidoMensagemDto message = pedidoMensagemMapper.toMessageDto(pedido);

@@ -33,6 +33,7 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    @Lazy
     public RabbitTemplate rabbitTemplate(org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
         try {
             return new RabbitTemplate(connectionFactory);
