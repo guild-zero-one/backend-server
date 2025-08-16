@@ -1,0 +1,31 @@
+name: Abrir Pull Request automático
+
+on:
+  push:
+    branches:
+      - feature/*
+      - dev
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cria PR de dev para main
+        if: github.ref == 'refs/heads/dev'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          source: dev
+          target: main
+          title: 'PR automático: dev → main'
+          body: 'PR criado automaticamente do dev para main.'
+
+      - name: Cria PR de feature para teste
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        uses: peter-evans/create-pull-request@v5
+        with:
+          source: ${{ github.ref_name }}
+          target: teste
+          title: 'PR automático: ${{ github.ref_name }} → teste'
+          body: 'PR criado automaticamente de ${{ github.ref_name }} para teste.'
