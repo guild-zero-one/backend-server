@@ -7,8 +7,8 @@ permissions:
 on:
   push:
     branches:
-      - feature/*
       - dev
+      - feature/*
 
 jobs:
   create-pr:
@@ -16,20 +16,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Dev → Main
       - name: Cria PR de dev para main
         if: github.ref == 'refs/heads/dev'
-        uses: peter-evans/create-pull-request@v5
+        uses: repo-sync/pull-request@v2
         with:
-          branch: dev
-          base: main
-          title: 'PR automático: dev → main'
-          body: 'PR criado automaticamente do dev para main.'
+          source_branch: dev
+          destination_branch: main
+          pr_title: "PR automático: dev → main"
+          pr_body: "PR criado automaticamente do dev para main."
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Feature/* → Teste
       - name: Cria PR de feature para teste
         if: startsWith(github.ref, 'refs/heads/feature/')
-        uses: peter-evans/create-pull-request@v5
+        uses: repo-sync/pull-request@v2
         with:
-          branch: teste
-          base: ${{ github.ref_name }}
-          title: 'PR automático: ${{ github.ref_name }} → teste'
-          body: 'PR criado automaticamente de ${{ github.ref_name }} para teste.'
+          source_branch: ${{ github.ref_name }}
+          destination_branch: teste
+          pr_title: "PR automático: ${{ github.ref_name }} → teste"
+          pr_body: "PR criado automaticamente de ${{ github.ref_name }} para teste."
+          github_token: ${{ secrets.GITHUB_TOKEN }}
