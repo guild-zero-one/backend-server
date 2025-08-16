@@ -16,8 +16,8 @@ jobs:
         if: github.ref == 'refs/heads/dev'
         uses: peter-evans/create-pull-request@v5
         with:
-          source: dev
-          target: main
+          branch: dev
+          base: main
           title: 'PR automático: dev → main'
           body: 'PR criado automaticamente do dev para main.'
 
@@ -25,7 +25,7 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/feature/')
         uses: peter-evans/create-pull-request@v5
         with:
-          source: ${{ github.ref_name }}
-          target: teste
+          branch: ${{ github.ref_name }}
+          base: teste
           title: 'PR automático: ${{ github.ref_name }} → teste'
           body: 'PR criado automaticamente de ${{ github.ref_name }} para teste.'
