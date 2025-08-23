@@ -38,42 +38,39 @@ public class SecurityConfiguracao {
 
     private final AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
 
-    private static final AntPathRequestMatcher[] URLS_PERMITIDAS = {
-            new AntPathRequestMatcher("/swagger-ui/**"),
-            new AntPathRequestMatcher("/swagger-ui.html"),
-            new AntPathRequestMatcher("/swagger-resources"),
-            new AntPathRequestMatcher("/swagger-resources/**"),
-            new AntPathRequestMatcher("/configuration/ui"),
-            new AntPathRequestMatcher("/configuration/security"),
-            new AntPathRequestMatcher("/api/public/**"),
-            new AntPathRequestMatcher("/api/public/authenticate"),
-            new AntPathRequestMatcher("/webjars/**"),
-            new AntPathRequestMatcher("/v3/api-docs/**"),
-            new AntPathRequestMatcher("/actuator/*"),
-            new AntPathRequestMatcher("/h2-console/**"),
-            new AntPathRequestMatcher("/h2-console/**/**"),
-            new AntPathRequestMatcher("/error/**"),
-            new AntPathRequestMatcher("/usuarios/**"),
-            new AntPathRequestMatcher("/produtos/**"),
-            new AntPathRequestMatcher("/**")
+    private static final String[] SWAGGER_URLS = {
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/api/public/**",
+            "/api/public/authenticate",
+            "/webjars/**",
+            "/v3/api-docs/**",
+            "/actuator/*",
+            "/h2-console/**",
+            "/h2-console/**"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(URLS_PERMITIDAS)
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
+                .authorizeHttpRequests(authorize -> authorize
+                                // Swagger and public endpoints
+                                .requestMatchers(SWAGGER_URLS).permitAll()
+                                // User registration and login
+                                .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/usuarios/logout").permitAll()
+                                .requestMatchers("/**").hasAuthority("ADMIN")
                 )
-                .exceptionHandling(handling -> handling
-                        .authenticationEntryPoint(autenticacaoJwtEntryPoint))
-                .sessionManagement(management -> management
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoJwtEntryPoint))
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
