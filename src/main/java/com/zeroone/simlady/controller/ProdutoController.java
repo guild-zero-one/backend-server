@@ -57,6 +57,7 @@ public class ProdutoController {
     }
 
     @Operation(summary = "Listar produtos", description = "Lista todos os produtos cadastrados no sistema")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Produtos listados na base",
                     content = @Content(mediaType = "application/json",
@@ -77,6 +78,7 @@ public class ProdutoController {
     }
 
     @Operation(summary = "Buscar produto por id", description = "Busca um produto por id, caso exista")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Produto encontrado com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -134,6 +136,7 @@ public class ProdutoController {
     }
 
     @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
                     content = @Content(mediaType = "application/json",

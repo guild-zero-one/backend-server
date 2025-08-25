@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class RelatorioController {
 
     @Operation(summary = "Listar vendas por produto",
             description = "Retorna uma lista dos produtos mais vendidos com suas quantidades")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -44,6 +46,7 @@ public class RelatorioController {
 
     @Operation(summary = "Resumo de vendas por produto",
             description = "Retorna o total de vendas do mês atual e acumulado para um produto específico")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Resumo encontrado com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -59,6 +62,7 @@ public class RelatorioController {
 
     @Operation(summary = "Total de vendas do mês atual",
             description = "Retorna o valor total das vendas realizadas no mês atual")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Total retornado com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -72,6 +76,7 @@ public class RelatorioController {
 
     @Operation(summary = "Top 3 produtos mais vendidos do mês",
             description = "Retorna os nomes dos 3 produtos mais vendidos no mês atual")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de nomes retornada com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -85,6 +90,7 @@ public class RelatorioController {
 
     @Operation(summary = "Quantidade de produtos vendidos nos últimos 6 meses",
             description = "Retorna a soma da quantidade de produtos vendidos nos últimos 6 meses")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Quantidade retornada com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -98,6 +104,7 @@ public class RelatorioController {
 
     @Operation(summary = "Valores totais de vendas dos últimos 6 meses",
             description = "Retorna uma lista com o valor total vendido em cada um dos últimos 6 meses")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Valores retornados com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -111,6 +118,7 @@ public class RelatorioController {
 
     @Operation(summary = "Quantidade de pedidos em aberto",
             description = "Retorna a quantidade de pedidos com status em aberto")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Quantidade retornada com sucesso",
                     content = @Content(mediaType = "application/json",

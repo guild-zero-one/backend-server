@@ -37,8 +37,16 @@ public class ProdutoImagemController {
     private final ProdutoImagemService produtoImagemService;
     private final ProdutoImagemMapper produtoImagemMapper;
 
-
+    @Operation(summary = "Upload imagens", description = "Cadastra uma nova imagem em um bucket")
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Imagem cadastrada com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProdutoImagemResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida",
+                    content = @Content()),
+    })
     public ResponseEntity<ProdutoImagemResponseDto> cadastrarImagemComUpload(
             @RequestPart("imagem") MultipartFile imagem,
             @RequestPart(value = "dados") String dadosJson
@@ -87,6 +95,7 @@ public class ProdutoImagemController {
 
 
     @Operation(summary = "Listar todas as imagens", description = "Lista todas as imagens de produtos do sistema de forma paginada")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Imagens listadas na base",
                     content = @Content(mediaType = "application/json",
@@ -94,7 +103,6 @@ public class ProdutoImagemController {
             @ApiResponse(responseCode = "204", description = "Sem imagens na base",
                     content = @Content()),
     })
-    @SecurityRequirement(name = "Bearer")
     @GetMapping
     public ResponseEntity<Page<ProdutoImagemResponseDto>> listarImagens(Pageable pageable) {
         Page<ProdutoImagemResponseDto> imagens = produtoImagemService.listarImagens(pageable)
@@ -124,6 +132,7 @@ public class ProdutoImagemController {
     }
 
     @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
+    @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
                     content = @Content(mediaType = "application/json",
