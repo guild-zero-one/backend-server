@@ -6,10 +6,10 @@ import com.zeroone.simlady.entity.Contato;
 import com.zeroone.simlady.entity.PedidoVenda;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.mapper.PedidoMensagemMapper;
-import com.zeroone.simlady.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.util.stream.Collectors;
 
@@ -21,6 +21,7 @@ public class RabbitMqService {
     private final PedidoMensagemMapper pedidoMensagemMapper;
     private final UsuarioService usuarioService;
 
+    @CircuitBreaker(name = "rabbitMq", fallbackMethod = "fallbackEnviarPedidoCriado")
     public void enviarPedidoCriado(PedidoVenda pedido) {
         Usuario usuario = usuarioService.buscar(pedido.getUsuario().getId());
 
@@ -32,5 +33,9 @@ public class RabbitMqService {
                 RabbitMqConfig.ORDER_CREATED_QUEUE,
                 message
         );
+    }
+
+    public void fallbackEnviarPedidoCriado(PedidoVenda pedido, Throwable t){
+        System.err.println("Falha ao enviar pedido para RabbitMQ: " + t.getMessage());
     }
 }
