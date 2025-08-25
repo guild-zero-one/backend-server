@@ -9,6 +9,7 @@ target/
 *.iml
 *.ipr
 *.iws
+vcs.xml
 
 # Logs e arquivos temporários
 *.log

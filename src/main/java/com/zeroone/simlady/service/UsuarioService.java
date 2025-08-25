@@ -100,31 +100,52 @@ public class UsuarioService {
     }
 
     public Usuario atualizar(Integer id, Usuario usuario) {
-
         Usuario usuarioAntigo = buscar(id);
-
 
         boolean existePorCpf = usuarioRepository.existsByCpfAndIdNot(usuario.getCpf(), id);
         boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
 
-        if(existePorCpf && existePorEmail) {
-            throw new ResourceAlreadyExistsException("Dados inválidos, email e/ou cpf já cadastrados");
+        if(existePorCpf) {
+            throw new ResourceAlreadyExistsException("CPF já cadastrado para outro usuário");
         }
 
-        usuarioAntigo.setNome(usuario.getNome());
-        usuarioAntigo.setSobrenome(usuario.getSobrenome());
-        usuarioAntigo.setCpf(usuario.getCpf());
-        usuarioAntigo.setEmail(usuario.getEmail());
-        usuarioAntigo.setSenha(usuario.getSenha());
-        usuarioAntigo.setUrlImagem(usuario.getUrlImagem());
-        usuarioAntigo.setPermissao(usuario.getPermissao());
-        usuarioAntigo.setAtivo(usuario.getAtivo());
-        usuarioAntigo.setContatos(usuario.getContatos());
-        usuarioAntigo.setPedidos(usuario.getPedidos());
+        if(existePorEmail) {
+            throw new ResourceAlreadyExistsException("Email já cadastrado para outro usuário");
+        }
 
-        usuario.setId(id);
+        if (usuario.getNome() != null && !usuario.getNome().equals(usuarioAntigo.getNome())) {
+            usuarioAntigo.setNome(usuario.getNome());
+        }
 
-        return usuarioRepository.save(usuario);
+        if (usuario.getSobrenome() != null && !usuario.getSobrenome().equals(usuarioAntigo.getSobrenome())) {
+            usuarioAntigo.setSobrenome(usuario.getSobrenome());
+        }
+
+        if (usuario.getCpf() != null && !usuario.getCpf().equals(usuarioAntigo.getCpf())) {
+            usuarioAntigo.setCpf(usuario.getCpf());
+        }
+
+        if (usuario.getEmail() != null && !usuario.getEmail().equals(usuarioAntigo.getEmail())) {
+            usuarioAntigo.setEmail(usuario.getEmail());
+        }
+
+        if (usuario.getSenha() != null && !usuario.getSenha().equals(usuarioAntigo.getSenha())) {
+            usuarioAntigo.setSenha(usuario.getSenha());
+        }
+
+        if (usuario.getUrlImagem() != null && !usuario.getUrlImagem().equals(usuarioAntigo.getUrlImagem())) {
+            usuarioAntigo.setUrlImagem(usuario.getUrlImagem());
+        }
+
+        if (usuario.getPermissao() != null && !usuario.getPermissao().equals(usuarioAntigo.getPermissao())) {
+            usuarioAntigo.setPermissao(usuario.getPermissao());
+        }
+
+        if (usuario.getAtivo() != null && !usuario.getAtivo().equals(usuarioAntigo.getAtivo())) {
+            usuarioAntigo.setAtivo(usuario.getAtivo());
+        }
+
+        return usuarioRepository.save(usuarioAntigo);
     }
 
     public Usuario buscarAutenticado(HttpServletRequest request) {
