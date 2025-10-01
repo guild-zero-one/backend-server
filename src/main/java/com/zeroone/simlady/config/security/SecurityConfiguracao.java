@@ -67,6 +67,8 @@ public class SecurityConfiguracao {
                                 .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios/logout").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/produtosCA").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/produtosCA").permitAll()
                                 .requestMatchers("/**").hasAuthority("ADMIN")
                 )
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoJwtEntryPoint))
