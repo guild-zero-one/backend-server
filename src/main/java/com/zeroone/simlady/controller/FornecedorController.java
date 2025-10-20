@@ -3,10 +3,9 @@ package com.zeroone.simlady.controller;
 import com.zeroone.simlady.dto.fornecedor.FornecedorComProdutosResponseDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorRequestDto;
 import com.zeroone.simlady.dto.fornecedor.FornecedorResponseDto;
-import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
+import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.mapper.FornecedorMapper;
-import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.service.FornecedorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -18,17 +17,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/fornecedores")
+@RequestMapping("/fornecedores-old")
 @Tag(name = "Fornecedores", description = "Marcas e Fornecedores")
 public class FornecedorController {
 
