@@ -3,16 +3,14 @@ package com.zeroone.simlady.core.application.usecases.produto;
 import com.zeroone.simlady.core.application.ports.ProdutoRepository;
 import com.zeroone.simlady.core.domain.produto.Produto;
 
-import java.util.List;
-
-public class ListProdutoUseCase {
+public class CriarProdutoUseCase {
     private final ProdutoRepository repository;
 
-    public ListProdutoUseCase(ProdutoRepository repository) {
+    public CriarProdutoUseCase(ProdutoRepository repository) {
         this.repository = repository;
     }
 
-    public List<Produto> executar(){
-        return repository.listar();
+    public Produto executar(Produto produto) {
+        return repository.salvarProduto(produto);
     }
 }

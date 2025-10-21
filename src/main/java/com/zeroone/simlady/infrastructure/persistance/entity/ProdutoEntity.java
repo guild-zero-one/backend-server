@@ -14,9 +14,10 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "produto")
 public class ProdutoEntity {
     @Id
-    private String id;
+    private UUID id;
 
     private String nome;
 
@@ -34,13 +35,18 @@ public class ProdutoEntity {
 
     private Double valorVenda;
 
+    private String imagemUrl;
+    
+    @Column(name = "fornecedor_id")
+    private UUID idFornecedor;
+
     @CreationTimestamp
     private LocalDateTime criadoEm;
 
     @UpdateTimestamp
     private LocalDateTime atualizadoEm;
 
-    public ProdutoEntity(String id, String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda) {
+    public ProdutoEntity(UUID id, String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl, UUID idFornecedor, LocalDateTime criadoEm, LocalDateTime atualizadoEm) {
         this.id = id;
         this.nome = nome;
         this.sku = sku;
@@ -50,5 +56,9 @@ public class ProdutoEntity {
         this.precoUnitario = precoUnitario;
         this.catalogo = catalogo;
         this.valorVenda = valorVenda;
+        this.imagemUrl = imagemUrl;
+        this.idFornecedor = idFornecedor;
+        this.criadoEm = criadoEm;
+        this.atualizadoEm = atualizadoEm;
     }
 }
