@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -61,30 +62,37 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
                 LOGGER.trace("[FALHA AUTENTICACAO] - stack trace: %s", exception);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\":\"Token expirado\"}");
+                return; 
             }
-        }
 
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            addUsernameInContext(request, username, jwtToken);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                addUsernameInContext(request, response, username, jwtToken);
+            }
         }
 
         filterChain.doFilter(request, response);
     }
 
-    private void addUsernameInContext(HttpServletRequest request, String username, String jwtToken) {
+    private void addUsernameInContext(HttpServletRequest request, HttpServletResponse response, String username, String jwtToken) {
+        try {
+            UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
 
-        UserDetails userDetails = autenticacaoService.loadUserByUsername(username);
+            if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
+                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
 
-        if (jwtTokenManager.validateToken(jwtToken, userDetails)) {
+                usernamePasswordAuthenticationToken
+                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-
-            usernamePasswordAuthenticationToken
-                    .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            }
+        } catch (UsernameNotFoundException exception) {
+            LOGGER.warn("[FALHA AUTENTICACAO] - Usuário não encontrado: {} - {}", username, exception.getMessage());
+            Cookie invalidCookie = new Cookie("token", "");
+            invalidCookie.setMaxAge(0);
+            invalidCookie.setPath("/");
+            response.addCookie(invalidCookie);
         }
     }
 }

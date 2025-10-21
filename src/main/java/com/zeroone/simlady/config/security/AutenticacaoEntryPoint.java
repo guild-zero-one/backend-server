@@ -16,10 +16,14 @@ public class AutenticacaoEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if (authException.getClass().equals(BadCredentialsException.class)|| authException.getClass().equals(InsufficientAuthenticationException.class)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        // Só define status de autenticação se não houver outro status já definido
+        if (response.getStatus() == HttpServletResponse.SC_OK || response.getStatus() == 0) {
+            if (authException.getClass().equals(BadCredentialsException.class) || authException.getClass().equals(InsufficientAuthenticationException.class)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token de acesso inválido ou expirado");
+            } else {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Acesso negado");
+            }
         }
+        // Se já há um status definido (404, 400, 500, etc.), não interfere
     }
 }
