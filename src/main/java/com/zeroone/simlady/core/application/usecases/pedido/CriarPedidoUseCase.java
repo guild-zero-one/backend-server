@@ -4,7 +4,7 @@ import com.zeroone.simlady.core.application.ports.PedidoRepositoryPort;
 import com.zeroone.simlady.core.application.ports.ProdutoRepository;
 import com.zeroone.simlady.core.domain.pedido.Pedido;
 import com.zeroone.simlady.core.domain.pedido.PedidoItem;
-import com.zeroone.simlady.exception.ResourceNotFoundException;
+import com.zeroone.simlady.infrastructure.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.UUID;
