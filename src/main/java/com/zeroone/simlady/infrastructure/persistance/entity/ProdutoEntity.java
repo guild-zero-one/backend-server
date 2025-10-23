@@ -37,8 +37,8 @@ public class ProdutoEntity {
 
     private String imagemUrl;
     
-    @Column(name = "fornecedor_id")
-    private UUID idFornecedor;
+    @Column(name = "marca_id")
+    private UUID idMarca;
 
     @CreationTimestamp
     private LocalDateTime criadoEm;
@@ -46,7 +46,7 @@ public class ProdutoEntity {
     @UpdateTimestamp
     private LocalDateTime atualizadoEm;
 
-    public ProdutoEntity(UUID id, String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl, UUID idFornecedor, LocalDateTime criadoEm, LocalDateTime atualizadoEm) {
+    public ProdutoEntity(UUID id, String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl, UUID idMarca, LocalDateTime criadoEm, LocalDateTime atualizadoEm) {
         this.id = id;
         this.nome = nome;
         this.sku = sku;
@@ -57,7 +57,7 @@ public class ProdutoEntity {
         this.catalogo = catalogo;
         this.valorVenda = valorVenda;
         this.imagemUrl = imagemUrl;
-        this.idFornecedor = idFornecedor;
+        this.idMarca = idMarca;
         this.criadoEm = criadoEm;
         this.atualizadoEm = atualizadoEm;
     }

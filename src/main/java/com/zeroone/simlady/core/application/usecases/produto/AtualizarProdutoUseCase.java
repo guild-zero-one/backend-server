@@ -1,15 +1,15 @@
 package com.zeroone.simlady.core.application.usecases.produto;
 
-import com.zeroone.simlady.core.application.ports.ProdutoRepository;
+import com.zeroone.simlady.core.application.ports.ProdutoRepositoryPort;
 import com.zeroone.simlady.core.domain.produto.Produto;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class AtualizarProdutoUseCase {
-    private final ProdutoRepository repository;
+    private final ProdutoRepositoryPort repository;
 
-    public AtualizarProdutoUseCase(ProdutoRepository repository) {
+    public AtualizarProdutoUseCase(ProdutoRepositoryPort repository) {
         this.repository = repository;
     }
 
@@ -35,7 +35,7 @@ public class AtualizarProdutoUseCase {
                 catalogo != null ? catalogo : produtoExistente.getCatalogo(),
                 valorVenda != null ? valorVenda : produtoExistente.getValorVenda().getValue(),
                 imagemUrl != null ? imagemUrl : (produtoExistente.getImagemUrl() != null ? produtoExistente.getImagemUrl().getValue() : null),
-                produtoExistente.getIdFornecedor()
+                produtoExistente.getIdMarca()
         );
         
         return Optional.of(repository.atualizarProduto(produtoAtualizado));

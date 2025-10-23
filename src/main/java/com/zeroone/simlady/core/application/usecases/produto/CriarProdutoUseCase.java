@@ -1,12 +1,12 @@
 package com.zeroone.simlady.core.application.usecases.produto;
 
-import com.zeroone.simlady.core.application.ports.ProdutoRepository;
+import com.zeroone.simlady.core.application.ports.ProdutoRepositoryPort;
 import com.zeroone.simlady.core.domain.produto.Produto;
 
 public class CriarProdutoUseCase {
-    private final ProdutoRepository repository;
+    private final ProdutoRepositoryPort repository;
 
-    public CriarProdutoUseCase(ProdutoRepository repository) {
+    public CriarProdutoUseCase(ProdutoRepositoryPort repository) {
         this.repository = repository;
     }
 

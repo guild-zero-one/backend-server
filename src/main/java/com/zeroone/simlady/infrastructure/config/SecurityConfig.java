@@ -1,11 +1,12 @@
 package com.zeroone.simlady.infrastructure.config;
 
-import com.zeroone.simlady.core.application.usecases.security.AutenticarUsuarioSecurityUseCase;
-import com.zeroone.simlady.core.application.usecases.security.CarregarUsuarioPorUsernameUseCase;
-import com.zeroone.simlady.core.application.usecases.security.ExtrairIdUsuarioUseCase;
-import com.zeroone.simlady.core.application.usecases.security.GerarTokenUseCase;
-import com.zeroone.simlady.core.application.usecases.security.ValidarTokenUseCase;
-import com.zeroone.simlady.infrastructure.adapters.AutenticacaoAdapter;
+import com.zeroone.simlady.core.application.ports.TokenRepositoryPort;
+import com.zeroone.simlady.infrastructure.security.AutenticarUsuarioSecurityUseCase;
+import com.zeroone.simlady.infrastructure.security.CarregarUsuarioPorUsernameUseCase;
+import com.zeroone.simlady.infrastructure.security.ExtrairIdUsuarioUseCase;
+import com.zeroone.simlady.infrastructure.security.GerarTokenUseCase;
+import com.zeroone.simlady.infrastructure.security.ValidarTokenUseCase;
+import com.zeroone.simlady.infrastructure.adapters.AutenticacaoRepositoryAdapter;
 import com.zeroone.simlady.infrastructure.adapters.JwtTokenValidatorAdapter;
 import com.zeroone.simlady.infrastructure.persistance.adapter.UsuarioJpaAdapter;
 import org.springframework.context.annotation.Bean;
@@ -53,38 +54,38 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AutenticacaoAdapter autenticacaoAdapter(UsuarioJpaAdapter usuarioRepository, PasswordEncoder passwordEncoder) {
-        return new AutenticacaoAdapter(usuarioRepository, passwordEncoder);
+    public AutenticacaoRepositoryAdapter autenticacaoAdapter(UsuarioJpaAdapter usuarioRepository, PasswordEncoder passwordEncoder) {
+        return new AutenticacaoRepositoryAdapter(usuarioRepository, passwordEncoder);
     }
 
     @Bean
-    public JwtTokenValidatorAdapter jwtTokenValidatorAdapter() {
-        return new JwtTokenValidatorAdapter();
+    public JwtTokenValidatorAdapter jwtTokenValidatorAdapter(TokenRepositoryPort tokenRepositoryPort) {
+        return new JwtTokenValidatorAdapter(tokenRepositoryPort);
     }
 
     @Bean
-    public ValidarTokenUseCase validarTokenUseCase(JwtTokenValidatorAdapter validatorAdapter) {
-        return new ValidarTokenUseCase(validatorAdapter);
+    public ValidarTokenUseCase validarTokenUseCase(TokenRepositoryPort tokenRepositoryPort) {
+        return new ValidarTokenUseCase(tokenRepositoryPort);
     }
 
     @Bean
-    public AutenticarUsuarioSecurityUseCase autenticarUsuarioSecurityUseCase(AutenticacaoAdapter autenticacaoAdapter) {
+    public AutenticarUsuarioSecurityUseCase autenticarUsuarioSecurityUseCase(AutenticacaoRepositoryAdapter autenticacaoAdapter) {
         return new AutenticarUsuarioSecurityUseCase(autenticacaoAdapter);
     }
 
     @Bean
-    public CarregarUsuarioPorUsernameUseCase carregarUsuarioPorUsernameUseCase(AutenticacaoAdapter autenticacaoAdapter) {
+    public CarregarUsuarioPorUsernameUseCase carregarUsuarioPorUsernameUseCase(AutenticacaoRepositoryAdapter autenticacaoAdapter) {
         return new CarregarUsuarioPorUsernameUseCase(autenticacaoAdapter);
     }
 
     @Bean
-    public ExtrairIdUsuarioUseCase extrairIdUsuarioUseCase(com.zeroone.simlady.core.domain.services.TokenExtractionService tokenExtractionService) {
-        return new ExtrairIdUsuarioUseCase(tokenExtractionService);
+    public ExtrairIdUsuarioUseCase extrairIdUsuarioUseCase(TokenRepositoryPort tokenRepositoryPort) {
+        return new ExtrairIdUsuarioUseCase(tokenRepositoryPort);
     }
 
     @Bean
-    public GerarTokenUseCase gerarTokenUseCase(com.zeroone.simlady.core.domain.services.TokenGenerationService tokenGenerationService) {
-        return new GerarTokenUseCase(tokenGenerationService);
+    public GerarTokenUseCase gerarTokenUseCase(TokenRepositoryPort tokenRepositoryPort) {
+        return new GerarTokenUseCase(tokenRepositoryPort);
     }
 
     @Bean

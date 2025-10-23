@@ -25,7 +25,7 @@ public class ProdutoMapper {
                 produto.getCatalogo(),
                 produto.getValorVenda().getValue(),
                 produto.getImagemUrl() != null ? produto.getImagemUrl().getValue() : null,
-                produto.getIdFornecedor(),
+                produto.getIdMarca(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
@@ -43,7 +43,7 @@ public class ProdutoMapper {
                 entity.getCatalogo(),
                 entity.getValorVenda(),
                 entity.getImagemUrl(),
-                entity.getIdFornecedor()
+                entity.getIdMarca()
         );
     }
 
@@ -77,7 +77,7 @@ public class ProdutoMapper {
                 dto.getCatalogo() != null ? dto.getCatalogo() : produtoExistente.getCatalogo(),
                 dto.getValorVenda() != null ? dto.getValorVenda() : produtoExistente.getValorVenda().getValue(),
                 dto.getImagemUrl() != null ? dto.getImagemUrl() : produtoExistente.getImagemUrl().getValue(),
-                produtoExistente.getIdFornecedor()
+                produtoExistente.getIdMarca()
         );
     }
 

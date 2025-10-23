@@ -16,5 +16,5 @@ public interface ProdutoRepositoryImpl extends JpaRepository<ProdutoEntity, UUID
     
     Page<ProdutoEntity> findByCatalogo(Boolean catalogo, Pageable pageable);
     
-    Page<ProdutoEntity> findByIdFornecedor(UUID idFornecedor, Pageable pageable);
+    Page<ProdutoEntity> findByIdMarca(UUID idMarca, Pageable pageable);
 }

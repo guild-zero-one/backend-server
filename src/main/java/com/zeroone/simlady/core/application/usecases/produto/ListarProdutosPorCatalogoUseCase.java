@@ -1,13 +1,13 @@
 package com.zeroone.simlady.core.application.usecases.produto;
 
-import com.zeroone.simlady.core.application.ports.ProdutoRepository;
+import com.zeroone.simlady.core.application.ports.ProdutoRepositoryPort;
 import com.zeroone.simlady.core.domain.produto.Produto;
 import org.springframework.data.domain.Page;
 
 public class ListarProdutosPorCatalogoUseCase {
-    private final ProdutoRepository repository;
+    private final ProdutoRepositoryPort repository;
 
-    public ListarProdutosPorCatalogoUseCase(ProdutoRepository repository) {
+    public ListarProdutosPorCatalogoUseCase(ProdutoRepositoryPort repository) {
         this.repository = repository;
     }
 

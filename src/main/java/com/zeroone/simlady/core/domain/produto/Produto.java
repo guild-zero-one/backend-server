@@ -1,6 +1,6 @@
 package com.zeroone.simlady.core.domain.produto;
 
-import com.zeroone.simlady.core.domain.produto.produtoVOs.ImagemUrl;
+import com.zeroone.simlady.core.domain.valueObjects.ImagemUrl;
 import com.zeroone.simlady.core.domain.produto.produtoVOs.Sku;
 import com.zeroone.simlady.core.domain.produto.produtoVOs.ValorVenda;
 import com.zeroone.simlady.core.domain.valueObjects.Descricao;
@@ -30,21 +30,21 @@ public class Produto {
     
     private ImagemUrl imagemUrl;
     
-    private UUID idFornecedor;
+    private UUID idMarca;
 
-    public static Produto of(UUID id, String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl, UUID idFornecedor) {
+    public static Produto of(UUID id, String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl, UUID idMarca) {
         return new Produto(
                 id,
                 nome,
                 Sku.of(sku),
-                Descricao.of(descricao),
+                (descricao != null && !descricao.isBlank()) ? Descricao.of(descricao) : null,
                 tag,
                 Quantidade.of(quantidade),
                 PrecoUnitario.of(precoUnitario),
                 catalogo,
                 ValorVenda.of(valorVenda),
                 (imagemUrl != null && !imagemUrl.isBlank()) ? ImagemUrl.of(imagemUrl) : null,
-                idFornecedor
+                idMarca
         );
     }
 
@@ -52,7 +52,7 @@ public class Produto {
         return Produto.of(UUID.randomUUID(), nome, sku, descricao, tag, quantidade, precoUnitario, catalogo, valorVenda, imagemUrl, null);
     }
 
-    private Produto(UUID id, String nome, Sku sku, Descricao descricao, String tag, Quantidade quantidade, PrecoUnitario precoUnitario, Boolean catalogo, ValorVenda valorVenda, ImagemUrl imagemUrl, UUID idFornecedor) {
+    private Produto(UUID id, String nome, Sku sku, Descricao descricao, String tag, Quantidade quantidade, PrecoUnitario precoUnitario, Boolean catalogo, ValorVenda valorVenda, ImagemUrl imagemUrl, UUID idMarca) {
         this.id = id;
         this.nome = nome;
         this.sku = sku;
@@ -63,7 +63,7 @@ public class Produto {
         this.catalogo = catalogo;
         this.valorVenda = valorVenda;
         this.imagemUrl = imagemUrl;
-        this.idFornecedor = idFornecedor;
+        this.idMarca = idMarca;
     }
 
     public Produto() {
@@ -109,8 +109,8 @@ public class Produto {
         return imagemUrl;
     }
     
-    public UUID getIdFornecedor() {
-        return idFornecedor;
+    public UUID getIdMarca() {
+        return idMarca;
     }
 
     public boolean estaDisponivel() {

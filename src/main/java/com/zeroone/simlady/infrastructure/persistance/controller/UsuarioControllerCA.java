@@ -4,8 +4,14 @@ import com.zeroone.simlady.core.adapters.dtos.usuario.*;
 import com.zeroone.simlady.infrastructure.persistance.mapper.UsuarioMapper;
 import com.zeroone.simlady.core.application.usecases.usuario.*;
 import com.zeroone.simlady.core.domain.usuario.Usuario;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,8 +23,9 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/usuariosCA")
+@RequestMapping("/usuarios")
 @RequiredArgsConstructor
+@Tag(name = "UsuáriosCA", description = "API para gerenciamento de usuários")
 public class UsuarioControllerCA {
 
     private final CadastrarUsuarioUseCase cadastrarUsuarioUseCase;
@@ -33,15 +40,25 @@ public class UsuarioControllerCA {
     private final ListarClientesUseCase listarClientesUseCase;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDto> cadastrarUsuario(@RequestBody UsuarioCreateRequestDto request) {
+    @Operation(summary = "Cadastrar novo usuário", description = "Cria um novo usuário no sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    public ResponseEntity<UsuarioResponseDto> cadastrarUsuario(@Valid @RequestBody UsuarioCreateRequestDto request) {
         Usuario usuario = UsuarioMapper.toDomain(request);
         Usuario usuarioSalvo = cadastrarUsuarioUseCase.executar(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponseDto(usuarioSalvo));
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Autenticar usuário", description = "Realiza login do usuário e retorna token de autenticação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    })
     public ResponseEntity<UsuarioTokenResponseDto> autenticarUsuario(
-            @RequestBody UsuarioLoginRequestDto request,
+            @Valid @RequestBody UsuarioLoginRequestDto request,
             HttpServletResponse response) {
         Usuario usuario = UsuarioMapper.toDomain(request);
         String token = autenticarUsuarioUseCase.executar(usuario, response);
@@ -53,6 +70,8 @@ public class UsuarioControllerCA {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout do usuário", description = "Realiza logout do usuário removendo o token de autenticação")
+    @ApiResponse(responseCode = "204", description = "Logout realizado com sucesso")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("token", "")
                 .path("/")
@@ -65,39 +84,73 @@ public class UsuarioControllerCA {
     }
 
     @GetMapping("/autenticado")
+    @Operation(summary = "Buscar usuário autenticado", description = "Retorna os dados do usuário atualmente autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "401", description = "Não autenticado")
+    })
     public ResponseEntity<UsuarioResponseDto> buscarUsuarioAutenticado(HttpServletRequest request) {
         Usuario usuario = buscarUsuarioAutenticadoUseCase.executar(request);
         return ResponseEntity.ok(UsuarioMapper.toResponseDto(usuario));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDto> buscarPorId(@PathVariable UUID id) {
+    @Operation(summary = "Buscar usuário por ID", description = "Retorna os dados de um usuário específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<UsuarioResponseDto> buscarPorId(
+            @Parameter(description = "ID único do usuário") @PathVariable UUID id) {
         Usuario usuario = buscarUsuarioPorIdUseCase.executar(id);
         return ResponseEntity.ok(UsuarioMapper.toResponseDto(usuario));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar usuário", description = "Atualiza os dados de um usuário existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
     public ResponseEntity<UsuarioResponseDto> atualizarUsuario(
-            @PathVariable UUID id, 
-            @RequestBody UsuarioUpdateRequestDto request) {
+            @Parameter(description = "ID único do usuário") @PathVariable UUID id, 
+            @Valid @RequestBody UsuarioUpdateRequestDto request) {
         Usuario usuarioAtualizado = UsuarioMapper.toDomain(request);
         Usuario usuarioSalvo = atualizarUsuarioUseCase.executar(id, usuarioAtualizado);
         return ResponseEntity.ok(UsuarioMapper.toResponseDto(usuarioSalvo));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarUsuario(@PathVariable UUID id) {
+    @Operation(summary = "Deletar usuário", description = "Remove um usuário do sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<Void> deletarUsuario(
+            @Parameter(description = "ID único do usuário") @PathVariable UUID id) {
         deletarUsuarioUseCase.executar(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/desativar")
-    public ResponseEntity<Void> desativarUsuario(@PathVariable UUID id) {
+    @Operation(summary = "Desativar usuário", description = "Desativa um usuário sem removê-lo do sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Usuário desativado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    })
+    public ResponseEntity<Void> desativarUsuario(
+            @Parameter(description = "ID único do usuário") @PathVariable UUID id) {
         desativarUsuarioUseCase.executar(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista com todos os usuários do sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Nenhum usuário encontrado")
+    })
     public ResponseEntity<List<UsuarioResponseDto>> listarUsuarios() {
         List<Usuario> usuarios = listarUsuariosUseCase.executar();
         
@@ -112,6 +165,11 @@ public class UsuarioControllerCA {
     }
 
     @GetMapping("/clientes")
+    @Operation(summary = "Listar clientes", description = "Retorna uma lista com todos os clientes do sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
+    })
     public ResponseEntity<List<UsuarioClienteResponseDto>> listarClientes() {
         List<Usuario> clientes = listarClientesUseCase.executar();
         
@@ -126,7 +184,13 @@ public class UsuarioControllerCA {
     }
 
     @GetMapping("/clientes/{id}")
-    public ResponseEntity<UsuarioClienteResponseDto> buscarClientePorId(@PathVariable UUID id) {
+    @Operation(summary = "Buscar cliente por ID", description = "Retorna os dados de um cliente específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
+    public ResponseEntity<UsuarioClienteResponseDto> buscarClientePorId(
+            @Parameter(description = "ID único do cliente") @PathVariable UUID id) {
         Usuario cliente = buscarUsuarioPorIdUseCase.executar(id);
         return ResponseEntity.ok(UsuarioMapper.toClienteResponseDto(cliente));
     }

@@ -2,7 +2,7 @@ package com.zeroone.simlady.infrastructure.config;
 
 import com.zeroone.simlady.core.application.usecases.pedido.*;
 import com.zeroone.simlady.infrastructure.persistance.adapter.PedidoJpaAdapter;
-import com.zeroone.simlady.infrastructure.persistance.adapter.ProdutoJpaAdapter;
+import com.zeroone.simlady.infrastructure.persistance.adapter.ProdutoJpaAdapterPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class PedidoConfig {
 
     @Bean
-    public CriarPedidoUseCase criarPedidoUseCase(PedidoJpaAdapter adapter, ProdutoJpaAdapter produtoAdapter) {
+    public CriarPedidoUseCase criarPedidoUseCase(PedidoJpaAdapter adapter, ProdutoJpaAdapterPort produtoAdapter) {
         return new CriarPedidoUseCase(adapter, produtoAdapter);
     }
 

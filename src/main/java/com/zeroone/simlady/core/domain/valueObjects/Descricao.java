@@ -7,14 +7,14 @@ public class Descricao {
     private static final Pattern DESCRICAO_REGEX = Pattern.compile("^.{3,60}$");
 
     public static Descricao of(String value){
-        if (!isDescricaoValid(value)){
+        if (value == null || !isDescricaoValid(value)){
             throw new IllegalArgumentException("Descrição Inválida: " + value);
         }
         return new Descricao(value);
     }
 
     private static Boolean isDescricaoValid(String value){
-        return DESCRICAO_REGEX.matcher(value).matches();
+        return value != null && DESCRICAO_REGEX.matcher(value).matches();
     }
 
     private Descricao(String value) {

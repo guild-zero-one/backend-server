@@ -2,6 +2,7 @@ package com.zeroone.simlady.core.application.usecases.pedido;
 
 import com.zeroone.simlady.core.application.ports.PedidoRepositoryPort;
 import com.zeroone.simlady.core.domain.pedido.Pedido;
+import com.zeroone.simlady.infrastructure.exception.ResourceNotFoundException;
 
 import java.util.UUID;
 
@@ -14,6 +15,6 @@ public class BuscarPedidoPorIdUseCase {
 
     public Pedido executar(UUID id) {
         return repository.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + id));
     }
 }

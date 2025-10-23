@@ -1,16 +1,16 @@
 package com.zeroone.simlady.core.application.usecases.usuario;
 
 import com.zeroone.simlady.core.application.ports.UsuarioRepositoryPort;
-import com.zeroone.simlady.core.application.ports.GeradorTokenJwtPort;
 import com.zeroone.simlady.core.domain.usuario.Usuario;
+import com.zeroone.simlady.infrastructure.adapters.JwtTokenAdapter;
 import com.zeroone.simlady.infrastructure.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class AutenticarUsuarioUseCase {
     private final UsuarioRepositoryPort repository;
-    private final GeradorTokenJwtPort geradorToken;
+    private final JwtTokenAdapter geradorToken;
 
-    public AutenticarUsuarioUseCase(UsuarioRepositoryPort repository, GeradorTokenJwtPort geradorToken) {
+    public AutenticarUsuarioUseCase(UsuarioRepositoryPort repository, JwtTokenAdapter geradorToken) {
         this.repository = repository;
         this.geradorToken = geradorToken;
     }

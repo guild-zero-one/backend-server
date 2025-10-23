@@ -1,7 +1,7 @@
 package com.zeroone.simlady.infrastructure.config;
 
 import com.zeroone.simlady.core.application.usecases.produto.*;
-import com.zeroone.simlady.infrastructure.persistance.adapter.ProdutoJpaAdapter;
+import com.zeroone.simlady.infrastructure.persistance.adapter.ProdutoJpaAdapterPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,47 +9,47 @@ import org.springframework.context.annotation.Configuration;
 public class ProdutoConfig {
 
     @Bean
-    public CriarProdutoUseCase criarProdutoUseCase(ProdutoJpaAdapter adapter) {
+    public CriarProdutoUseCase criarProdutoUseCase(ProdutoJpaAdapterPort adapter) {
         return new CriarProdutoUseCase(adapter);
     }
 
     @Bean
-    public BuscarProdutoPorIdUseCase buscarProdutoPorIdUseCase(ProdutoJpaAdapter adapter) {
+    public BuscarProdutoPorIdUseCase buscarProdutoPorIdUseCase(ProdutoJpaAdapterPort adapter) {
         return new BuscarProdutoPorIdUseCase(adapter);
     }
 
     @Bean
-    public ListarProdutoUseCase listarProdutoUseCase(ProdutoJpaAdapter adapter) {
+    public ListarProdutoUseCase listarProdutoUseCase(ProdutoJpaAdapterPort adapter) {
         return new ListarProdutoUseCase(adapter);
     }
 
     @Bean
-    public AtualizarProdutoUseCase atualizarProdutoUseCase(ProdutoJpaAdapter adapter) {
+    public AtualizarProdutoUseCase atualizarProdutoUseCase(ProdutoJpaAdapterPort adapter) {
         return new AtualizarProdutoUseCase(adapter);
     }
 
     @Bean
-    public DeletarProdutoPorIdUseCase deletarProdutoPorIdUseCase(ProdutoJpaAdapter adapter) {
+    public DeletarProdutoPorIdUseCase deletarProdutoPorIdUseCase(ProdutoJpaAdapterPort adapter) {
         return new DeletarProdutoPorIdUseCase(adapter);
     }
 
     @Bean
-    public BuscarProdutoPorSkuUseCase buscarProdutoPorSkuUseCase(ProdutoJpaAdapter adapter) {
+    public BuscarProdutoPorSkuUseCase buscarProdutoPorSkuUseCase(ProdutoJpaAdapterPort adapter) {
         return new BuscarProdutoPorSkuUseCase(adapter);
     }
 
     @Bean
-    public ListarProdutosPorFornecedorUseCase listarProdutosPorFornecedorUseCase(ProdutoJpaAdapter adapter) {
-        return new ListarProdutosPorFornecedorUseCase(adapter);
+    public ListarProdutosPorMarcaUseCase listarProdutosPorMarcaUseCase(ProdutoJpaAdapterPort adapter) {
+        return new ListarProdutosPorMarcaUseCase(adapter);
     }
 
     @Bean
-    public ListarProdutosPorCatalogoUseCase listarProdutosPorCatalogoUseCase(ProdutoJpaAdapter adapter) {
+    public ListarProdutosPorCatalogoUseCase listarProdutosPorCatalogoUseCase(ProdutoJpaAdapterPort adapter) {
         return new ListarProdutosPorCatalogoUseCase(adapter);
     }
 
     @Bean
-    public AlterarStatusCatalogoUseCase alterarStatusCatalogoUseCase(ProdutoJpaAdapter adapter) {
+    public AlterarStatusCatalogoUseCase alterarStatusCatalogoUseCase(ProdutoJpaAdapterPort adapter) {
         return new AlterarStatusCatalogoUseCase(adapter);
     }
 }

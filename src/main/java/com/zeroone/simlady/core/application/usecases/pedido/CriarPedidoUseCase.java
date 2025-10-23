@@ -1,7 +1,7 @@
 package com.zeroone.simlady.core.application.usecases.pedido;
 
 import com.zeroone.simlady.core.application.ports.PedidoRepositoryPort;
-import com.zeroone.simlady.core.application.ports.ProdutoRepository;
+import com.zeroone.simlady.core.application.ports.ProdutoRepositoryPort;
 import com.zeroone.simlady.core.domain.pedido.Pedido;
 import com.zeroone.simlady.core.domain.pedido.PedidoItem;
 import com.zeroone.simlady.infrastructure.exception.ResourceNotFoundException;
@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public class CriarPedidoUseCase {
     private final PedidoRepositoryPort repository;
-    private final ProdutoRepository produtoRepository;
+    private final ProdutoRepositoryPort produtoRepositoryPort;
 
-    public CriarPedidoUseCase(PedidoRepositoryPort repository, ProdutoRepository produtoRepository) {
+    public CriarPedidoUseCase(PedidoRepositoryPort repository, ProdutoRepositoryPort produtoRepositoryPort) {
         this.repository = repository;
-        this.produtoRepository = produtoRepository;
+        this.produtoRepositoryPort = produtoRepositoryPort;
     }
 
     public Pedido executar(UUID idVenda, UUID idUsuario, List<PedidoItem> itens) {
@@ -25,7 +25,7 @@ public class CriarPedidoUseCase {
             for (PedidoItem item : itens) {
                 UUID idProduto = item.getIdProduto();
                 
-                if (!produtoRepository.buscarPorId(idProduto).isPresent()) {
+                if (!produtoRepositoryPort.buscarPorId(idProduto).isPresent()) {
                     throw new ResourceNotFoundException("Produto não encontrado com ID: " + idProduto);
                 }
                 

@@ -1,20 +1,33 @@
 package com.zeroone.simlady.infrastructure.adapters;
 
-import com.zeroone.simlady.core.application.ports.GeradorTokenJwtPort;
-import com.zeroone.simlady.core.application.usecases.security.GerarTokenUseCase;
+import com.zeroone.simlady.core.application.ports.TokenRepositoryPort;
 import com.zeroone.simlady.core.domain.usuario.Usuario;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenAdapter implements GeradorTokenJwtPort {
+public class JwtTokenAdapter {
     
-    private final GerarTokenUseCase gerarTokenUseCase;
+    private final TokenRepositoryPort tokenRepositoryPort;
+    
+    @Value("${jwt.validity}")
+    private long jwtTokenValidity;
 
-    @Override
     public String gerarToken(Usuario usuario, HttpServletResponse response) {
-        return gerarTokenUseCase.executar(usuario, response);
+        String token = tokenRepositoryPort.gerarToken(usuario);
+        
+        // Adiciona o token como cookie
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge((int) jwtTokenValidity);
+        response.addCookie(cookie);
+        
+        return token;
     }
 }
