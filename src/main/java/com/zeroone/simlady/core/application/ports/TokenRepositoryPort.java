@@ -10,5 +10,7 @@ public interface TokenRepositoryPort {
     
     UUID extrairIdUsuario(String token);
     
+    String extrairEmailDoToken(String token);
+    
     boolean validarToken(String token);
 }

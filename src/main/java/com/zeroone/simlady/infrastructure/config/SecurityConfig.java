@@ -6,6 +6,7 @@ import com.zeroone.simlady.infrastructure.security.CarregarUsuarioPorUsernameUse
 import com.zeroone.simlady.infrastructure.security.ExtrairIdUsuarioUseCase;
 import com.zeroone.simlady.infrastructure.security.GerarTokenUseCase;
 import com.zeroone.simlady.infrastructure.security.ValidarTokenUseCase;
+import com.zeroone.simlady.infrastructure.security.JwtAuthenticationFilter;
 import com.zeroone.simlady.infrastructure.adapters.AutenticacaoRepositoryAdapter;
 import com.zeroone.simlady.infrastructure.adapters.JwtTokenValidatorAdapter;
 import com.zeroone.simlady.infrastructure.persistance.adapter.UsuarioJpaAdapter;
@@ -89,16 +90,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
+                .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(SWAGGER_URLS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuariosCA").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuariosCA/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuariosCA/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

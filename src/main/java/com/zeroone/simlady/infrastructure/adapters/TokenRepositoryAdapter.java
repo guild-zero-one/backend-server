@@ -54,6 +54,17 @@ public class TokenRepositoryAdapter implements TokenRepositoryPort {
     }
 
     @Override
+    public String extrairEmailDoToken(String token) {
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            return claims.get("email", String.class);
+        } catch (Exception e) {
+            log.error("Erro ao extrair email do token: {}", e.getMessage());
+            throw new IllegalArgumentException("Token inválido ou expirado", e);
+        }
+    }
+
+    @Override
     public boolean validarToken(String token) {
         try {
             getAllClaimsFromToken(token);

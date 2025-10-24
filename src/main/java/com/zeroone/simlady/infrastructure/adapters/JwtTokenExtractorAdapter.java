@@ -22,6 +22,10 @@ public class JwtTokenExtractorAdapter {
         return tokenRepositoryPort.extrairIdUsuario(token);
     }
     
+    public String extrairEmailDoToken(String token) {
+        return tokenRepositoryPort.extrairEmailDoToken(token);
+    }
+    
     private String extrairTokenDoRequest(HttpServletRequest request) {
         // Extrair token dos cookies
         Cookie[] cookies = request.getCookies();
