@@ -74,4 +74,9 @@ public class PedidoJpaAdapter implements PedidoRepositoryPort {
         Page<PedidoEntity> pageEntity = repository.findByIdVenda(idVenda, pageable);
         return pageEntity.map(PedidoMapper::toDomain);
     }
+
+    @Override
+    public long contarPedidosPorUsuario(UUID idUsuario) {
+        return repository.countByIdUsuario(idUsuario);
+    }
 }

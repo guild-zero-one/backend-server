@@ -15,4 +15,5 @@ public interface PedidoRepositoryPort {
     Page<Pedido> listarPorUsuario(UUID idUsuario, int pagina, int tamanho);
     Page<Pedido> listarPorStatus(String status, int pagina, int tamanho);
     Page<Pedido> listarPorVenda(UUID idVenda, int pagina, int tamanho);
+    long contarPedidosPorUsuario(UUID idUsuario);
 }

@@ -4,15 +4,17 @@ import com.zeroone.simlady.core.application.usecases.usuario.*;
 import com.zeroone.simlady.infrastructure.adapters.JwtTokenAdapter;
 import com.zeroone.simlady.infrastructure.adapters.JwtTokenExtractorAdapter;
 import com.zeroone.simlady.infrastructure.persistance.adapter.UsuarioJpaAdapter;
+import com.zeroone.simlady.infrastructure.security.AutenticarUsuarioSecurityUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class UsuarioConfig {
 
     @Bean
-    public CadastrarUsuarioUseCase cadastrarUsuarioUseCase(UsuarioJpaAdapter adapter) {
-        return new CadastrarUsuarioUseCase(adapter);
+    public CadastrarUsuarioUseCase cadastrarUsuarioUseCase(UsuarioJpaAdapter adapter, PasswordEncoder passwordEncoder) {
+        return new CadastrarUsuarioUseCase(adapter, passwordEncoder);
     }
 
     @Bean
@@ -51,8 +53,8 @@ public class UsuarioConfig {
     }
 
     @Bean
-    public AutenticarUsuarioUseCase autenticarUsuarioUseCase(UsuarioJpaAdapter adapter, JwtTokenAdapter jwtAdapter) {
-        return new AutenticarUsuarioUseCase(adapter, jwtAdapter);
+    public AutenticarUsuarioUseCase autenticarUsuarioUseCase(UsuarioJpaAdapter adapter, JwtTokenAdapter jwtAdapter, AutenticarUsuarioSecurityUseCase autenticacaoSecurity) {
+        return new AutenticarUsuarioUseCase(adapter, jwtAdapter, autenticacaoSecurity);
     }
 
     @Bean

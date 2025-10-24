@@ -1,10 +1,17 @@
 package com.zeroone.simlady.infrastructure.persistance.mapper;
 
 import com.zeroone.simlady.core.adapters.dtos.usuario.*;
+import com.zeroone.simlady.core.application.ports.PedidoRepositoryPort;
 import com.zeroone.simlady.core.domain.usuario.Usuario;
 import com.zeroone.simlady.infrastructure.persistance.entity.UsuarioEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class UsuarioMapper {
+
+    private final PedidoRepositoryPort pedidoRepositoryPort;
     
     // Mapeamento Entity <-> Domain
     public static Usuario toDomain(UsuarioEntity entity) {
@@ -148,7 +155,35 @@ public class UsuarioMapper {
                 usuario.getSobrenome(),
                 usuario.getEmail(),
                 usuario.getCelular(),
+                usuario.getAtivo(),
+                usuario.getPermissao() != null ? usuario.getPermissao().name() : null,
+                0, 
                 usuario.getCriadoEm()
         );
+    }
+    
+    public UsuarioClienteResponseDto toClienteResponseDtoComPedidos(Usuario usuario) {
+        if (usuario == null) {
+            return null;
+        }
+        
+        Integer qtdPedidos = mapQtdPedidos(usuario);
+        
+        return new UsuarioClienteResponseDto(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getSobrenome(),
+                usuario.getEmail(),
+                usuario.getCelular(),
+                usuario.getAtivo(),
+                usuario.getPermissao() != null ? usuario.getPermissao().name() : null,
+                qtdPedidos,
+                usuario.getCriadoEm()
+        );
+    }
+
+    public Integer mapQtdPedidos(Usuario usuario) {
+        return usuario == null ? 0 : 
+            (int) pedidoRepositoryPort.contarPedidosPorUsuario(usuario.getId());
     }
 }

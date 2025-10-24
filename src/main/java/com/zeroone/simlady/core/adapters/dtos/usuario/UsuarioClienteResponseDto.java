@@ -9,5 +9,8 @@ public record UsuarioClienteResponseDto(
         String sobrenome,
         String email,
         String celular,
+        Boolean ativo,
+        String permissao,
+        Integer qtdPedidos,
         LocalDateTime criadoEm
 ) {}
