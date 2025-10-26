@@ -15,11 +15,11 @@ public class AlterarStatusPedidoUseCase {
     }
 
     public Pedido executar(UUID pedidoId, StatusPedido novoStatus) {
-        Pedido pedido = repository.buscarPorId(pedidoId)
+        // Verificar se o pedido existe
+        repository.buscarPorId(pedidoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + pedidoId));
 
-        pedido.alterarStatus(novoStatus);
-
-        return repository.atualizarPedido(pedido);
+        // Alterar apenas o status, preservando os itens
+        return repository.alterarStatusPedido(pedidoId, novoStatus);
     }
 }

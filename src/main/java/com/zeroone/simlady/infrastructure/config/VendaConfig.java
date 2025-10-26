@@ -1,6 +1,5 @@
 package com.zeroone.simlady.infrastructure.config;
 
-import com.zeroone.simlady.core.application.usecases.pedido.AlterarStatusPedidoUseCase;
 import com.zeroone.simlady.core.application.usecases.venda.*;
 import com.zeroone.simlady.infrastructure.persistance.adapter.VendaJpaAdapter;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class VendaConfig {
 
     @Bean
-    public CriarVendaUseCase criarVendaUseCase(VendaJpaAdapter adapter, AlterarStatusPedidoUseCase alterarStatusPedidoUseCase) {
-        return new CriarVendaUseCase(adapter, alterarStatusPedidoUseCase);
+    public CriarVendaUseCase criarVendaUseCase(VendaJpaAdapter adapter) {
+        return new CriarVendaUseCase(adapter);
     }
 
     @Bean

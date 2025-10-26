@@ -15,9 +15,11 @@ public class CadastrarUsuarioUseCase {
     }
 
     public Usuario executar(Usuario usuario) {
-        // Verifica se já existe um usuário com o mesmo email
-        if (repository.buscarPorEmail(usuario.getEmail()).isPresent()) {
-            throw new ResourceAlreadyExistsException("Usuário já existe com o email: " + usuario.getEmail());
+        // Verifica se já existe um usuário com o mesmo email apenas se o email não for null
+        if (usuario.getEmail() != null && !usuario.getEmail().trim().isEmpty()) {
+            if (repository.buscarPorEmail(usuario.getEmail()).isPresent()) {
+                throw new ResourceAlreadyExistsException("Usuário já existe com o email: " + usuario.getEmail());
+            }
         }
 
         // Criptografar a senha antes de salvar

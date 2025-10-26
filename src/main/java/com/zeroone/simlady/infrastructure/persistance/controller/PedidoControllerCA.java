@@ -1,10 +1,14 @@
 package com.zeroone.simlady.infrastructure.persistance.controller;
 
 import com.zeroone.simlady.core.adapters.dtos.pedido.*;
+import com.zeroone.simlady.core.adapters.dtos.venda.VendaResponseDto;
 import com.zeroone.simlady.core.application.usecases.pedido.*;
+import com.zeroone.simlady.core.application.usecases.mensagem.EnviarPedidoCriadoUseCase;
 import com.zeroone.simlady.core.domain.pedido.Pedido;
 import com.zeroone.simlady.core.domain.pedido.PedidoItem;
+import com.zeroone.simlady.core.domain.venda.Venda;
 import com.zeroone.simlady.infrastructure.persistance.mapper.PedidoMapper;
+import com.zeroone.simlady.infrastructure.persistance.mapper.VendaMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +38,9 @@ public class PedidoControllerCA {
     private final ListarPedidosUseCase listarPedidosUseCase;
     private final ListarPedidosPorStatusUseCase listarPedidosPorStatusUseCase;
     private final AlterarStatusPedidoUseCase alterarStatusPedidoUseCase;
+    private final FinalizarPedidoUseCase finalizarPedidoUseCase;
+    private final EnviarPedidoCriadoUseCase enviarPedidoCriadoUseCase;
+    private final VendaMapper vendaMapper;
 
     @PostMapping
     @Operation(summary = "Criar novo pedido", description = "Cria um novo pedido no sistema")
@@ -49,6 +56,13 @@ public class PedidoControllerCA {
             : new ArrayList<>();
         
         Pedido pedido = criarPedidoUseCase.executar(null, request.idUsuario(), itens);
+        
+        try {
+            enviarPedidoCriadoUseCase.executar(pedido);
+        } catch (Exception e) {
+            System.err.println("Erro ao enviar pedido para RabbitMQ: " + e.getMessage());
+        }
+        
         return ResponseEntity.status(HttpStatus.CREATED).body(PedidoMapper.toResponseDto(pedido));
     }
 
@@ -69,19 +83,27 @@ public class PedidoControllerCA {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pedido atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "409", description = "Estoque insuficiente para atualizar o pedido")
     })
     public ResponseEntity<PedidoResponseDto> atualizarPedido(
             @Parameter(description = "ID único do pedido") @PathVariable UUID id, 
             @Valid @RequestBody PedidoUpdateRequestDto request) {
         Pedido pedidoExistente = buscarPedidoPorIdUseCase.executar(id);
         
+        // Processar os itens do request
+        List<PedidoItem> novosItens = request.itens() != null 
+            ? request.itens().stream()
+                .map(PedidoMapper::toDomain)
+                .toList()
+            : new ArrayList<>();
+        
         Pedido pedidoAtualizado = Pedido.of(
                 pedidoExistente.getId(),
                 pedidoExistente.getStatus(),
                 request.idVenda(),
                 request.idUsuario(),
-                pedidoExistente.getItens(),
+                novosItens,
                 pedidoExistente.getCriadoEm(),
                 pedidoExistente.getAtualizadoEm()
         );
@@ -138,4 +160,22 @@ public class PedidoControllerCA {
         return ResponseEntity.ok(PedidoMapper.toResponseDto(pedido));
     }
 
+    @PostMapping("/{id}/finalizar")
+    @Operation(summary = "Finalizar pedido", description = "Finaliza um pedido, atualiza estoque e cria venda")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pedido finalizado e venda criada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pedido não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos ou estoque insuficiente"),
+            @ApiResponse(responseCode = "409", description = "Pedido não pode ser finalizado")
+    })
+    public ResponseEntity<VendaResponseDto> finalizarPedido(
+            @Parameter(description = "ID único do pedido") @PathVariable UUID id,
+            @Valid @RequestBody FinalizarPedidoRequestDto request) {
+        try {
+            Venda venda = finalizarPedidoUseCase.executar(id, request.desconto(), request.dataVenda());
+            return ResponseEntity.ok(vendaMapper.toResponseDto(venda));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
 }

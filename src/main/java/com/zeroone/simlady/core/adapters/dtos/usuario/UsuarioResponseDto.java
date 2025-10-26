@@ -14,5 +14,6 @@ public record UsuarioResponseDto(
         Boolean ativo,
         Permissao permissao,
         LocalDateTime criadoEm,
-        LocalDateTime atualizadoEm
+        LocalDateTime atualizadoEm,
+        Long qtdPedidos
 ) {}

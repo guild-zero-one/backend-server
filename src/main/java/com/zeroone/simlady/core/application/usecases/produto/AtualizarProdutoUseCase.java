@@ -15,7 +15,7 @@ public class AtualizarProdutoUseCase {
 
     public Optional<Produto> executar(UUID id, String nome, String sku, String descricao, 
                                      String tag, Integer quantidade, Double precoUnitario, 
-                                     Boolean catalogo, Double valorVenda, String imagemUrl) {
+                                     Boolean catalogo, Double valorVenda, String imagemUrl, UUID idMarca) {
         Optional<Produto> produtoOpt = repository.buscarPorId(id);
         
         if (produtoOpt.isEmpty()) {
@@ -35,7 +35,7 @@ public class AtualizarProdutoUseCase {
                 catalogo != null ? catalogo : produtoExistente.getCatalogo(),
                 valorVenda != null ? valorVenda : produtoExistente.getValorVenda().getValue(),
                 imagemUrl != null ? imagemUrl : (produtoExistente.getImagemUrl() != null ? produtoExistente.getImagemUrl().getValue() : null),
-                produtoExistente.getIdMarca()
+                idMarca != null ? idMarca : produtoExistente.getIdMarca()
         );
         
         return Optional.of(repository.atualizarProduto(produtoAtualizado));

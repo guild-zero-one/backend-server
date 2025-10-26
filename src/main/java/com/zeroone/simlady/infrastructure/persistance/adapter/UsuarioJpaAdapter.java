@@ -7,6 +7,8 @@ import com.zeroone.simlady.infrastructure.persistance.entity.UsuarioEntity;
 import com.zeroone.simlady.infrastructure.persistance.mapper.UsuarioMapper;
 import com.zeroone.simlady.infrastructure.persistance.repository.UsuarioRepositoryImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -77,5 +79,19 @@ public class UsuarioJpaAdapter implements UsuarioRepositoryPort {
         return repository.findByAtivoFalse().stream()
                 .map(UsuarioMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Usuario> listarTodos(int pagina, int tamanho) {
+        PageRequest pageRequest = PageRequest.of(pagina, tamanho);
+        return repository.findAll(pageRequest)
+                .map(UsuarioMapper::toDomain);
+    }
+
+    @Override
+    public Page<Usuario> listarPorPermissao(Permissao permissao, int pagina, int tamanho) {
+        PageRequest pageRequest = PageRequest.of(pagina, tamanho);
+        return repository.findByPermissao(permissao, pageRequest)
+                .map(UsuarioMapper::toDomain);
     }
 }

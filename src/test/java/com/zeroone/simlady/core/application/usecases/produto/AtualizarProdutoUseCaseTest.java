@@ -74,7 +74,7 @@ class AtualizarProdutoUseCaseTest {
         Optional<Produto> resultado = atualizarProdutoUseCase.executar(
                 id, novoNome, novoSku, novaDescricao, novaTag, 
                 novaQuantidade, novoPrecoUnitario, novoCatalogo, 
-                novoValorVenda, novaImagemUrl
+                novoValorVenda, novaImagemUrl, null
         );
 
         // Then
@@ -103,7 +103,7 @@ class AtualizarProdutoUseCaseTest {
         // When
         Optional<Produto> resultado = atualizarProdutoUseCase.executar(
                 id, "Novo Nome", "SKU-456", "Nova descrição", "novaTag",
-                20, 150.0, false, 180.0, "http://imagem.com/novo.jpg"
+                20, 150.0, false, 180.0, "http://imagem.com/novo.jpg", null
         );
 
         // Then
@@ -153,7 +153,7 @@ class AtualizarProdutoUseCaseTest {
         // When
         Optional<Produto> resultado = atualizarProdutoUseCase.executar(
                 id, novoNome, null, null, null, 
-                null, null, null, null, null
+                null, null, null, null, null, null
         );
 
         // Then

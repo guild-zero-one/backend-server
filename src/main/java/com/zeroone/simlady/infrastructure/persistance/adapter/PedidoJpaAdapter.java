@@ -6,10 +6,12 @@ import com.zeroone.simlady.core.domain.pedido.StatusPedido;
 import com.zeroone.simlady.infrastructure.persistance.entity.PedidoEntity;
 import com.zeroone.simlady.infrastructure.persistance.mapper.PedidoMapper;
 import com.zeroone.simlady.infrastructure.persistance.repository.PedidoRepositoryImpl;
+import com.zeroone.simlady.infrastructure.persistance.repository.PedidoItemRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class PedidoJpaAdapter implements PedidoRepositoryPort {
 
     private final PedidoRepositoryImpl repository;
+    private final PedidoItemRepositoryImpl itemRepository;
 
     @Override
     public Pedido salvarPedido(Pedido pedido) {
@@ -39,7 +42,15 @@ public class PedidoJpaAdapter implements PedidoRepositoryPort {
     }
 
     @Override
+    @Transactional
     public Pedido atualizarPedido(Pedido pedido) {
+        // Primeiro, deletar todos os itens existentes
+        itemRepository.deleteByPedidoId(pedido.getId());
+        
+        // Forçar flush para garantir que a deleção seja persistida
+        repository.flush();
+        
+        // Criar nova entidade com os dados atualizados
         PedidoEntity entity = PedidoMapper.toEntity(pedido);
         PedidoEntity saved = repository.save(entity);
         return PedidoMapper.toDomain(saved);
@@ -76,7 +87,23 @@ public class PedidoJpaAdapter implements PedidoRepositoryPort {
     }
 
     @Override
+    @Transactional
+    public Pedido alterarStatusPedido(UUID id, StatusPedido novoStatus) {
+        PedidoEntity entity = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        
+        entity.setStatus(novoStatus);
+        PedidoEntity saved = repository.save(entity);
+        return PedidoMapper.toDomain(saved);
+    }
+
+    @Override
     public long contarPedidosPorUsuario(UUID idUsuario) {
         return repository.countByIdUsuario(idUsuario);
+    }
+
+    @Override
+    public long contarPedidosAbertosPorUsuario(UUID idUsuario) {
+        return repository.countByIdUsuarioAndStatus(idUsuario, StatusPedido.PENDENTE);
     }
 }

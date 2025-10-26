@@ -7,6 +7,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class ProdutoRequestDto {
@@ -37,4 +39,6 @@ public class ProdutoRequestDto {
     private Double valorVenda;
     
     private String imagemUrl;
+    
+    private UUID idMarca;
 }

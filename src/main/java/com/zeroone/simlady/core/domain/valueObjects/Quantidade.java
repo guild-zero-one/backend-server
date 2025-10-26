@@ -11,7 +11,7 @@ public class Quantidade {
     }
 
     private static Boolean isQuantidadeValid(Integer value){
-        return value != null && value > 0;
+        return value != null && value >= 0;
     }
 
     private Quantidade(Integer value) {

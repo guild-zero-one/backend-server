@@ -37,7 +37,8 @@ class CriarProdutoUseCaseTest {
                 100.0,
                 true,
                 120.0,
-                "http://imagem.com/produto.jpg"
+                "http://imagem.com/produto.jpg",
+                null
         );
 
         Produto produtoSalvo = Produto.of(
@@ -87,6 +88,7 @@ class CriarProdutoUseCaseTest {
                 100.0,
                 true,
                 120.0,
+                null,
                 null
         );
 

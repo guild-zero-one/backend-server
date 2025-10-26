@@ -7,13 +7,15 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import jakarta.annotation.PostConstruct;
 
 @Configuration
 public class QueueSetup {
 
     public static final String ORDER_CREATED_QUEUE = "simlady-order-created";
     public static final String EXCHANGE_NAME = "simlady-exchange";
+    
+    private RabbitAdmin rabbitAdmin;
 
     @Bean
     public Queue orderCreatedQueue() {
@@ -31,10 +33,11 @@ public class QueueSetup {
     }
 
     @Bean
-    @Lazy
-    public RabbitTemplate rabbitTemplate(org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory, Jackson2JsonMessageConverter jackson2JsonMessageConverter) {
         try {
-            return new RabbitTemplate(connectionFactory);
+            RabbitTemplate template = new RabbitTemplate(connectionFactory);
+            template.setMessageConverter(jackson2JsonMessageConverter);
+            return template;
         } catch (Exception e) {
             System.err.println("Falha ao criar RabbitTemplate: " + e.getMessage());
             return new FallbackRabbitTemplate();
@@ -42,14 +45,10 @@ public class QueueSetup {
     }
 
     @Bean
-    @Lazy
     public RabbitAdmin rabbitAdmin(RabbitTemplate rabbitTemplate) {
         try {
-            RabbitAdmin rabbitAdmin = new RabbitAdmin(rabbitTemplate);
-            rabbitAdmin.declareQueue(orderCreatedQueue());
-            rabbitAdmin.declareExchange(orderCreatedExchange());
-            System.out.println("Fila e Exchange criados com sucesso no RabbitMQ!");
-            return rabbitAdmin;
+            this.rabbitAdmin = new RabbitAdmin(rabbitTemplate);
+            return this.rabbitAdmin;
         } catch (Exception e) {
             System.err.println("Falha ao criar RabbitAdmin: " + e.getMessage());
             return new RabbitAdmin(rabbitTemplate) {
@@ -57,6 +56,28 @@ public class QueueSetup {
                 public void afterPropertiesSet() {
                 }
             };
+        }
+    }
+    
+    @PostConstruct
+    public void initializeQueues() {
+        if (rabbitAdmin != null) {
+            try {
+                rabbitAdmin.declareExchange(orderCreatedExchange());
+                rabbitAdmin.declareQueue(orderCreatedQueue());
+                rabbitAdmin.declareBinding(
+                    new org.springframework.amqp.core.Binding(
+                        ORDER_CREATED_QUEUE,
+                        org.springframework.amqp.core.Binding.DestinationType.QUEUE,
+                        EXCHANGE_NAME,
+                        ORDER_CREATED_QUEUE,
+                        null
+                    )
+                );
+                System.out.println("Fila e Exchange criados com sucesso no RabbitMQ!");
+            } catch (Exception e) {
+                System.err.println("Falha ao inicializar filas: " + e.getMessage());
+            }
         }
     }
 

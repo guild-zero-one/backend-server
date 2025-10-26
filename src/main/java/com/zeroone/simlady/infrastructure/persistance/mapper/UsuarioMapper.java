@@ -107,10 +107,12 @@ public class UsuarioMapper {
     }
     
     // Mapeamento Domain -> Response DTOs
-    public static UsuarioResponseDto toResponseDto(Usuario usuario) {
+    public UsuarioResponseDto toResponseDto(Usuario usuario) {
         if (usuario == null) {
             return null;
         }
+        
+        Long qtdPedidos = mapQtdPedidosAbertos(usuario);
         
         return new UsuarioResponseDto(
                 usuario.getId(),
@@ -121,7 +123,8 @@ public class UsuarioMapper {
                 usuario.getAtivo(),
                 usuario.getPermissao(),
                 usuario.getCriadoEm(),
-                usuario.getAtualizadoEm()
+                usuario.getAtualizadoEm(),
+                qtdPedidos
         );
     }
     
@@ -167,7 +170,7 @@ public class UsuarioMapper {
             return null;
         }
         
-        Integer qtdPedidos = mapQtdPedidos(usuario);
+        Long qtdPedidosAbertos = mapQtdPedidosAbertos(usuario);
         
         return new UsuarioClienteResponseDto(
                 usuario.getId(),
@@ -177,7 +180,7 @@ public class UsuarioMapper {
                 usuario.getCelular(),
                 usuario.getAtivo(),
                 usuario.getPermissao() != null ? usuario.getPermissao().name() : null,
-                qtdPedidos,
+                qtdPedidosAbertos.intValue(),
                 usuario.getCriadoEm()
         );
     }
@@ -185,5 +188,10 @@ public class UsuarioMapper {
     public Integer mapQtdPedidos(Usuario usuario) {
         return usuario == null ? 0 : 
             (int) pedidoRepositoryPort.contarPedidosPorUsuario(usuario.getId());
+    }
+
+    public Long mapQtdPedidosAbertos(Usuario usuario) {
+        return usuario == null ? 0L : 
+            pedidoRepositoryPort.contarPedidosAbertosPorUsuario(usuario.getId());
     }
 }

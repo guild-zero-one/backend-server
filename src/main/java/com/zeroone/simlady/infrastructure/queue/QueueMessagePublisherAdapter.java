@@ -32,6 +32,7 @@ public class QueueMessagePublisherAdapter implements MessagePublisherPort {
             PedidoMensagemDto message = pedidoMensagemMapper.toMessageDto(pedido, usuario);
 
             rabbitTemplate.convertAndSend(
+                    QueueSetup.EXCHANGE_NAME,
                     QueueSetup.ORDER_CREATED_QUEUE,
                     message
             );

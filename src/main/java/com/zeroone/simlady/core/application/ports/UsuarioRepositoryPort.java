@@ -2,6 +2,7 @@ package com.zeroone.simlady.core.application.ports;
 
 import com.zeroone.simlady.core.domain.usuario.Usuario;
 import com.zeroone.simlady.core.domain.usuario.Permissao;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,6 @@ public interface UsuarioRepositoryPort {
     List<Usuario> listarPorPermissao(Permissao permissao);
     List<Usuario> listarAtivos();
     List<Usuario> listarInativos();
+    Page<Usuario> listarTodos(int pagina, int tamanho);
+    Page<Usuario> listarPorPermissao(Permissao permissao, int pagina, int tamanho);
 }

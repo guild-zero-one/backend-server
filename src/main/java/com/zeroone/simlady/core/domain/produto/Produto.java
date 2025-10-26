@@ -48,8 +48,8 @@ public class Produto {
         );
     }
 
-    public static Produto newProduto(String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl) {
-        return Produto.of(UUID.randomUUID(), nome, sku, descricao, tag, quantidade, precoUnitario, catalogo, valorVenda, imagemUrl, null);
+    public static Produto newProduto(String nome, String sku, String descricao, String tag, Integer quantidade, Double precoUnitario, Boolean catalogo, Double valorVenda, String imagemUrl, UUID idMarca) {
+        return Produto.of(UUID.randomUUID(), nome, sku, descricao, tag, quantidade, precoUnitario, catalogo, valorVenda, imagemUrl, idMarca);
     }
 
     private Produto(UUID id, String nome, Sku sku, Descricao descricao, String tag, Quantidade quantidade, PrecoUnitario precoUnitario, Boolean catalogo, ValorVenda valorVenda, ImagemUrl imagemUrl, UUID idMarca) {

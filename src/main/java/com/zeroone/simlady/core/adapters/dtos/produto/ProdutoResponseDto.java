@@ -18,4 +18,5 @@ public class ProdutoResponseDto {
     private Boolean catalogo;
     private Double valorVenda;
     private String imagemUrl;
+    private UUID idMarca;
 }

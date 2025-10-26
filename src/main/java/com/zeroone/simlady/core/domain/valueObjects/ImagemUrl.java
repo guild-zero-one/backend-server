@@ -1,12 +1,6 @@
 package com.zeroone.simlady.core.domain.valueObjects;
 
-import java.util.regex.Pattern;
-
 public class ImagemUrl {
-    private static final Pattern URL_REGEX = Pattern.compile(
-            "^(https?://)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([/\\w \\.-]*)*/?$"
-    );
-
     private final String value;
 
     public static ImagemUrl of(String value) {
@@ -20,7 +14,7 @@ public class ImagemUrl {
         if (value == null || value.isBlank()) {
             return false;
         }
-        return URL_REGEX.matcher(value).matches();
+        return true; // Aceita qualquer URL não vazia
     }
 
     private ImagemUrl(String value) {

@@ -99,7 +99,8 @@ public class ProdutoControllerCA {
                 request.getPrecoUnitario(),
                 request.getCatalogo(),
                 request.getValorVenda(),
-                request.getImagemUrl()
+                request.getImagemUrl(),
+                request.getIdMarca()
         );
         
         if (produto.isEmpty()) {

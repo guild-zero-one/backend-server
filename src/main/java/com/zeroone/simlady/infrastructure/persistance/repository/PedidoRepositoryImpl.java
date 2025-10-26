@@ -25,5 +25,7 @@ public interface PedidoRepositoryImpl extends JpaRepository<PedidoEntity, UUID> 
     
     long countByIdUsuario(UUID idUsuario);
     
+    long countByIdUsuarioAndStatus(UUID idUsuario, StatusPedido status);
+    
     boolean existsByIdUsuario(UUID idUsuario);
 }

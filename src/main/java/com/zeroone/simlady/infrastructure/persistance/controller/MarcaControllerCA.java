@@ -88,8 +88,8 @@ public class MarcaControllerCA {
             @ApiResponse(responseCode = "200", description = "Lista de marcas retornada com sucesso")
     })
     public ResponseEntity<Page<MarcaResponseDto>> listarMarcas(
-            @Parameter(description = "Número da página (inicia em 0)") @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-            @Parameter(description = "Tamanho da página") @RequestParam(value = "size", required = false, defaultValue = "10") int size){
+            @Parameter(description = "Número da página (inicia em 0)") @RequestParam(value = "pagina", required = false, defaultValue = "0") int page,
+            @Parameter(description = "Tamanho da página") @RequestParam(value = "tamanho", required = false, defaultValue = "10") int size){
         Page<Marca> marcas = listarMarcaUseCase.executar(page, size);
         Page<MarcaResponseDto> response = marcas.map(MarcaMapper::toResponseDto);
         return ResponseEntity.ok(response);

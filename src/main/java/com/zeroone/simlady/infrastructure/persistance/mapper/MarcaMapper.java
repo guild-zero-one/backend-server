@@ -10,7 +10,7 @@ public class MarcaMapper {
         return new MarcaEntity(
                 marca.getId(),
                 marca.getNome(),
-                marca.getDescricao().getValue(),
+                marca.getDescricao() != null ? marca.getDescricao().getValue() : null,
                 marca.getImagemUrl() != null ? marca.getImagemUrl().toString() : null,
                 marca.getCriadoEm(),
                 marca.getAtualizadoEm()
@@ -40,7 +40,7 @@ public class MarcaMapper {
         return new MarcaResponseDto(
                 marca.getId(),
                 marca.getNome(),
-                marca.getDescricao().getValue(),
+                marca.getDescricao() != null ? marca.getDescricao().getValue() : null,
                 marca.getImagemUrl() != null ? marca.getImagemUrl().toString() : null,
                 marca.getCriadoEm(),
                 marca.getAtualizadoEm()

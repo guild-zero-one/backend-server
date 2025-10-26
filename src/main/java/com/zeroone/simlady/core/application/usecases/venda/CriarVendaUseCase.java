@@ -1,8 +1,6 @@
 package com.zeroone.simlady.core.application.usecases.venda;
 
 import com.zeroone.simlady.core.application.ports.VendaRepositoryPort;
-import com.zeroone.simlady.core.application.usecases.pedido.AlterarStatusPedidoUseCase;
-import com.zeroone.simlady.core.domain.pedido.StatusPedido;
 import com.zeroone.simlady.core.domain.venda.Venda;
 import com.zeroone.simlady.core.domain.venda.vendaVOs.Desconto;
 import com.zeroone.simlady.core.domain.venda.vendaVOs.ValorTotal;
@@ -13,11 +11,9 @@ import java.util.UUID;
 
 public class CriarVendaUseCase {
     private final VendaRepositoryPort repository;
-    private final AlterarStatusPedidoUseCase alterarStatusPedidoUseCase;
 
-    public CriarVendaUseCase(VendaRepositoryPort repository, AlterarStatusPedidoUseCase alterarStatusPedidoUseCase) {
+    public CriarVendaUseCase(VendaRepositoryPort repository) {
         this.repository = repository;
-        this.alterarStatusPedidoUseCase = alterarStatusPedidoUseCase;
     }
 
     public Venda executar(String valorTotal, String desconto, LocalDate dataVenda, List<UUID> pedidosIds) {
@@ -30,7 +26,6 @@ public class CriarVendaUseCase {
         if (pedidosIds != null) {
             for (UUID pedidoId : pedidosIds) {
                 novaVenda.adicionarPedido(pedidoId);
-                alterarStatusPedidoUseCase.executar(pedidoId, StatusPedido.CONCLUIDO);
             }
         }
         

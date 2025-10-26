@@ -20,8 +20,8 @@ public class PedidoConfig {
     }
 
     @Bean
-    public AtualizarPedidoUseCase atualizarPedidoUseCase(PedidoJpaAdapter adapter) {
-        return new AtualizarPedidoUseCase(adapter);
+    public AtualizarPedidoUseCase atualizarPedidoUseCase(PedidoJpaAdapter adapter, ValidarEstoquePedidoUseCase validarEstoquePedidoUseCase) {
+        return new AtualizarPedidoUseCase(adapter, validarEstoquePedidoUseCase);
     }
 
     @Bean

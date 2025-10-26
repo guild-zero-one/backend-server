@@ -25,7 +25,7 @@ public class UsuarioEntity {
     
     private String sobrenome;
     
-    @Column(nullable = false, unique = true)
+    @Column
     private String email;
     
     @Column(nullable = false)

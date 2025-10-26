@@ -28,6 +28,11 @@ public class Usuario {
         this.permissao = permissao;
         this.criadoEm = criadoEm;
         this.atualizadoEm = atualizadoEm;
+        
+        // Validação: email é obrigatório apenas para usuários ADMIN
+        if (permissao == Permissao.ADMIN && (email == null || email.trim().isEmpty())) {
+            throw new IllegalArgumentException("Email é obrigatório para usuários ADMIN");
+        }
     }
 
     public static Usuario of(UUID id, String nome, String sobrenome, String email, String senha, 
@@ -61,6 +66,8 @@ public class Usuario {
         }
         if (email != null && !email.trim().isEmpty()) {
             this.email = email;
+        } else if (this.permissao == Permissao.ADMIN && (email == null || email.trim().isEmpty())) {
+            throw new IllegalArgumentException("Email é obrigatório para usuários ADMIN");
         }
         if (celular != null && !celular.trim().isEmpty()) {
             this.celular = celular;

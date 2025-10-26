@@ -32,6 +32,11 @@ public class AutenticarUsuarioUseCase {
                 throw new UnauthorizedException("Usuário inativo");
             }
             
+            // Verificar se o usuário é ADMIN - apenas ADMINs podem fazer login
+            if (!usuarioEncontrado.isAdmin()) {
+                throw new UnauthorizedException("Apenas usuários ADMIN podem fazer login");
+            }
+            
             return geradorToken.gerarToken(usuarioEncontrado, response);
         } catch (Exception e) {
             throw new UnauthorizedException("Email ou senha inválidos");

@@ -7,7 +7,6 @@ import com.zeroone.simlady.infrastructure.persistance.entity.PedidoEntity;
 import com.zeroone.simlady.infrastructure.persistance.entity.PedidoItemEntity;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class PedidoMapper {
@@ -67,7 +66,7 @@ public class PedidoMapper {
         }
         
         return PedidoItem.newPedidoItem(
-                UUID.fromString("00000000-0000-0000-0000-" + String.format("%012d", dto.idProduto())),
+                dto.idProduto(),
                 dto.quantidade(),
                 dto.precoUnitario().toString()
         );

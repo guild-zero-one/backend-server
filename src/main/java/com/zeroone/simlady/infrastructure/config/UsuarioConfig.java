@@ -38,6 +38,16 @@ public class UsuarioConfig {
     }
 
     @Bean
+    public ListarUsuariosPaginadoUseCase listarUsuariosPaginadoUseCase(UsuarioJpaAdapter adapter) {
+        return new ListarUsuariosPaginadoUseCase(adapter);
+    }
+
+    @Bean
+    public ListarClientesPaginadoUseCase listarClientesPaginadoUseCase(UsuarioJpaAdapter adapter) {
+        return new ListarClientesPaginadoUseCase(adapter);
+    }
+
+    @Bean
     public AtualizarUsuarioUseCase atualizarUsuarioUseCase(UsuarioJpaAdapter adapter) {
         return new AtualizarUsuarioUseCase(adapter);
     }
@@ -45,6 +55,11 @@ public class UsuarioConfig {
     @Bean
     public DesativarUsuarioUseCase desativarUsuarioUseCase(UsuarioJpaAdapter adapter) {
         return new DesativarUsuarioUseCase(adapter);
+    }
+
+    @Bean
+    public AtivarUsuarioUseCase ativarUsuarioUseCase(UsuarioJpaAdapter adapter) {
+        return new AtivarUsuarioUseCase(adapter);
     }
 
     @Bean

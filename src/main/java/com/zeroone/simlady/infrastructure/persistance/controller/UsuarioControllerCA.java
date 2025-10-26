@@ -13,13 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,8 +36,10 @@ public class UsuarioControllerCA {
     private final AtualizarUsuarioUseCase atualizarUsuarioUseCase;
     private final DeletarUsuarioUseCase deletarUsuarioUseCase;
     private final DesativarUsuarioUseCase desativarUsuarioUseCase;
-    private final ListarUsuariosUseCase listarUsuariosUseCase;
-    private final ListarClientesUseCase listarClientesUseCase;
+    private final AtivarUsuarioUseCase ativarUsuarioUseCase;
+    private final ListarUsuariosPaginadoUseCase listarUsuariosPaginadoUseCase;
+    private final ListarClientesPaginadoUseCase listarClientesPaginadoUseCase;
+    private final UsuarioMapper usuarioMapper;
 
     @PostMapping
     @Operation(summary = "Cadastrar novo usuário", description = "Cria um novo usuário no sistema")
@@ -48,7 +50,7 @@ public class UsuarioControllerCA {
     public ResponseEntity<UsuarioResponseDto> cadastrarUsuario(@Valid @RequestBody UsuarioCreateRequestDto request) {
         Usuario usuario = UsuarioMapper.toDomain(request);
         Usuario usuarioSalvo = cadastrarUsuarioUseCase.executar(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toResponseDto(usuarioSalvo));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioMapper.toResponseDto(usuarioSalvo));
     }
 
     @PostMapping("/login")
@@ -68,6 +70,7 @@ public class UsuarioControllerCA {
         
         return ResponseEntity.ok(UsuarioMapper.toTokenResponseDto(usuarioCompleto, token));
     }
+
 
     @PostMapping("/logout")
     @Operation(summary = "Logout do usuário", description = "Realiza logout do usuário removendo o token de autenticação")
@@ -91,7 +94,7 @@ public class UsuarioControllerCA {
     })
     public ResponseEntity<UsuarioResponseDto> buscarUsuarioAutenticado(HttpServletRequest request) {
         Usuario usuario = buscarUsuarioAutenticadoUseCase.executar(request);
-        return ResponseEntity.ok(UsuarioMapper.toResponseDto(usuario));
+        return ResponseEntity.ok(usuarioMapper.toResponseDto(usuario));
     }
 
     @GetMapping("/{id}")
@@ -103,7 +106,7 @@ public class UsuarioControllerCA {
     public ResponseEntity<UsuarioResponseDto> buscarPorId(
             @Parameter(description = "ID único do usuário") @PathVariable UUID id) {
         Usuario usuario = buscarUsuarioPorIdUseCase.executar(id);
-        return ResponseEntity.ok(UsuarioMapper.toResponseDto(usuario));
+        return ResponseEntity.ok(usuarioMapper.toResponseDto(usuario));
     }
 
     @PutMapping("/{id}")
@@ -118,7 +121,7 @@ public class UsuarioControllerCA {
             @Valid @RequestBody UsuarioUpdateRequestDto request) {
         Usuario usuarioAtualizado = UsuarioMapper.toDomain(request);
         Usuario usuarioSalvo = atualizarUsuarioUseCase.executar(id, usuarioAtualizado);
-        return ResponseEntity.ok(UsuarioMapper.toResponseDto(usuarioSalvo));
+        return ResponseEntity.ok(usuarioMapper.toResponseDto(usuarioSalvo));
     }
 
     @DeleteMapping("/{id}")
@@ -145,41 +148,41 @@ public class UsuarioControllerCA {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    @Operation(summary = "Listar todos os usuários", description = "Retorna uma lista com todos os usuários do sistema")
+    @PatchMapping("/{id}/ativar")
+    @Operation(summary = "Ativar usuário", description = "Ativa um usuário que estava desativado")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso"),
-            @ApiResponse(responseCode = "204", description = "Nenhum usuário encontrado")
+            @ApiResponse(responseCode = "204", description = "Usuário ativado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<List<UsuarioResponseDto>> listarUsuarios() {
-        List<Usuario> usuarios = listarUsuariosUseCase.executar();
-        
-        if(usuarios.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        
-        List<UsuarioResponseDto> response = usuarios.stream()
-                .map(UsuarioMapper::toResponseDto)
-                .toList();
+    public ResponseEntity<Void> ativarUsuario(
+            @Parameter(description = "ID único do usuário") @PathVariable UUID id) {
+        ativarUsuarioUseCase.executar(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @Operation(summary = "Listar usuários", description = "Retorna uma lista paginada de usuários")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso")
+    })
+    public ResponseEntity<Page<UsuarioResponseDto>> listarUsuarios(
+            @Parameter(description = "Número da página (inicia em 0)") @RequestParam(value = "pagina", required = false, defaultValue = "0") int page,
+            @Parameter(description = "Tamanho da página") @RequestParam(value = "tamanho", required = false, defaultValue = "10") int size) {
+        Page<Usuario> usuarios = listarUsuariosPaginadoUseCase.executar(page, size);
+        Page<UsuarioResponseDto> response = usuarios.map(usuarioMapper::toResponseDto);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/clientes")
-    @Operation(summary = "Listar clientes", description = "Retorna uma lista com todos os clientes do sistema")
+    @Operation(summary = "Listar clientes", description = "Retorna uma lista paginada de clientes")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso"),
-            @ApiResponse(responseCode = "204", description = "Nenhum cliente encontrado")
+            @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso")
     })
-    public ResponseEntity<List<UsuarioClienteResponseDto>> listarClientes() {
-        List<Usuario> clientes = listarClientesUseCase.executar();
-        
-        if (clientes.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        
-        List<UsuarioClienteResponseDto> response = clientes.stream()
-                .map(UsuarioMapper::toClienteResponseDto)
-                .toList();
+    public ResponseEntity<Page<UsuarioClienteResponseDto>> listarClientes(
+            @Parameter(description = "Número da página (inicia em 0)") @RequestParam(value = "pagina", required = false, defaultValue = "0") int page,
+            @Parameter(description = "Tamanho da página") @RequestParam(value = "tamanho", required = false, defaultValue = "10") int size) {
+        Page<Usuario> clientes = listarClientesPaginadoUseCase.executar(page, size);
+        Page<UsuarioClienteResponseDto> response = clientes.map(usuarioMapper::toClienteResponseDtoComPedidos);
         return ResponseEntity.ok(response);
     }
 
@@ -192,6 +195,6 @@ public class UsuarioControllerCA {
     public ResponseEntity<UsuarioClienteResponseDto> buscarClientePorId(
             @Parameter(description = "ID único do cliente") @PathVariable UUID id) {
         Usuario cliente = buscarUsuarioPorIdUseCase.executar(id);
-        return ResponseEntity.ok(UsuarioMapper.toClienteResponseDto(cliente));
+        return ResponseEntity.ok(usuarioMapper.toClienteResponseDtoComPedidos(cliente));
     }
 }

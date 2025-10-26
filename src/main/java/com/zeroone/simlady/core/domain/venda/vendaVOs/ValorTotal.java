@@ -6,8 +6,8 @@ public class ValorTotal {
     private final BigDecimal valor;
 
     private ValorTotal(BigDecimal valor) {
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Valor total deve ser maior ou igual a zero");
+        if (valor == null) {
+            throw new IllegalArgumentException("Valor total não pode ser nulo");
         }
         this.valor = valor;
     }

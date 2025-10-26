@@ -57,7 +57,8 @@ public class ProdutoMapper {
                 dto.getPrecoUnitario(),
                 dto.getCatalogo(),
                 dto.getValorVenda(),
-                dto.getImagemUrl()
+                dto.getImagemUrl(),
+                dto.getIdMarca()
         );
     }
     
@@ -77,7 +78,7 @@ public class ProdutoMapper {
                 dto.getCatalogo() != null ? dto.getCatalogo() : produtoExistente.getCatalogo(),
                 dto.getValorVenda() != null ? dto.getValorVenda() : produtoExistente.getValorVenda().getValue(),
                 dto.getImagemUrl() != null ? dto.getImagemUrl() : produtoExistente.getImagemUrl().getValue(),
-                produtoExistente.getIdMarca()
+                dto.getIdMarca() != null ? dto.getIdMarca() : produtoExistente.getIdMarca()
         );
     }
 
@@ -92,7 +93,8 @@ public class ProdutoMapper {
         dto.setPrecoUnitario(produto.getPrecoUnitario().getValue());
         dto.setCatalogo(produto.getCatalogo());
         dto.setValorVenda(produto.getValorVenda().getValue());
-        dto.setImagemUrl(produto.getImagemUrl().getValue());
+        dto.setImagemUrl(produto.getImagemUrl() != null ? produto.getImagemUrl().getValue() : null);
+        dto.setIdMarca(produto.getIdMarca());
         return dto;
     }
     
