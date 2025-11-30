@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -47,6 +48,28 @@ public class RelatorioJpaAdapter implements RelatorioRepositoryPort {
     }
 
     @Override
+    public List<ProdutoMaisVendido> buscarProdutosMaisVendidosMesAtual(LocalDate inicioMes, LocalDate fimMes) {
+        LocalDate fimMesExclusivo = fimMes.plusDays(1);
+        return pedidoItemRepository.buscarProdutosMaisVendidosPorStatusEPeriodo(
+                StatusPedido.CONCLUIDO, inicioMes, fimMesExclusivo
+        ).stream()
+                .map((Object[] row) -> {
+                    UUID idProduto = (UUID) row[0];
+                    String nome = (String) row[1];
+                    Long quantidade = ((Number) row[2]).longValue(); 
+                    BigDecimal valorTotal = (BigDecimal) row[3];
+
+                    return ProdutoMaisVendido.of(
+                            idProduto,
+                            nome,
+                            quantidade.intValue(),
+                            valorTotal
+                    );
+                })
+                .toList();
+    }
+
+    @Override
     public ResumoVendasProduto obterResumoVendasProduto(UUID produtoId, LocalDate inicioMes, LocalDate fimMes) {
         Integer vendasMesAtual = pedidoItemRepository.countVendasProdutoPeriodo(
                 produtoId, inicioMes, fimMes);
@@ -64,7 +87,6 @@ public class RelatorioJpaAdapter implements RelatorioRepositoryPort {
     @Override
     public List<String> buscarTop3ProdutosMaisVendidosMesAtual(LocalDate inicioMes, LocalDate fimMes) {
         return vendaRepository.findTop3NomesProdutosMaisVendidosNoMes(inicioMes, fimMes).stream()
-                .limit(3)
                 .map(id -> "Produto " + id)
                 .toList();
     }
@@ -106,6 +128,48 @@ public class RelatorioJpaAdapter implements RelatorioRepositoryPort {
             faturamentoPorMes.put(mesBonito, total);
         }
         return faturamentoPorMes;
+    }
+
+    @Override
+    public Map<String, BigDecimal> obterFaturamentoUltimos4Meses(LocalDate inicio) {
+        List<Object[]> results = vendaRepository.sumValorTotalPorMesUltimos4Meses(inicio);
+        Map<String, BigDecimal> faturamentoPorMes = new LinkedHashMap<>();
+
+        DateTimeFormatter parser = DateTimeFormatter.ofPattern("yyyy-MM");
+        DateTimeFormatter mesFormatter = DateTimeFormatter.ofPattern("MMMM", Locale.forLanguageTag("pt-BR"));
+
+        for (Object[] row : results) {
+            String mesAno = ((String) row[0]).trim();
+            BigDecimal total = (BigDecimal) row[1];
+
+            String mesBonito = YearMonth.parse(mesAno, parser).format(mesFormatter);
+            mesBonito = mesBonito.substring(0, 1).toUpperCase() + mesBonito.substring(1);
+
+            faturamentoPorMes.put(mesBonito, total);
+        }
+        return faturamentoPorMes;
+    }
+
+    @Override
+    public Map<StatusPedido, Integer> obterPedidosPorStatusMesAtual(LocalDate inicioMes, LocalDate fimMes) {
+        LocalDateTime inicio = inicioMes.atStartOfDay();
+        LocalDateTime fim = fimMes.atStartOfDay();
+        
+        List<Object[]> results = pedidoVendaRepository.countPedidosPorStatusNoPeriodo(inicio, fim);
+        Map<StatusPedido, Integer> pedidosPorStatus = new HashMap<>();
+        
+        for (Object[] row : results) {
+            StatusPedido status = (StatusPedido) row[0];
+            Long count = ((Number) row[1]).longValue();
+            pedidosPorStatus.put(status, count.intValue());
+        }
+        
+        // Garantir que todos os status estejam presentes, mesmo com 0
+        for (StatusPedido status : StatusPedido.values()) {
+            pedidosPorStatus.putIfAbsent(status, 0);
+        }
+        
+        return pedidosPorStatus;
     }
 
     @Override

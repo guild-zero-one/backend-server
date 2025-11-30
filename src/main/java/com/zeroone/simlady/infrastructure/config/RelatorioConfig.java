@@ -14,6 +14,11 @@ public class RelatorioConfig {
     }
 
     @Bean
+    public ListarTop3ProdutosMaisVendidosMesAtualUseCase listarTop3ProdutosMaisVendidosMesAtualUseCase(RelatorioJpaAdapter adapter) {
+        return new ListarTop3ProdutosMaisVendidosMesAtualUseCase(adapter);
+    }
+
+    @Bean
     public ObterResumoVendasProdutoUseCase obterResumoVendasProdutoUseCase(RelatorioJpaAdapter adapter) {
         return new ObterResumoVendasProdutoUseCase(adapter);
     }
@@ -36,6 +41,16 @@ public class RelatorioConfig {
     @Bean
     public ObterFaturamentoUltimos6MesesUseCase obterFaturamentoUltimos6MesesUseCase(RelatorioJpaAdapter adapter) {
         return new ObterFaturamentoUltimos6MesesUseCase(adapter);
+    }
+
+    @Bean
+    public ObterFaturamentoUltimos4MesesUseCase obterFaturamentoUltimos4MesesUseCase(RelatorioJpaAdapter adapter) {
+        return new ObterFaturamentoUltimos4MesesUseCase(adapter);
+    }
+
+    @Bean
+    public ObterPedidosPorStatusMesAtualUseCase obterPedidosPorStatusMesAtualUseCase(RelatorioJpaAdapter adapter) {
+        return new ObterPedidosPorStatusMesAtualUseCase(adapter);
     }
 
     @Bean

@@ -27,15 +27,16 @@ public interface VendaRepositoryImpl extends JpaRepository<VendaEntity, UUID> {
     @Query("SELECT COALESCE(SUM(v.valorTotal), 0) FROM VendaEntity v WHERE v.dataVenda BETWEEN :start AND :end")
     BigDecimal sumValorTotalByDataVendaBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
-    @Query("""
-    SELECT pi.idProduto
-    FROM PedidoItemEntity pi
-    JOIN pi.pedido p
-    JOIN VendaEntity v ON p.idVenda = v.id
-    WHERE v.dataVenda BETWEEN :start AND :end
-    GROUP BY pi.idProduto
+    @Query(value = """
+    SELECT pi.produto_id
+    FROM pedido_item pi
+    JOIN pedido p ON pi.pedido_id = p.id
+    JOIN venda v ON p.venda_id = v.id
+    WHERE v.data_venda BETWEEN :start AND :end
+    GROUP BY pi.produto_id
     ORDER BY SUM(pi.quantidade) DESC
-    """)
+    LIMIT 3
+    """, nativeQuery = true)
     List<UUID> findTop3NomesProdutosMaisVendidosNoMes(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end
@@ -61,6 +62,17 @@ public interface VendaRepositoryImpl extends JpaRepository<VendaEntity, UUID> {
     ORDER BY FUNCTION('TO_CHAR', v.dataVenda, 'YYYY-MM') DESC
 """)
     List<Object[]> sumValorTotalPorMesUltimos6Meses(@Param("start") LocalDate start);
+
+    @Query("""
+    SELECT\s
+        FUNCTION('TO_CHAR', v.dataVenda, 'YYYY-MM') as mesAno,
+        COALESCE(SUM(v.valorTotal), 0) as total
+    FROM VendaEntity v
+    WHERE v.dataVenda >= :start
+    GROUP BY FUNCTION('TO_CHAR', v.dataVenda, 'YYYY-MM')
+    ORDER BY FUNCTION('TO_CHAR', v.dataVenda, 'YYYY-MM') DESC
+""")
+    List<Object[]> sumValorTotalPorMesUltimos4Meses(@Param("start") LocalDate start);
 
     @Query("""
     SELECT\s

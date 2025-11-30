@@ -5,8 +5,12 @@ import com.zeroone.simlady.core.domain.pedido.StatusPedido;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -28,4 +32,7 @@ public interface PedidoRepositoryImpl extends JpaRepository<PedidoEntity, UUID> 
     long countByIdUsuarioAndStatus(UUID idUsuario, StatusPedido status);
     
     boolean existsByIdUsuario(UUID idUsuario);
+    
+    @Query("SELECT p.status, COUNT(p) FROM PedidoEntity p WHERE p.criadoEm >= :inicio AND p.criadoEm < :fim GROUP BY p.status")
+    List<Object[]> countPedidosPorStatusNoPeriodo(@Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim);
 }

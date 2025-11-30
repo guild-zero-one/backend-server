@@ -35,6 +35,26 @@ public interface PedidoItemRepositoryImpl extends JpaRepository<PedidoItemEntity
     List<Object[]> buscarProdutosMaisVendidosPorStatus(@Param("status") StatusPedido status);
 
     @Query("""
+        SELECT p.id,
+            p.nome,
+            COALESCE(SUM(pi.quantidade), 0),
+            COALESCE(SUM(pi.quantidade * pi.precoUnitario), 0)
+        FROM PedidoItemEntity pi
+        JOIN pi.pedido pv
+        JOIN ProdutoEntity p ON p.id = pi.idProduto
+        WHERE pv.status = :status
+            AND CAST(pv.criadoEm AS date) >= :inicio
+            AND CAST(pv.criadoEm AS date) < :fim
+        GROUP BY p.id, p.nome
+        ORDER BY SUM(pi.quantidade) DESC
+        """)
+    List<Object[]> buscarProdutosMaisVendidosPorStatusEPeriodo(
+            @Param("status") StatusPedido status,
+            @Param("inicio") LocalDate inicio,
+            @Param("fim") LocalDate fim
+    );
+
+    @Query("""
         SELECT COUNT(pi) FROM PedidoItemEntity pi 
         WHERE pi.idProduto = :produtoId 
         AND pi.pedido.criadoEm BETWEEN :inicio AND :fim
