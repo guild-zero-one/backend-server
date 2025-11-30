@@ -30,11 +30,14 @@ import java.util.UUID;
 public class RelatorioController {
 
     private final ListarProdutosMaisVendidosUseCase listarProdutosMaisVendidosUseCase;
+    private final ListarTop3ProdutosMaisVendidosMesAtualUseCase listarTop3ProdutosMaisVendidosMesAtualUseCase;
     private final ObterResumoVendasProdutoUseCase obterResumoVendasProdutoUseCase;
     private final CalcularTotalVendasMesAtualUseCase calcularTotalVendasMesAtualUseCase;
     private final BuscarTop3ProdutosMaisVendidosMesAtualUseCase buscarTop3ProdutosMaisVendidosMesAtualUseCase;
     private final ObterQuantidadePedidosUltimos6MesesUseCase obterQuantidadePedidosUltimos6MesesUseCase;
     private final ObterFaturamentoUltimos6MesesUseCase obterFaturamentoUltimos6MesesUseCase;
+    private final ObterFaturamentoUltimos4MesesUseCase obterFaturamentoUltimos4MesesUseCase;
+    private final ObterPedidosPorStatusMesAtualUseCase obterPedidosPorStatusMesAtualUseCase;
     private final ContarPedidosEmAbertoUseCase contarPedidosEmAbertoUseCase;
 
     @Operation(summary = "Listar vendas por produto",
@@ -50,6 +53,21 @@ public class RelatorioController {
                 .map(RelatorioMapper::toDto)
                 .toList();
         return ResponseEntity.ok(relatorio);
+    }
+
+    @Operation(summary = "Top 3 produtos mais vendidos do mês atual",
+            description = "Retorna os 3 produtos mais vendidos do mês atual com quantidade e valor total")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ProdutosMaisVendidosResponseDto.class))))
+    })
+    @GetMapping("/top3-produtos-mes-atual")
+    public ResponseEntity<List<ProdutosMaisVendidosResponseDto>> getTop3ProdutosMesAtual() {
+        List<ProdutosMaisVendidosResponseDto> produtos = listarTop3ProdutosMaisVendidosMesAtualUseCase.executar().stream()
+                .map(RelatorioMapper::toDto)
+                .toList();
+        return ResponseEntity.ok(produtos);
     }
 
     @Operation(summary = "Resumo de vendas por produto",
@@ -117,6 +135,39 @@ public class RelatorioController {
     public ResponseEntity<Map<String, BigDecimal>> getFaturamentoUltimos6Meses() {
         Map<String, BigDecimal> faturamento = obterFaturamentoUltimos6MesesUseCase.executar();
         return ResponseEntity.ok(faturamento);
+    }
+
+    @Operation(summary = "Valores totais de vendas dos últimos 4 meses",
+            description = "Retorna uma lista com o valor total vendido em cada um dos últimos 4 meses")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Valores retornados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = BigDecimal.class))))
+    })
+    @GetMapping("/faturamento-ultimos-4-meses")
+    public ResponseEntity<Map<String, BigDecimal>> getFaturamentoUltimos4Meses() {
+        Map<String, BigDecimal> faturamento = obterFaturamentoUltimos4MesesUseCase.executar();
+        return ResponseEntity.ok(faturamento);
+    }
+
+    @Operation(summary = "Total de pedidos por status no mês atual",
+            description = "Retorna a quantidade de pedidos agrupados por status no mês atual")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quantidades retornadas com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Map.class)))
+    })
+    @GetMapping("/pedidos-por-status-mes-atual")
+    public ResponseEntity<Map<String, Integer>> getPedidosPorStatusMesAtual() {
+        Map<com.zeroone.simlady.core.domain.pedido.StatusPedido, Integer> pedidosPorStatus = 
+                obterPedidosPorStatusMesAtualUseCase.executar();
+        
+        // Converter StatusPedido enum para String para o JSON
+        Map<String, Integer> response = new java.util.HashMap<>();
+        pedidosPorStatus.forEach((status, quantidade) -> 
+                response.put(status.name(), quantidade));
+        
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Quantidade de pedidos em aberto",
