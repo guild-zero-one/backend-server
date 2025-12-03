@@ -23,7 +23,7 @@ public class JwtTokenAdapter {
         // Adiciona o token como cookie
         Cookie cookie = new Cookie("token", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge((int) jwtTokenValidity);
         response.addCookie(cookie);
