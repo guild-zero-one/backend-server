@@ -1,14 +1,19 @@
 package com.zeroone.simlady.infrastructure.queue;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.Exchange;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import jakarta.annotation.PostConstruct;
 
+@Slf4j
 @Configuration
 public class QueueSetup {
 
@@ -23,8 +28,15 @@ public class QueueSetup {
     }
 
     @Bean
-    public Exchange orderCreatedExchange() {
-        return new org.springframework.amqp.core.DirectExchange(EXCHANGE_NAME, true, false);
+    public DirectExchange orderCreatedExchange() {
+        return new DirectExchange(EXCHANGE_NAME, true, false);
+    }
+
+    @Bean
+    public Binding orderCreatedBinding(Queue orderCreatedQueue, DirectExchange orderCreatedExchange) {
+        return BindingBuilder.bind(orderCreatedQueue)
+                .to(orderCreatedExchange)
+                .with(ORDER_CREATED_QUEUE);
     }
 
     @Bean
@@ -63,28 +75,40 @@ public class QueueSetup {
     public void initializeQueues() {
         if (rabbitAdmin != null) {
             try {
-                rabbitAdmin.declareExchange(orderCreatedExchange());
-                rabbitAdmin.declareQueue(orderCreatedQueue());
-                rabbitAdmin.declareBinding(
-                    new org.springframework.amqp.core.Binding(
-                        ORDER_CREATED_QUEUE,
-                        org.springframework.amqp.core.Binding.DestinationType.QUEUE,
-                        EXCHANGE_NAME,
-                        ORDER_CREATED_QUEUE,
-                        null
-                    )
-                );
-                System.out.println("Fila e Exchange criados com sucesso no RabbitMQ!");
+                log.info("=== Inicializando RabbitMQ ===");
+
+                DirectExchange exchange = orderCreatedExchange();
+                Queue queue = orderCreatedQueue();
+
+                rabbitAdmin.declareExchange(exchange);
+                log.info("✓ Exchange declarada: {} (durable: {})", exchange.getName(), exchange.isDurable());
+
+                rabbitAdmin.declareQueue(queue);
+                log.info("✓ Queue declarada: {} (durable: {})", queue.getName(), queue.isDurable());
+
+                Binding binding = orderCreatedBinding(queue, exchange);
+                rabbitAdmin.declareBinding(binding);
+                log.info("✓ Binding declarado: Queue '{}' -> Exchange '{}' com routing key '{}'",
+                        queue.getName(), exchange.getName(), ORDER_CREATED_QUEUE);
+
+                log.info("=== RabbitMQ inicializado com sucesso ===");
             } catch (Exception e) {
-                System.err.println("Falha ao inicializar filas: " + e.getMessage());
+                log.error("✗ Falha ao inicializar filas: {}", e.getMessage(), e);
             }
+        } else {
+            log.warn("RabbitAdmin não disponível - pulando inicialização de filas");
         }
     }
 
     private static class FallbackRabbitTemplate extends RabbitTemplate {
         @Override
-        public void convertAndSend(String exchange, Object message) {
-            System.err.println("RabbitMQ indisponível. Mensagem não enviada.");
+        public void convertAndSend(@NonNull String exchange, @NonNull Object message) {
+            System.err.println("RabbitMQ indisponível. Mensagem não enviada. exchange=" + exchange + " message=" + message);
+        }
+
+        @Override
+        public void convertAndSend(@NonNull String exchange, @NonNull String routingKey, @NonNull Object message) {
+            System.err.println("RabbitMQ indisponível. Mensagem não enviada. exchange=" + exchange + " routingKey=" + routingKey + " message=" + message);
         }
     }
 }
