@@ -113,18 +113,21 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
 
-        configuracao.setAllowedOrigins(List.of("*"));
+        configuracao.setAllowedOriginPatterns(List.of("*"));  // Permite qualquer origem
         configuracao.setAllowedMethods(Arrays.asList(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.PATCH.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name()
+            HttpMethod.GET.name(),
+            HttpMethod.POST.name(),
+            HttpMethod.PUT.name(),
+            HttpMethod.PATCH.name(),
+            HttpMethod.DELETE.name(),
+            HttpMethod.OPTIONS.name()
         ));
         configuracao.setAllowedHeaders(List.of("*"));
-        configuracao.setAllowCredentials(true);
-        configuracao.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
+        configuracao.setAllowCredentials(true);  // ✅ Agora funciona com qualquer origem
+        configuracao.setExposedHeaders(Arrays.asList(
+            HttpHeaders.CONTENT_DISPOSITION,
+            HttpHeaders.SET_COOKIE
+        ));
 
         UrlBasedCorsConfigurationSource origem = new UrlBasedCorsConfigurationSource();
         origem.registerCorsConfiguration("/**", configuracao);
