@@ -2,10 +2,10 @@ package com.zeroone.simlady.infrastructure.adapters;
 
 import com.zeroone.simlady.core.application.ports.TokenRepositoryPort;
 import com.zeroone.simlady.core.domain.usuario.Usuario;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +17,7 @@ public class JwtTokenAdapter {
     @Value("${jwt.cookie.name:jwt-token}")
     private String cookieName;
 
-    @Value("${jwt.cookie.max-age:86400}") // 24 horas em segundos
+    @Value("${jwt.cookie.max-age:86400}") 
     private int cookieMaxAge;
 
     @Value("${jwt.cookie.secure:false}")
@@ -31,18 +31,17 @@ public class JwtTokenAdapter {
 
     public String gerarToken(Usuario usuario, HttpServletResponse response) {
         String token = tokenRepositoryPort.gerarToken(usuario);
-
-        Cookie cookie = new Cookie(cookieName, token);
-        cookie.setMaxAge(cookieMaxAge);
-        cookie.setHttpOnly(cookieHttpOnly);
-        cookie.setSecure(cookieSecure);
-        cookie.setPath("/");
-
-        response.addHeader("Set-Cookie", 
-            String.format("%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=%s%s",
-                cookieName, token, cookieMaxAge, cookieSameSite,
-                cookieSecure ? "; Secure" : ""));
-
+    
+        ResponseCookie cookie = ResponseCookie.from(cookieName, token)
+                .httpOnly(cookieHttpOnly)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(cookieMaxAge)
+                .sameSite(cookieSameSite)
+                .build();
+    
+        response.addHeader("Set-Cookie", cookie.toString());
+    
         return token;
     }
 }
