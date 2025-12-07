@@ -2,7 +2,6 @@ package com.zeroone.simlady.infrastructure.script;
 
 import com.zeroone.simlady.core.application.usecases.marca.CriarMarcaUseCase;
 import com.zeroone.simlady.core.application.usecases.pedido.CriarPedidoUseCase;
-import com.zeroone.simlady.core.application.usecases.produto.BuscarProdutoPorSkuUseCase;
 import com.zeroone.simlady.core.application.usecases.produto.CriarProdutoUseCase;
 import com.zeroone.simlady.core.application.usecases.usuario.BuscarUsuarioPorEmailUseCase;
 import com.zeroone.simlady.core.application.usecases.usuario.CadastrarUsuarioUseCase;
@@ -46,9 +45,6 @@ public class InitializationScript implements CommandLineRunner {
     private CriarProdutoUseCase criarProdutoUseCase;
 
     @Autowired
-    private BuscarProdutoPorSkuUseCase buscarProdutoPorSkuUseCase;
-
-    @Autowired
     private CriarPedidoUseCase criarPedidoUseCase;
 
     @Autowired
@@ -76,12 +72,22 @@ public class InitializationScript implements CommandLineRunner {
                 return;
             }
             
-            logger.info("app.initialize-data habilitado. Iniciando criação de dados iniciais...");
-            criarMarcasSeNaoExistirem();
-            criarUsuariosSeNaoExistirem();
-            criarProdutosSeNaoExistirem();
-            criarPedidosSeNaoExistirem();
-            criarVendasSeNaoExistirem();
+            logger.info("app.initialize-data habilitado. Verificando se dados iniciais já existem...");
+            
+            // Verificar se os dados iniciais já foram criados tentando criar a primeira marca
+            // Se ela já existir, significa que o script já foi executado anteriormente
+            if (dadosIniciaisJaForamCriados()) {
+                logger.info("Dados iniciais já foram criados anteriormente. Pulando criação.");
+                logger.info("Script de inicialização concluído com sucesso!");
+                return;
+            }
+            
+            logger.info("Dados iniciais não encontrados. Iniciando criação...");
+            criarMarcas();
+            criarUsuarios();
+            criarProdutos();
+            criarPedidos();
+            criarVendas();
             
             logger.info("Script de inicialização concluído com sucesso!");
         } catch (Exception e) {
@@ -145,18 +151,35 @@ public class InitializationScript implements CommandLineRunner {
         }
     }
 
-    private void criarMarcasSeNaoExistirem() {
-        logger.info("Verificando marcas no banco de dados...");
+    private boolean dadosIniciaisJaForamCriados() {
+        try {
+            // Tenta criar a primeira marca (O Boticário) como verificação
+            Marca marcaTeste = Marca.newMarca(
+                "O Boticário",
+                "Maior rede de franquias de beleza do Brasil",
+                "https://gkpb.com.br/wp-content/uploads/2020/08/novo-logo-o-boticario-2020.jpg"
+            );
+            Marca marcaCriada = criarMarcaUseCase.executar(marcaTeste);
+            marcasMap.put("O Boticário", marcaCriada.getId());
+            logger.info("Primeira marca criada com sucesso. Dados iniciais não existem.");
+            return false; // Não existia, acabamos de criar
+        } catch (Exception e) {
+            logger.info("Marca de teste já existe. Dados iniciais já foram criados anteriormente.");
+            return true; // Já existe, então dados já foram criados
+        }
+    }
+    
+    private void criarMarcas() {
+        logger.info("Criando marcas no banco de dados...");
         
+        // Pular O Boticário pois já foi criado na verificação
         String[][] marcasData = {
-            {"O Boticário", "Maior rede de franquias de beleza do Brasil", "https://gkpb.com.br/wp-content/uploads/2020/08/novo-logo-o-boticario-2020.jpg"},
             {"Natura", "Cosméticos sustentáveis e naturais", "https://cdn.worldvectorlogo.com/logos/natura-1.svg"},
             {"Avon", "Cosméticos e perfumaria internacional", "https://gkpb.com.br/wp-content/uploads/2021/01/novo-logo-avon-png.png"},
             {"L'Oréal", "Líder mundial em beleza e cosméticos", "https://cdn-icons-png.flaticon.com/512/5968/5968613.png"}
         };
         
-        int criadas = 0;
-        int existentes = 0;
+        int criadas = 1; // O Boticário já foi criado
         
         for (String[] data : marcasData) {
             try {
@@ -166,16 +189,15 @@ public class InitializationScript implements CommandLineRunner {
                 logger.info("Marca criada: {} (ID: {})", data[0], marcaCriada.getId());
                 criadas++;
             } catch (Exception e) {
-                logger.warn("Marca {} já existe ou erro ao criar: {}", data[0], e.getMessage());
-                existentes++;
+                logger.error("Erro ao criar marca {}: {}", data[0], e.getMessage());
             }
         }
         
-        logger.info("Marcas processadas - Criadas: {}, Já existentes: {}", criadas, existentes);
+        logger.info("Marcas criadas: {}", criadas);
     }
 
-    private void criarUsuariosSeNaoExistirem() {
-        logger.info("Verificando usuários no banco de dados...");
+    private void criarUsuarios() {
+        logger.info("Criando usuários no banco de dados...");
         
         Object[][] usuariosData = {
             {"Shirleide", "Santos", "554.062.260-02", "admin@admin.com", "12345678", "11987654321", Permissao.ADMIN},
@@ -185,22 +207,10 @@ public class InitializationScript implements CommandLineRunner {
         };
         
         int criados = 0;
-        int existentes = 0;
         
         for (Object[] data : usuariosData) {
             String email = (String) data[3];
             try {
-                // Verificar se o usuário já existe
-                try {
-                    Usuario usuarioExistente = buscarUsuarioPorEmailUseCase.executar(email);
-                    usuariosMap.put(email, usuarioExistente.getId());
-                    logger.info("Usuário {} já existe (ID: {})", email, usuarioExistente.getId());
-                    existentes++;
-                    continue;
-                } catch (Exception e) {
-                    // Usuário não existe, criar
-                }
-                
                 Usuario usuario = Usuario.newUsuario(
                     (String) data[0],  // nome
                     (String) data[1],  // sobrenome
@@ -219,11 +229,11 @@ public class InitializationScript implements CommandLineRunner {
             }
         }
         
-        logger.info("Usuários processados - Criados: {}, Já existentes: {}", criados, existentes);
+        logger.info("Usuários criados: {}", criados);
     }
 
-    private void criarProdutosSeNaoExistirem() {
-        logger.info("Verificando produtos no banco de dados...");
+    private void criarProdutos() {
+        logger.info("Criando produtos no banco de dados...");
         
         Object[][] produtosData = {
             {"Malbec Perfume", "MAL-PER-100", "O melhor perfume do Brasil", "Lançamento", 12, 30.0, true, 50.0, "https://cdn.awsli.com.br/600x450/1000/1000152/produto/59005983/d4e8a3d63b.jpg", "O Boticário"},
@@ -233,24 +243,12 @@ public class InitializationScript implements CommandLineRunner {
         };
         
         int criados = 0;
-        int existentes = 0;
         
         for (Object[] data : produtosData) {
             String sku = (String) data[1];
             String nomeMarca = (String) data[9];
             
             try {
-                // Verificar se o produto já existe
-                try {
-                    Produto produtoExistente = buscarProdutoPorSkuUseCase.executar(sku);
-                    produtosMap.put(sku, produtoExistente.getId());
-                    logger.info("Produto {} já existe (ID: {})", sku, produtoExistente.getId());
-                    existentes++;
-                    continue;
-                } catch (Exception e) {
-                    // Produto não existe, criar
-                }
-                
                 UUID idMarca = marcasMap.get(nomeMarca);
                 if (idMarca == null) {
                     logger.warn("Marca {} não encontrada para produto {}", nomeMarca, sku);
@@ -279,77 +277,59 @@ public class InitializationScript implements CommandLineRunner {
             }
         }
         
-        logger.info("Produtos processados - Criados: {}, Já existentes: {}", criados, existentes);
+        logger.info("Produtos criados: {}", criados);
     }
 
-    private void criarPedidosSeNaoExistirem() {
+    private void criarPedidos() {
         logger.info("Criando pedidos no banco de dados...");
         
         int criados = 0;
         
-        // Pedido 1: admin@admin.com
-        criados += criarPedido("admin@admin.com", 1, 
-            new String[]{"MAL-PER-100", "2", "49.99"},
-            new String[]{"NAT-TOD-250", "1", "28.9"});
-        
-        // Pedido 2: maria@gmail.com
-        criados += criarPedido("maria@gmail.com", 2,
+        // Pedido 1: maria@gmail.com
+        criados += criarPedido("maria@gmail.com", 1,
             new String[]{"AVN-CLR-001", "3", "15.9"});
         
-        // Pedido 3: joao@gmail.com
-        criados += criarPedido("joao@gmail.com", 3,
+        // Pedido 2: joao@gmail.com
+        criados += criarPedido("joao@gmail.com", 2,
             new String[]{"LOR-REV-050", "1", "89.9"});
         
-        // Pedido 4: ana@gmail.com
-        criados += criarPedido("ana@gmail.com", 4,
+        // Pedido 3: ana@gmail.com
+        criados += criarPedido("ana@gmail.com", 3,
             new String[]{"NAT-TOD-250", "5", "25.0"},
             new String[]{"AVN-CLR-001", "2", "17.5"});
         
-        // Pedido 5: maria@gmail.com
-        criados += criarPedido("maria@gmail.com", 5,
+        // Pedido 4: maria@gmail.com
+        criados += criarPedido("maria@gmail.com", 4,
             new String[]{"MAL-PER-100", "1", "49.99"});
         
-        // Pedido 6: joao@gmail.com
-        criados += criarPedido("joao@gmail.com", 6,
+        // Pedido 5: joao@gmail.com
+        criados += criarPedido("joao@gmail.com", 5,
             new String[]{"NAT-TOD-250", "3", "28.9"});
         
-        // Pedido 7: ana@gmail.com
-        criados += criarPedido("ana@gmail.com", 7,
+        // Pedido 6: ana@gmail.com
+        criados += criarPedido("ana@gmail.com", 6,
             new String[]{"LOR-REV-050", "2", "90.0"});
         
-        // Pedido 8: admin@admin.com
-        criados += criarPedido("admin@admin.com", 8,
-            new String[]{"AVN-CLR-001", "1", "16.0"},
-            new String[]{"MAL-PER-100", "2", "50.0"});
-        
-        // Pedido 9: maria@gmail.com
-        criados += criarPedido("maria@gmail.com", 9,
+        // Pedido 7: maria@gmail.com
+        criados += criarPedido("maria@gmail.com", 7,
             new String[]{"NAT-TOD-250", "2", "27.9"});
+        
+        // Pedido 8: joao@gmail.com
+        criados += criarPedido("joao@gmail.com", 8,
+            new String[]{"MAL-PER-100", "1", "48.5"});
+        
+        // Pedido 9: ana@gmail.com
+        criados += criarPedido("ana@gmail.com", 9,
+            new String[]{"AVN-CLR-001", "4", "14.9"});
         
         // Pedido 10: joao@gmail.com
         criados += criarPedido("joao@gmail.com", 10,
-            new String[]{"MAL-PER-100", "1", "48.5"});
-        
-        // Pedido 11: ana@gmail.com
-        criados += criarPedido("ana@gmail.com", 11,
-            new String[]{"AVN-CLR-001", "4", "14.9"});
-        
-        // Pedido 12: admin@admin.com
-        criados += criarPedido("admin@admin.com", 12,
-            new String[]{"LOR-REV-050", "2", "87.0"});
-        
-        // Pedido 13: joao@gmail.com
-        criados += criarPedido("joao@gmail.com", 13,
             new String[]{"NAT-TOD-250", "1", "29.5"},
             new String[]{"AVN-CLR-001", "3", "15.9"});
         
-        // Pedido 14: maria@gmail.com
-        criados += criarPedido("maria@gmail.com", 14,
+        // Pedido 11: maria@gmail.com
+        criados += criarPedido("maria@gmail.com", 11,
             new String[]{"LOR-REV-050", "1", "88.0"});
-        
-        // Pedido 15: admin@admin.com
-        criados += criarPedido("admin@admin.com", 15,
-            new String[]{"NAT-TOD-250", "2", "28.0"});
         
         logger.info("Pedidos processados - Criados: {}", criados);
     }
@@ -393,23 +373,19 @@ public class InitializationScript implements CommandLineRunner {
         }
     }
 
-    private void criarVendasSeNaoExistirem() {
+    private void criarVendas() {
         logger.info("Criando vendas no banco de dados...");
         
         // Estrutura: desconto, pagamentoRealizado, lista de pedidos (índices), dataVenda
         Object[][] vendasData = {
-            {30.0, true, new int[]{1}, "2025-06-01"},
-            {15.5, false, new int[]{2}, "2025-05-28"},
-            {0.0, true, new int[]{3}, "2025-05-18"},
-            {12.0, true, new int[]{4, 5}, "2025-05-12"},
-            {22.7, false, new int[]{6}, "2025-04-28"},
-            {10.0, true, new int[]{7}, "2025-04-17"},
-            {5.5, true, new int[]{8, 9}, "2025-03-23"},
-            {0.0, false, new int[]{10}, "2025-03-10"},
-            {7.0, true, new int[]{11}, "2025-02-15"},
-            {13.0, true, new int[]{12}, "2025-01-28"},
-            {18.0, false, new int[]{13, 14}, "2025-01-13"},
-            {3.0, true, new int[]{15}, "2024-12-30"}
+            {15.5, false, new int[]{1}, "2025-05-28"},
+            {0.0, true, new int[]{2}, "2025-05-18"},
+            {12.0, true, new int[]{3, 4}, "2025-05-12"},
+            {22.7, false, new int[]{5}, "2025-04-28"},
+            {10.0, true, new int[]{6}, "2025-04-17"},
+            {5.5, true, new int[]{7, 8}, "2025-03-23"},
+            {0.0, false, new int[]{9}, "2025-03-10"},
+            {18.0, false, new int[]{10, 11}, "2025-01-13"}
         };
         
         int criadas = 0;
