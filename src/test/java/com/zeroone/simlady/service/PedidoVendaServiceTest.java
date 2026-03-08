@@ -14,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,8 +39,8 @@ class PedidoVendaServiceTest {
     @DisplayName("Deve cadastrar um novo pedido de venda com sucesso")
     void deveCadastrarPedidoVendaComSucesso() {
         Usuario usuario = new Usuario();
-        usuario.setId(1);
 
+        usuario.setId(UUID.randomUUID());
         PedidoItem item = new PedidoItem();
         item.setProduto(new com.zeroone.simlady.entity.Produto());
         item.getProduto().setId(2);

@@ -8,8 +8,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,40 +20,36 @@ import java.util.Set;
 @Table(name = "usuario")
 public class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
+    @Column(nullable = false)
     private String nome;
 
     private String sobrenome;
 
-    private String cpf;
-
+    @Column
     private String email;
 
+    @Column(nullable = false)
     private String senha;
 
-    private String urlImagem;
+    private String celular;
+
+    @OneToMany
+    private List<PedidoVenda> pedidos;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
 
     @Enumerated(EnumType.STRING)
     private Permissao permissao;
 
-    private Boolean ativo = true;
-
     @CreationTimestamp
-    private LocalDate criadoEm;
+    @Column(name = "criado_em")
+    private LocalDateTime criadoEm;
 
     @UpdateTimestamp
-    private LocalDate atualizadoEm;
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Contato> contatos = new HashSet<>();
-
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PedidoVenda> pedidos = new HashSet<>();
-
-    public void adicionarContato(Contato contato) {
-        contatos.add(contato);
-        contato.setUsuario(this);
-    }
+    @Column(name = "atualizado_em")
+    private LocalDateTime atualizadoEm;
 }

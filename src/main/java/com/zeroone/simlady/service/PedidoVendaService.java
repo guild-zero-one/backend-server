@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ public class PedidoVendaService {
     private final ProdutoRepository produtoRepository;
 
     public PedidoVenda cadastrar(PedidoVenda pedido) {
-        Integer idUsuario = pedido.getUsuario().getId();
+        UUID idUsuario = pedido.getUsuario().getId();
 
         usuarioService.buscar(idUsuario);
         pedido.getItens().forEach(item -> item.setPedidoVenda(pedido));

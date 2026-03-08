@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class PedidoVendaResponseDto {
@@ -18,7 +19,7 @@ public class PedidoVendaResponseDto {
     private String status;
 
     @Schema(description = "ID do Usuário", example = "1")
-    private Integer idUsuario;
+    private UUID idUsuario;
 
     @Schema(description = "ID da Venda", example = "1")
     private Integer idVenda;

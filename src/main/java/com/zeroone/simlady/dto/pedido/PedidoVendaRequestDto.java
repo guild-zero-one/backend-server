@@ -7,12 +7,13 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class PedidoVendaRequestDto {
     @NotNull(message = "ID do Usuário não pode ser nulo.")
     @Schema(description = "ID do Usuário", example = "1")
-    private Integer idUsuario;
+    private UUID idUsuario;
 
     @NotNull(message = "Um pedido deve obrigatóriamente conter itens.")
     @ArraySchema(

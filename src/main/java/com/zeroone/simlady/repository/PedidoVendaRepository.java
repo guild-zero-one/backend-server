@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface PedidoVendaRepository extends JpaRepository<PedidoVenda, Integer> {
@@ -14,7 +15,7 @@ public interface PedidoVendaRepository extends JpaRepository<PedidoVenda, Intege
 
     List<PedidoVenda> findAllByUsuario(Usuario usuario);
 
-    Integer countPedidoVendasByUsuario_IdAndStatus(Integer usuarioId, StatusPedido statusPedido);
+    Integer countPedidoVendasByUsuario_IdAndStatus(UUID usuarioId, StatusPedido statusPedido);
 
     Integer countByStatus(StatusPedido statusPedido);
 }

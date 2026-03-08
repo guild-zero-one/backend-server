@@ -4,12 +4,11 @@ import com.zeroone.simlady.dto.pedidoItem.PedidoItemResponseDto;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class PedidoMensagemDto {
     private Integer id;
     private String nomeUsuario;
-    private Set<String> contatosUsuario;
+    private String celularUsuario;
     private List<PedidoItemResponseDto> itens;
 }
