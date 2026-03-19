@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -78,7 +79,7 @@ public class PedidoVendaController {
                     content = @Content())
     })
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoVendaResponseDto> buscar(@PathVariable Integer id) {
+    public ResponseEntity<PedidoVendaResponseDto> buscar(@PathVariable UUID id) {
         PedidoVenda pedido = pedidoVendaService.buscar(id);
         return ResponseEntity.ok(pedidoVendaMapper.toDto(pedido));
     }
@@ -95,7 +96,7 @@ public class PedidoVendaController {
                     content = @Content()),
     })
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoVendaResponseDto> atualizar(@PathVariable Integer id, @Valid @RequestBody PedidoVendaRequestDto dto) {
+    public ResponseEntity<PedidoVendaResponseDto> atualizar(@PathVariable UUID id, @Valid @RequestBody PedidoVendaRequestDto dto) {
         PedidoVenda atualizado = pedidoVendaService.atualizar(id, pedidoVendaMapper.toEntity(dto));
         return ResponseEntity.ok(pedidoVendaMapper.toDto(atualizado));
     }
@@ -111,7 +112,7 @@ public class PedidoVendaController {
     })
     @PatchMapping("/status/{id}")
     public ResponseEntity<PedidoVendaResponseDto> atualizarStatus(
-            @PathVariable Integer id,
+            @PathVariable UUID id,
             @RequestParam StatusPedido status
     ) {
         PedidoVenda atualizado = pedidoVendaService.atualizarStatus(id, status);
@@ -127,7 +128,7 @@ public class PedidoVendaController {
                     content = @Content()),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         pedidoVendaService.deletar(id);
         return ResponseEntity.noContent().build();
     }

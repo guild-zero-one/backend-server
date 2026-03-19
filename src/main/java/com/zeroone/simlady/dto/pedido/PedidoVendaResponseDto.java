@@ -12,17 +12,17 @@ import java.util.UUID;
 
 @Data
 public class PedidoVendaResponseDto {
-    @Schema(description = "ID do Pedido", example = "1")
-    private Integer id;
+    @Schema(description = "ID do Pedido", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
     @Schema(description = "Status do pedido", example = "PENDENTE")
     private String status;
 
-    @Schema(description = "ID do Usuário", example = "1")
+    @Schema(description = "ID do Usuário", example = "550e8400-e29b-41d4-a716-446655440001")
     private UUID idUsuario;
 
-    @Schema(description = "ID da Venda", example = "1")
-    private Integer idVenda;
+    @Schema(description = "ID da Venda", example = "550e8400-e29b-41d4-a716-446655440002")
+    private UUID idVenda;
 
     @Schema(description = "Data de criação do pedido", example = "2023-10-01T10:15:30")
     private LocalDateTime criadoEm;
