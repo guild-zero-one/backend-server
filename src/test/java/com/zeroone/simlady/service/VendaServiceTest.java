@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -39,7 +40,9 @@ class VendaServiceTest {
         PedidoVenda pedido1 = new PedidoVenda();
         PedidoVenda pedido2 = new PedidoVenda();
         List<PedidoVenda> pedidos = Arrays.asList(pedido1, pedido2);
-        List<Integer> ids = Arrays.asList(1, 2);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        List<UUID> ids = Arrays.asList(id1, id2);
 
         when(pedidoVendaRepository.findAllById(ids)).thenReturn(pedidos);
         when(pedidoVendaService.calcularValorTotal(pedido1)).thenReturn(new BigDecimal("10.00"));
@@ -57,7 +60,9 @@ class VendaServiceTest {
     @DisplayName("Deve lançar exceção ao cadastrar venda sem pedidos encontrados")
     void deveLancarExcecaoAoCadastrarVendaSemPedidos() {
         Venda venda = new Venda();
-        List<Integer> ids = Arrays.asList(1, 2);
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        List<UUID> ids = Arrays.asList(id1, id2);
 
         when(pedidoVendaRepository.findAllById(ids)).thenReturn(List.of());
 
@@ -95,39 +100,43 @@ class VendaServiceTest {
     @Test
     @DisplayName("Deve buscar venda por ID com sucesso")
     void deveBuscarVendaPorIdComSucesso() {
+        UUID id = UUID.randomUUID();
         Venda venda = new Venda();
-        when(vendaRepository.findById(1)).thenReturn(Optional.of(venda));
+        when(vendaRepository.findById(id)).thenReturn(Optional.of(venda));
 
-        Venda resultado = vendaService.buscar(1);
+        Venda resultado = vendaService.buscar(id);
 
         assertEquals(venda, resultado);
-        verify(vendaRepository).findById(1);
+        verify(vendaRepository).findById(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao buscar venda inexistente")
     void deveLancarExcecaoAoBuscarVendaInexistente() {
-        when(vendaRepository.findById(1)).thenReturn(Optional.empty());
+        UUID id = UUID.randomUUID();
+        when(vendaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> vendaService.buscar(1));
+        assertThrows(ResourceNotFoundException.class, () -> vendaService.buscar(id));
     }
 
     @Test
     @DisplayName("Deve deletar venda com sucesso")
     void deveDeletarVendaComSucesso() {
-        when(vendaRepository.existsById(1)).thenReturn(true);
+        UUID id = UUID.randomUUID();
+        when(vendaRepository.existsById(id)).thenReturn(true);
 
-        vendaService.deletar(1);
+        vendaService.deletar(id);
 
-        verify(vendaRepository).deleteById(1);
+        verify(vendaRepository).deleteById(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao deletar venda inexistente")
     void deveLancarExcecaoAoDeletarVendaInexistente() {
-        when(vendaRepository.existsById(1)).thenReturn(false);
+        UUID id = UUID.randomUUID();
+        when(vendaRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(ResourceNotFoundException.class, () -> vendaService.deletar(1));
-        verify(vendaRepository, never()).deleteById(anyInt());
+        assertThrows(ResourceNotFoundException.class, () -> vendaService.deletar(id));
+        verify(vendaRepository, never()).deleteById(any(UUID.class));
     }
 }

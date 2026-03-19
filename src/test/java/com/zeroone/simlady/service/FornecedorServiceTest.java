@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +46,8 @@ class FornecedorServiceTest {
         // Given
         Pageable pageable = Pageable.unpaged();
         Fornecedor fornecedor1 = new Fornecedor();
-        fornecedor1.setId(1);
+        UUID id = UUID.randomUUID();
+        fornecedor1.setId(id);
         fornecedor1.setNome("Boticário");
         fornecedor1.setCnpj("12345678901234");
         fornecedor1.setDescricao("Descrição teste");
@@ -65,14 +67,14 @@ class FornecedorServiceTest {
         // Assert
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.getTotalElements());
-        assertEquals("Boticário", resultado.getContent().get(0).getNome());
+        assertEquals("Boticário", resultado.getContent().getFirst().getNome());
     }
 
     @Test
     @DisplayName("Deve atualizar fornecedor com sucesso")
     void deveAtualizarFornecedorComSucesso() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Fornecedor fornecedorExistente = new Fornecedor();
         fornecedorExistente.setId(id);
         fornecedorExistente.setNome("Nome Antigo");
@@ -98,7 +100,8 @@ class FornecedorServiceTest {
         // Given
         Pageable pageable = Pageable.unpaged();
         Fornecedor fornecedor = new Fornecedor();
-        fornecedor.setId(1);
+        UUID id = UUID.randomUUID();
+        fornecedor.setId(id);
         fornecedor.setNome("Boticário");
 
         List<Fornecedor> fornecedores = List.of(fornecedor);
@@ -124,7 +127,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve excluir fornecedor por ID")
     void deveExcluirFornecedorPorId() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
 
         // When
         fornecedorService.excluirPorId(id);
@@ -137,7 +140,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve lançar exceção quando buscar fornecedor por ID inexistente")
     void deveLancarExcecaoQuandoBuscarFornecedorPorIdInexistente() {
         // Given
-        Integer id = 999;
+        UUID id = UUID.randomUUID();
         when(fornecedorRepository.findById(id)).thenReturn(Optional.empty());
 
         // Then & Assert
@@ -188,7 +191,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve buscar fornecedor por ID com sucesso")
     void deveBuscarFornecedorPorIdComSucesso() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Fornecedor fornecedor = new Fornecedor();
         fornecedor.setId(id);
         fornecedor.setNome("Fornecedor Teste");
@@ -229,7 +232,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve atualizar apenas o nome do fornecedor mantendo outros campos inalterados")
     void deveAtualizarApenasNomeDoFornecedorMantendoOutrosCamposInalterados() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Fornecedor fornecedorExistente = new Fornecedor();
         fornecedorExistente.setId(id);
         fornecedorExistente.setNome("Nome Antigo");
@@ -259,7 +262,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve lançar exceção ao tentar atualizar fornecedor inexistente")
     void deveLancarExcecaoAoTentarAtualizarFornecedorInexistente() {
         // Given
-        Integer id = 999;
+        UUID id = UUID.randomUUID();
         Fornecedor fornecedorAtualizado = new Fornecedor();
         fornecedorAtualizado.setNome("Nome Novo");
 
@@ -276,7 +279,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve manter dados originais quando atualização fornecida for nula")
     void deveManterDadosOriginaisQuandoAtualizacaoFornecidaForNula() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Fornecedor fornecedorExistente = new Fornecedor();
         fornecedorExistente.setId(id);
         fornecedorExistente.setNome("Nome Original");
@@ -299,7 +302,7 @@ class FornecedorServiceTest {
     @DisplayName("Deve atualizar apenas os campos fornecidos do fornecedor")
     void deveAtualizarApenasOsCamposFornecidosDoFornecedor() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Fornecedor fornecedorExistente = new Fornecedor();
         fornecedorExistente.setId(id);
         fornecedorExistente.setNome("Nome Antigo");

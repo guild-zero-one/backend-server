@@ -3,10 +3,12 @@ package com.zeroone.simlady.dto.fornecedor;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 public class FornecedorResponseDto {
-    @Schema(description = "ID do fornecedor/marca", example = "1")
-    private Integer id;
+    @Schema(description = "ID do fornecedor/marca", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
     @Schema(description = "Nome do fornecedor/marca", example = "Boticário")
     private String nome;

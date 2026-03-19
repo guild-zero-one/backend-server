@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class FornecedorComProdutosResponseDto {
-    private Integer id;
+    private UUID id;
     private String nome;
     private String cnpj;
     private String descricao;

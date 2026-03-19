@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +31,11 @@ public class FornecedorService {
         return fornecedorRepository.findAll(pageable);
     }
 
-    public void excluirPorId(Integer id) {
+    public void excluirPorId(UUID id) {
         fornecedorRepository.deleteById(id);
     }
 
-    public Fornecedor atualizar(Integer id, Fornecedor fornecedor) {
+    public Fornecedor atualizar(UUID id, Fornecedor fornecedor) {
         Fornecedor fornecedorBuscado = buscarPorId(id);
 
         if (fornecedor.getNome() != null) {
@@ -53,7 +54,7 @@ public class FornecedorService {
         return fornecedorRepository.save(fornecedorBuscado);
     }
 
-    public Fornecedor buscarPorId(Integer id){
+    public Fornecedor buscarPorId(UUID id){
         return fornecedorRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Fornecedor Não Encontrado"));
     }
 
