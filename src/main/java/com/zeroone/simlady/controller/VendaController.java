@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,7 +80,7 @@ public class VendaController {
                     content = @Content())
     })
     @GetMapping("/{id}")
-    public ResponseEntity<VendaResponseDto> buscar(@PathVariable Integer id) {
+    public ResponseEntity<VendaResponseDto> buscar(@PathVariable UUID id) {
         return ResponseEntity
                 .ok(vendaMapper
                         .toDto(vendaService
@@ -95,7 +96,7 @@ public class VendaController {
                     content = @Content()),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         vendaService.deletar(id);
         return ResponseEntity
                 .status(200)

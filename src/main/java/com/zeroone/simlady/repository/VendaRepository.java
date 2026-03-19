@@ -10,9 +10,10 @@ import java.awt.print.Pageable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface VendaRepository extends JpaRepository<Venda, Integer> {
+public interface VendaRepository extends JpaRepository<Venda, UUID> {
 
     @Query("SELECT COALESCE(SUM(v.valorTotal), 0) FROM Venda v WHERE v.dataVenda BETWEEN :start AND :end")
     BigDecimal sumValorTotalByDataVendaBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);

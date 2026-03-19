@@ -5,11 +5,12 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 public class VendaResponseDto {
-    @Schema(description = "ID da Venda", example = "1")
-    private Integer id;
+    @Schema(description = "ID da Venda", example = "550e8400-e29b-41d4-a716-446655440001")
+    private UUID id;
 
     @Schema(description = "Valor total da venda", example = "150.00")
     private BigDecimal valorTotal;

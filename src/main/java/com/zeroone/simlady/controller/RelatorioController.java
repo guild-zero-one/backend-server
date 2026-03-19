@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/relatorios")
@@ -52,7 +53,7 @@ public class RelatorioController {
                     content = @Content())
     })
     @GetMapping("/vendas-produto/{id}")
-    public ResponseEntity<ResumoVendasProdutoResponseDto> getResumoVendasProduto(@PathVariable Integer id) {
+    public ResponseEntity<ResumoVendasProdutoResponseDto> getResumoVendasProduto(@PathVariable UUID id) {
         ResumoVendasProdutoResponseDto resumo = relatorioService.obterResumoVendasProduto(id);
         return ResponseEntity.ok(resumo);
     }
