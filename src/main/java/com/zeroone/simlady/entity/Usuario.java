@@ -36,6 +36,9 @@ public class Usuario {
 
     private String celular;
 
+    @Column(name = "url_imagem")
+    private String urlImagem;
+
     @OneToMany
     private List<PedidoVenda> pedidos;
 

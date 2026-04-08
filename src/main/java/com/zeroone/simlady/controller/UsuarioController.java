@@ -1,7 +1,5 @@
 package com.zeroone.simlady.controller;
 
-import com.azure.core.annotation.Patch;
-import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.mapper.UsuarioMapper;
@@ -17,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -67,12 +64,15 @@ public class UsuarioController {
     public ResponseEntity<UsuarioTokenDto> login(
             @RequestBody UsuarioLoginDto usuarioLoginDto, HttpServletResponse response) {
 
-        Usuario usuario = usuarioMapper.toEntity(usuarioLoginDto);
-        UsuarioTokenDto usuarioTokenDto = usuarioMapper.toTokenDto(usuario);
+        Usuario usuarioCredenciais = usuarioMapper.toEntity(usuarioLoginDto);
+        String token = usuarioService.autenticar(usuarioCredenciais, response);
 
-        String token = usuarioService.autenticar(usuario, response);
+        Usuario usuarioAutenticado = usuarioService.buscarPorEmail(usuarioLoginDto.getEmail());
+        UsuarioResponseDto usuarioResponseDto = usuarioMapper.toDto(usuarioAutenticado);
 
+        UsuarioTokenDto usuarioTokenDto = new UsuarioTokenDto();
         usuarioTokenDto.setToken(token);
+        usuarioTokenDto.setUsuario(usuarioResponseDto);
 
         return ResponseEntity.ok(usuarioTokenDto);
     }

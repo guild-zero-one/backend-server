@@ -98,6 +98,11 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 
+    public Usuario buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+    }
+
     public Usuario atualizar(UUID id, Usuario usuario) {
 
         Usuario usuarioAntigo = buscar(id);
