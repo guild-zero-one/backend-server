@@ -13,7 +13,6 @@ public class ProdutoRequestDto {
     @Schema(description = "Nome do produto", example = "Malbec Perfume")
     private String nome;
 
-    @NotBlank(message = "SKU não pode ser vazio.")
     @Size(min = 3, max = 70, message = "O SKU deve ter entre 3 e 50 caracteres")
     @Schema(description = "SKU do produto", example = "MAL-PER-100")
     private String sku;
