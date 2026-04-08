@@ -1,7 +1,5 @@
 package com.zeroone.simlady.controller;
 
-import com.azure.core.annotation.Patch;
-import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.dto.usuario.*;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.mapper.UsuarioMapper;
@@ -17,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -25,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -66,12 +64,15 @@ public class UsuarioController {
     public ResponseEntity<UsuarioTokenDto> login(
             @RequestBody UsuarioLoginDto usuarioLoginDto, HttpServletResponse response) {
 
-        Usuario usuario = usuarioMapper.toEntity(usuarioLoginDto);
-        UsuarioTokenDto usuarioTokenDto = usuarioMapper.toTokenDto(usuario);
+        Usuario usuarioCredenciais = usuarioMapper.toEntity(usuarioLoginDto);
+        String token = usuarioService.autenticar(usuarioCredenciais, response);
 
-        String token = usuarioService.autenticar(usuario, response);
+        Usuario usuarioAutenticado = usuarioService.buscarPorEmail(usuarioLoginDto.getEmail());
+        UsuarioResponseDto usuarioResponseDto = usuarioMapper.toDto(usuarioAutenticado);
 
+        UsuarioTokenDto usuarioTokenDto = new UsuarioTokenDto();
         usuarioTokenDto.setToken(token);
+        usuarioTokenDto.setUsuario(usuarioResponseDto);
 
         return ResponseEntity.ok(usuarioTokenDto);
     }
@@ -132,7 +133,7 @@ public class UsuarioController {
                     content = @Content())
     })
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDto> buscar(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioResponseDto> buscar(@PathVariable UUID id) {
         Usuario usuario = usuarioService.buscar(id);
         return ResponseEntity.ok(usuarioMapper.toDto(usuario));
     }
@@ -170,7 +171,7 @@ public class UsuarioController {
                     content = @Content())
     })
     @GetMapping("/clientes/{id}")
-    public ResponseEntity<UsuarioClienteDto> buscarClientePorId(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioClienteDto> buscarClientePorId(@PathVariable UUID id) {
         Usuario cliente = usuarioService.buscar(id);
         return ResponseEntity.ok().body(usuarioMapper.toClienteDto(cliente));
     }
@@ -188,7 +189,7 @@ public class UsuarioController {
     })
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable Integer id, @Valid @RequestBody UsuarioAtualizacaoDto dto) {
+    public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable UUID id, @Valid @RequestBody UsuarioAtualizacaoDto dto) {
        Usuario usuario = usuarioMapper.toEntity(dto);
 
         usuarioService
@@ -219,7 +220,7 @@ public class UsuarioController {
     })
 
     @PatchMapping("/desativar/{id}")
-    public ResponseEntity<Void> desativar(@PathVariable Integer id) {
+    public ResponseEntity<Void> desativar(@PathVariable UUID id) {
         usuarioService.desativar(id);
         return ResponseEntity.noContent().build();
     }
@@ -233,7 +234,7 @@ public class UsuarioController {
                     content = @Content()),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
     }

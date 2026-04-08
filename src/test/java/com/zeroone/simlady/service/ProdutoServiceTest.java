@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,11 +41,13 @@ class ProdutoServiceTest {
         // Given
         Pageable pageable = Pageable.unpaged();
         Produto produto = new Produto();
-        produto.setId(1);
+        UUID id = UUID.randomUUID();
+        produto.setId(id);
         produto.setNome("Produto Teste");
         produto.setSku("SKU-123");
         produto.setQuantidade(10);
         produto.setPrecoUnitario(100.0);
+        produto.setUrlImagem("https://imagem.com/produto.png");
 
         List<Produto> produtos = List.of(produto);
         Page<Produto> page = new PageImpl<>(produtos);
@@ -58,7 +61,8 @@ class ProdutoServiceTest {
         // Assert
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.getTotalElements());
-        assertEquals("Produto Teste", resultado.getContent().get(0).getNome());
+        assertEquals("Produto Teste", resultado.getContent().getFirst().getNome());
+        assertEquals("https://imagem.com/produto.png", resultado.getContent().getFirst().getUrlImagem());
     }
 
     @Test
@@ -70,6 +74,7 @@ class ProdutoServiceTest {
         produto.setSku("SKU-123");
         produto.setQuantidade(10);
         produto.setPrecoUnitario(100.0);
+        produto.setUrlImagem("https://imagem.com/produto.png");
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(produto);
 
@@ -80,6 +85,7 @@ class ProdutoServiceTest {
         assertNotNull(resultado);
         assertEquals("Produto Teste", resultado.getNome());
         assertEquals("SKU-123", resultado.getSku());
+        assertEquals("https://imagem.com/produto.png", resultado.getUrlImagem());
         verify(produtoRepository).save(produto);
     }
 
@@ -87,11 +93,12 @@ class ProdutoServiceTest {
     @DisplayName("Deve buscar produto por ID com sucesso")
     void deveBuscarProdutoPorIdComSucesso() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Produto produto = new Produto();
         produto.setId(id);
         produto.setNome("Produto Teste");
         produto.setSku("SKU-123");
+        produto.setUrlImagem("https://imagem.com/produto.png");
 
         when(produtoRepository.findById(id)).thenReturn(Optional.of(produto));
 
@@ -102,6 +109,7 @@ class ProdutoServiceTest {
         assertNotNull(resultado);
         assertEquals(id, resultado.getId());
         assertEquals("Produto Teste", resultado.getNome());
+        assertEquals("https://imagem.com/produto.png", resultado.getUrlImagem());
         verify(produtoRepository).findById(id);
     }
 
@@ -109,7 +117,7 @@ class ProdutoServiceTest {
     @DisplayName("Deve lançar exceção quando buscar produto por ID inexistente")
     void deveLancarExcecaoQuandoBuscarProdutoPorIdInexistente() {
         // Given
-        Integer id = 999;
+        UUID id = UUID.randomUUID();
         when(produtoRepository.findById(id)).thenReturn(Optional.empty());
 
         // Then & Assert
@@ -121,19 +129,21 @@ class ProdutoServiceTest {
     @DisplayName("Deve atualizar produto com sucesso")
     void deveAtualizarProdutoComSucesso() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Produto produtoExistente = new Produto();
         produtoExistente.setId(id);
         produtoExistente.setNome("Produto Antigo");
         produtoExistente.setSku("SKU-123");
         produtoExistente.setQuantidade(10);
         produtoExistente.setPrecoUnitario(100.0);
+        produtoExistente.setUrlImagem("https://imagem.com/antigo.png");
 
         Produto produtoAtualizado = new Produto();
         produtoAtualizado.setNome("Produto Novo");
         produtoAtualizado.setSku("SKU-456");
         produtoAtualizado.setQuantidade(20);
         produtoAtualizado.setPrecoUnitario(200.0);
+        produtoAtualizado.setUrlImagem("https://imagem.com/novo.png");
 
         when(produtoRepository.findById(id)).thenReturn(Optional.of(produtoExistente));
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoAtualizado);
@@ -146,6 +156,7 @@ class ProdutoServiceTest {
         assertEquals("SKU-456", resultado.getSku());
         assertEquals(20, resultado.getQuantidade());
         assertEquals(200.0, resultado.getPrecoUnitario());
+        assertEquals("https://imagem.com/novo.png", resultado.getUrlImagem());
         verify(produtoRepository).save(any(Produto.class));
     }
 
@@ -153,10 +164,11 @@ class ProdutoServiceTest {
     @DisplayName("Deve buscar produtos por fornecedor com sucesso")
     void deveBuscarProdutosPorFornecedorComSucesso() {
         // Given
-        Integer fornecedorId = 1;
+        UUID fornecedorId = UUID.randomUUID();
         Produto produto = new Produto();
-        produto.setId(1);
+        produto.setId(UUID.randomUUID());
         produto.setNome("Produto Teste");
+        produto.setUrlImagem("https://imagem.com/produto.png");
 
         List<Produto> produtos = List.of(produto);
 
@@ -169,7 +181,8 @@ class ProdutoServiceTest {
         assertNotNull(resultado);
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.size());
-        assertEquals("Produto Teste", resultado.get(0).getNome());
+        assertEquals("Produto Teste", resultado.getFirst().getNome());
+        assertEquals("https://imagem.com/produto.png", resultado.getFirst().getUrlImagem());
         verify(produtoRepository).findByFornecedorId(fornecedorId);
     }
 
@@ -177,7 +190,7 @@ class ProdutoServiceTest {
     @DisplayName("Deve excluir produto com sucesso")
     void deveExcluirProdutoComSucesso() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
 
         // When
         produtoService.excluirPorId(id);
@@ -190,7 +203,7 @@ class ProdutoServiceTest {
     @DisplayName("Deve lançar exceção ao tentar atualizar produto inexistente")
     void deveLancarExcecaoAoTentarAtualizarProdutoInexistente() {
         // Given
-        Integer id = 999;
+        UUID id = UUID.randomUUID();
         Produto produtoAtualizado = new Produto();
         produtoAtualizado.setNome("Produto Novo");
 
@@ -205,7 +218,7 @@ class ProdutoServiceTest {
     @DisplayName("Deve retornar lista vazia ao buscar produtos por fornecedor inexistente")
     void deveRetornarListaVaziaAoBuscarProdutosPorFornecedorInexistente() {
         // Given
-        Integer fornecedorId = 999;
+        UUID fornecedorId = UUID.randomUUID();
         when(produtoRepository.findByFornecedorId(fornecedorId)).thenReturn(List.of());
 
         // When
@@ -221,13 +234,14 @@ class ProdutoServiceTest {
     @DisplayName("Deve manter dados originais quando atualização for nula")
     void deveManterDadosOriginaisQuandoAtualizacaoForNula() {
         // Given
-        Integer id = 1;
+        UUID id = UUID.randomUUID();
         Produto produtoExistente = new Produto();
         produtoExistente.setId(id);
         produtoExistente.setNome("Produto Original");
         produtoExistente.setSku("SKU-123");
         produtoExistente.setQuantidade(10);
         produtoExistente.setPrecoUnitario(100.0);
+        produtoExistente.setUrlImagem("https://imagem.com/original.png");
 
         when(produtoRepository.findById(id)).thenReturn(Optional.of(produtoExistente));
         when(produtoRepository.save(any(Produto.class))).thenReturn(produtoExistente);
@@ -240,6 +254,7 @@ class ProdutoServiceTest {
         assertEquals("SKU-123", resultado.getSku());
         assertEquals(10, resultado.getQuantidade());
         assertEquals(100.0, resultado.getPrecoUnitario());
+        assertEquals("https://imagem.com/original.png", resultado.getUrlImagem());
         verify(produtoRepository).save(any(Produto.class));
     }
 
@@ -247,14 +262,16 @@ class ProdutoServiceTest {
     @DisplayName("Deve listar produtos por fornecedor com sucesso usando DTO")
     void deveListarProdutosPorFornecedorComSucessoUsandoDTO() {
         // Given
-        Integer fornecedorId = 1;
+        UUID fornecedorId = UUID.randomUUID();
         Produto produto = new Produto();
-        produto.setId(1);
+        produto.setId(UUID.randomUUID());
         produto.setNome("Produto Teste");
+        produto.setUrlImagem("https://imagem.com/produto.png");
 
         ProdutoResponseDto produtoResponseDto = new ProdutoResponseDto();
-        produtoResponseDto.setId(1);
+        produtoResponseDto.setId(produto.getId());
         produtoResponseDto.setNome("Produto Teste");
+        produtoResponseDto.setUrlImagem("https://imagem.com/produto.png");
 
         when(produtoRepository.findByFornecedorId(fornecedorId)).thenReturn(List.of(produto));
         when(produtoMapper.toResponseDto(produto)).thenReturn(produtoResponseDto);
@@ -266,7 +283,8 @@ class ProdutoServiceTest {
         assertNotNull(resultado);
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.size());
-        assertEquals("Produto Teste", resultado.get(0).getNome());
+        assertEquals("Produto Teste", resultado.getFirst().getNome());
+        assertEquals("https://imagem.com/produto.png", resultado.getFirst().getUrlImagem());
         verify(produtoRepository).findByFornecedorId(fornecedorId);
         verify(produtoMapper).toResponseDto(produto);
     }

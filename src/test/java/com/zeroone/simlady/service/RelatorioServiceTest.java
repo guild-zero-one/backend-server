@@ -28,15 +28,16 @@ class RelatorioServiceTest {
     @DisplayName("Deve listar vendas por produto com sucesso")
     void deveListarVendasPorProdutoComSucesso() {
         // Given
+
         ProdutosMaisVendidosResponseDto produto1 = new ProdutosMaisVendidosResponseDto(
-                1,
+                java.util.UUID.randomUUID(),
                 "Produto A",
                 10L,
                 new BigDecimal("1000.00")
         );
 
         ProdutosMaisVendidosResponseDto produto2 = new ProdutosMaisVendidosResponseDto(
-                2,
+                java.util.UUID.randomUUID(),
                 "Produto B",
                 5L,
                 new BigDecimal("500.00")
@@ -77,15 +78,16 @@ class RelatorioServiceTest {
     @DisplayName("Deve ordenar produtos por quantidade vendida em ordem decrescente")
     void deveOrdenarProdutosPorQuantidadeVendidaEmOrdemDecrescente() {
         // Given
+
         ProdutosMaisVendidosResponseDto produtoMaisVendido = new ProdutosMaisVendidosResponseDto(
-                1,
+                java.util.UUID.randomUUID(),
                 "Produto Popular",
                 100L,
                 new BigDecimal("10000.00")
         );
 
         ProdutosMaisVendidosResponseDto produtoMenosVendido = new ProdutosMaisVendidosResponseDto(
-                2,
+                java.util.UUID.randomUUID(),
                 "Produto Menos Popular",
                 50L,
                 new BigDecimal("5000.00")
@@ -110,8 +112,9 @@ class RelatorioServiceTest {
     @DisplayName("Deve calcular valores totais corretamente")
     void deveCalcularValoresTotaisCorretamente() {
         // Given
+
         ProdutosMaisVendidosResponseDto produto = new ProdutosMaisVendidosResponseDto(
-                1,
+                java.util.UUID.randomUUID(),
                 "Produto Test",
                 10L,
                 new BigDecimal("1000.00")

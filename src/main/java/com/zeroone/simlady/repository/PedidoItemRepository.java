@@ -8,8 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
-public interface PedidoItemRepository extends JpaRepository<PedidoItem, Integer> {
+public interface PedidoItemRepository extends JpaRepository<PedidoItem, UUID> {
 
     @Query("""
     SELECT new com.zeroone.simlady.dto.produto.ProdutosMaisVendidosResponseDto(
@@ -35,11 +36,11 @@ public interface PedidoItemRepository extends JpaRepository<PedidoItem, Integer>
         AND pi.pedidoVenda.criadoEm BETWEEN :inicio AND :fim
     """)
     Integer countVendasProdutoPeriodo(
-            @Param("produtoId") Integer produtoId,
+            @Param("produtoId") UUID produtoId,
             @Param("inicio") LocalDate inicio,
             @Param("fim") LocalDate fim
     );
 
     @Query("SELECT COUNT(pi) FROM PedidoItem pi WHERE pi.produto.id = :produtoId")
-    Integer countVendasTotaisProduto(@Param("produtoId") Integer produtoId);
+    Integer countVendasTotaisProduto(@Param("produtoId") UUID produtoId);
 }

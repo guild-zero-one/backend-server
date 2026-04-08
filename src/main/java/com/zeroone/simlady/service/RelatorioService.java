@@ -17,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Locale.forLanguageTag;
 
@@ -32,7 +33,7 @@ public class RelatorioService {
         return pedidoItemRepository.buscarProdutosMaisVendidos();
     }
 
-    public ResumoVendasProdutoResponseDto obterResumoVendasProduto(Integer produtoId) {
+    public ResumoVendasProdutoResponseDto obterResumoVendasProduto(UUID produtoId) {
         produtoService.buscarPorId(produtoId);
 
         LocalDate inicioMesAtual = LocalDate.now().withDayOfMonth(1);

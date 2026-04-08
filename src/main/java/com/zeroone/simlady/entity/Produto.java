@@ -6,10 +6,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import lombok.Data;
-
-
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,8 +15,8 @@ import java.time.LocalDateTime;
 @Table(name = "produto")
 public class Produto {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String nome;
 
@@ -26,12 +24,12 @@ public class Produto {
 
     private String descricao;
 
-    private String tag;
+
+    private String urlImagem;
+
 
     private Integer quantidade;
-
     private Double precoUnitario;
-
     private Boolean catalogo;
 
     private Double valorVenda;

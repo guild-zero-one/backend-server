@@ -14,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,11 +39,11 @@ class PedidoVendaServiceTest {
     @DisplayName("Deve cadastrar um novo pedido de venda com sucesso")
     void deveCadastrarPedidoVendaComSucesso() {
         Usuario usuario = new Usuario();
-        usuario.setId(1);
 
+        usuario.setId(UUID.randomUUID());
         PedidoItem item = new PedidoItem();
         item.setProduto(new com.zeroone.simlady.entity.Produto());
-        item.getProduto().setId(2);
+        item.getProduto().setId(UUID.randomUUID());
 
         PedidoVenda pedido = new PedidoVenda();
         pedido.setUsuario(usuario);
@@ -79,37 +77,41 @@ class PedidoVendaServiceTest {
     @DisplayName("Deve buscar pedido de venda por ID com sucesso")
     void deveBuscarPedidoVendaPorIdComSucesso() {
         PedidoVenda pedido = new PedidoVenda();
-        when(pedidoVendaRepository.findById(1)).thenReturn(Optional.of(pedido));
+        UUID id = UUID.randomUUID();
+        pedido.setId(id);
+        when(pedidoVendaRepository.findById(id)).thenReturn(Optional.of(pedido));
 
-        PedidoVenda result = pedidoVendaService.buscar(1);
+        PedidoVenda result = pedidoVendaService.buscar(id);
 
         assertEquals(pedido, result);
-        verify(pedidoVendaRepository).findById(1);
+        verify(pedidoVendaRepository).findById(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao buscar pedido de venda inexistente")
     void deveLancarExcecaoAoBuscarPedidoVendaInexistente() {
-        when(pedidoVendaRepository.findById(1)).thenReturn(Optional.empty());
+        UUID id = UUID.randomUUID();
+        when(pedidoVendaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> pedidoVendaService.buscar(1));
+        assertThrows(ResourceNotFoundException.class, () -> pedidoVendaService.buscar(id));
     }
 
     @Test
     @DisplayName("Deve atualizar pedido de venda com sucesso")
     void deveAtualizarPedidoVendaComSucesso() {
+        UUID id = UUID.randomUUID();
         PedidoVenda existente = new PedidoVenda();
-        existente.setId(1);
+        existente.setId(id);
 
         PedidoVenda atualizado = new PedidoVenda();
         atualizado.setUsuario(new Usuario());
         atualizado.setItens(List.of(new PedidoItem()));
         atualizado.setStatus(StatusPedido.CONCLUIDO);
 
-        when(pedidoVendaRepository.findById(1)).thenReturn(Optional.of(existente));
+        when(pedidoVendaRepository.findById(id)).thenReturn(Optional.of(existente));
         when(pedidoVendaRepository.save(any(PedidoVenda.class))).thenReturn(existente);
 
-        PedidoVenda result = pedidoVendaService.atualizar(1, atualizado);
+        PedidoVenda result = pedidoVendaService.atualizar(id, atualizado);
 
         assertEquals(existente, result);
         assertEquals(atualizado.getUsuario(), existente.getUsuario());
@@ -121,32 +123,36 @@ class PedidoVendaServiceTest {
     @Test
     @DisplayName("Deve deletar pedido de venda com sucesso")
     void deveDeletarPedidoVendaComSucesso() {
-        when(pedidoVendaRepository.existsById(1)).thenReturn(true);
+        UUID id = UUID.randomUUID();
+        when(pedidoVendaRepository.existsById(id)).thenReturn(true);
 
-        pedidoVendaService.deletar(1);
+        pedidoVendaService.deletar(id);
 
-        verify(pedidoVendaRepository).deleteById(1);
+        verify(pedidoVendaRepository).deleteById(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao deletar pedido de venda inexistente")
     void deveLancarExcecaoAoDeletarPedidoVendaInexistente() {
-        when(pedidoVendaRepository.existsById(1)).thenReturn(false);
+        UUID id = UUID.randomUUID();
+        when(pedidoVendaRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(ResourceNotFoundException.class, () -> pedidoVendaService.deletar(1));
-        verify(pedidoVendaRepository, never()).deleteById(anyInt());
+        assertThrows(ResourceNotFoundException.class, () -> pedidoVendaService.deletar(id));
+        verify(pedidoVendaRepository, never()).deleteById(any());
     }
 
     @Test
     @DisplayName("Deve atualizar status do pedido de venda com sucesso")
     void deveAtualizarStatusDoPedidoVendaComSucesso() {
+        UUID id = UUID.randomUUID();
         PedidoVenda pedido = new PedidoVenda();
+        pedido.setId(id);
         pedido.setStatus(StatusPedido.PENDENTE);
 
-        when(pedidoVendaRepository.findById(1)).thenReturn(Optional.of(pedido));
+        when(pedidoVendaRepository.findById(id)).thenReturn(Optional.of(pedido));
         when(pedidoVendaRepository.save(any(PedidoVenda.class))).thenReturn(pedido);
 
-        PedidoVenda result = pedidoVendaService.atualizarStatus(1, StatusPedido.CANCELADO);
+        PedidoVenda result = pedidoVendaService.atualizarStatus(id, StatusPedido.CANCELADO);
 
         assertEquals(StatusPedido.CANCELADO, result.getStatus());
         verify(pedidoVendaRepository).save(pedido);

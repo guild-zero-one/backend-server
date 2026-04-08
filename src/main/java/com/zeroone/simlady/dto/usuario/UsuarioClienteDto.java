@@ -1,17 +1,17 @@
 package com.zeroone.simlady.dto.usuario;
 
-import com.zeroone.simlady.dto.contato.ContatoResponseDto;
-import com.zeroone.simlady.dto.pedidoItem.PedidoItemRequestDto;
+
 import com.zeroone.simlady.entity.enums.Permissao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 public class UsuarioClienteDto {
     @Schema(description = "ID do Usuário", example = "1")
-    private Integer id;
+    private UUID id;
 
     @Schema(description = "Nome do usuário", example = "André")
     private String nome;
@@ -31,8 +31,8 @@ public class UsuarioClienteDto {
     @Schema(description = "Quantidade de Pedidos", example = "34")
     private Integer qtdPedidos;
 
-    @Schema(description = "Contato do Usuário", implementation = PedidoItemRequestDto.class)
-    private ContatoResponseDto contato;
+    @Schema(description = "Número de celular", example = "12345678910")
+    private String celular;
 
     @Schema(description = "Permissão do usuário", example = "COMUM")
     private Permissao permissao;

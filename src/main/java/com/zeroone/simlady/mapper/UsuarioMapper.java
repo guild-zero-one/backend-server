@@ -8,7 +8,7 @@ import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {UsuarioMapperHelper.class, PedidoVendaMapper.class, ContatoMapper.class})
+@Mapper(componentModel = "spring", uses = {UsuarioMapperHelper.class, PedidoVendaMapper.class})
 public interface UsuarioMapper {
     Usuario toEntity (UsuarioRequestDto dto);
 
@@ -17,7 +17,6 @@ public interface UsuarioMapper {
     UsuarioResponseDto toDto (Usuario entity);
 
     @Mapping(target = "qtdPedidos", source = "usuario", qualifiedByName = "mapQtdPedidos")
-    @Mapping(target = "contato", source = "usuario", qualifiedByName = "mapContato")
     UsuarioClienteDto toClienteDto(Usuario usuario);
 
     Usuario toEntity(UsuarioLoginDto dto);

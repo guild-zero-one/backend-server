@@ -2,9 +2,7 @@ package com.zeroone.simlady.controller;
 
 import com.zeroone.simlady.dto.produto.ProdutoRequestDto;
 import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
-import com.zeroone.simlady.dto.usuario.UsuarioResponseDto;
 import com.zeroone.simlady.entity.Fornecedor;
-import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.service.FornecedorService;
@@ -18,13 +16,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,7 +46,6 @@ public class ProdutoController {
     @PostMapping
     public ResponseEntity<ProdutoResponseDto> cadastrarProduto(@RequestBody ProdutoRequestDto dto) {
         Produto produto = produtoMapper.toEntity(dto);
-
         Fornecedor fornecedor = fornecedorService.buscarPorId(dto.getFornecedorId());
         produto.setFornecedor(fornecedor);
 
@@ -85,7 +82,7 @@ public class ProdutoController {
                     content = @Content())
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoResponseDto> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<ProdutoResponseDto> buscarPorId(@PathVariable UUID id) {
         Produto produto = produtoService.buscarPorId(id);
         return ResponseEntity.ok(produtoMapper.toResponseDto(produto));
     }
@@ -100,7 +97,7 @@ public class ProdutoController {
                     content = @Content())
     })
     @GetMapping("/lista")
-    public ResponseEntity<List<ProdutoResponseDto>> buscarListaPorId(@RequestParam List<Integer> ids) {
+    public ResponseEntity<List<ProdutoResponseDto>> buscarListaPorId(@RequestParam List<UUID> ids) {
         List<ProdutoResponseDto> produtos = produtoService.buscarListaPorId(ids)
                 .stream()
                 .map(produtoMapper::toResponseDto)
@@ -142,7 +139,7 @@ public class ProdutoController {
                     content = @Content())
     })
     @GetMapping("/fornecedor/{id}")
-    public ResponseEntity<List<ProdutoResponseDto>> buscarPorFornecedor(@PathVariable Integer id) {
+    public ResponseEntity<List<ProdutoResponseDto>> buscarPorFornecedor(@PathVariable UUID id) {
         List<Produto> produtos = produtoService.buscarPorFornecedor(id);
 
         if (produtos.isEmpty()) {
@@ -166,7 +163,7 @@ public class ProdutoController {
                     content = @Content()),
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<ProdutoResponseDto> atualizarProduto(@PathVariable Integer id, @RequestBody ProdutoRequestDto request){
+    public ResponseEntity<ProdutoResponseDto> atualizarProduto(@PathVariable UUID id, @RequestBody ProdutoRequestDto request){
         Produto produto = produtoMapper.toEntity(request);
         ProdutoResponseDto response = produtoMapper.toResponseDto(produtoService.atualizar(id,produto));
         return ResponseEntity.ok(response);
@@ -181,7 +178,7 @@ public class ProdutoController {
                     content = @Content()),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirProduto(@PathVariable Integer id) {
+    public ResponseEntity<Void> excluirProduto(@PathVariable UUID id) {
         produtoService.excluirPorId(id);
         return ResponseEntity.noContent().build();
     }

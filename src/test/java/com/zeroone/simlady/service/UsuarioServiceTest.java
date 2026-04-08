@@ -2,7 +2,6 @@ package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.config.security.GerenciadorTokenJwt;
 import com.zeroone.simlady.entity.Usuario;
-import com.zeroone.simlady.exception.BadRequestException;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.UsuarioRepository;
@@ -21,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,11 +44,9 @@ class UsuarioServiceTest {
     @DisplayName("Deve cadastrar usuário com sucesso")
     void deveCadastrarUsuarioComSucesso() {
         Usuario usuario = new Usuario();
-        usuario.setCpf("123");
         usuario.setEmail("email@test.com");
         usuario.setSenha("senha");
 
-        when(usuarioRepository.existsByCpf("123")).thenReturn(false);
         when(usuarioRepository.existsByEmail("email@test.com")).thenReturn(false);
         when(passwordEncoder.encode("senha")).thenReturn("senhaCriptografada");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
@@ -61,25 +59,11 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao cadastrar usuário com CPF já cadastrado")
-    void deveLancarExcecaoAoCadastrarUsuarioComCpfExistente() {
-        Usuario usuario = new Usuario();
-        usuario.setCpf("123");
-        usuario.setEmail("email@test.com");
-
-        when(usuarioRepository.existsByCpf("123")).thenReturn(true);
-
-        assertThrows(ResourceAlreadyExistsException.class, () -> usuarioService.cadastrar(usuario));
-    }
-
-    @Test
     @DisplayName("Deve lançar exceção ao cadastrar usuário com email já cadastrado")
     void deveLancarExcecaoAoCadastrarUsuarioComEmailExistente() {
         Usuario usuario = new Usuario();
-        usuario.setCpf("123");
         usuario.setEmail("email@test.com");
 
-        when(usuarioRepository.existsByCpf("123")).thenReturn(false);
         when(usuarioRepository.existsByEmail("email@test.com")).thenReturn(true);
 
         assertThrows(ResourceAlreadyExistsException.class, () -> usuarioService.cadastrar(usuario));
@@ -136,54 +120,54 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve buscar usuário por ID com sucesso")
     void deveBuscarUsuarioPorIdComSucesso() {
+        UUID id = UUID.randomUUID();
         Usuario usuario = new Usuario();
-        when(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
 
-        Usuario result = usuarioService.buscar(1);
+        Usuario result = usuarioService.buscar(id);
 
         assertEquals(usuario, result);
-        verify(usuarioRepository).findById(1);
+        verify(usuarioRepository).findById(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao buscar usuário inexistente")
     void deveLancarExcecaoAoBuscarUsuarioInexistente() {
-        when(usuarioRepository.findById(1)).thenReturn(Optional.empty());
+        UUID id = UUID.randomUUID();
+        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> usuarioService.buscar(1));
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.buscar(id));
     }
 
     @Test
     @DisplayName("Deve atualizar usuário com sucesso")
     void deveAtualizarUsuarioComSucesso() {
+        UUID id = UUID.randomUUID();
         Usuario usuario = new Usuario();
-        usuario.setCpf("123");
         usuario.setEmail("email@test.com");
 
-        when(usuarioRepository.findById(1)).thenReturn(Optional.of(new Usuario()));
-        when(usuarioRepository.existsByCpfAndIdNot("123", 1)).thenReturn(false);
-        when(usuarioRepository.existsByEmailAndIdNot("email@test.com", 1)).thenReturn(false);
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(new Usuario()));
+        when(usuarioRepository.existsByEmailAndIdNot("email@test.com", id)).thenReturn(false);
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
-        Usuario result = usuarioService.atualizar(1, usuario);
+        Usuario result = usuarioService.atualizar(id, usuario);
 
         assertEquals(usuario, result);
-        assertEquals(1, usuario.getId());
+        assertEquals(id, usuario.getId());
         verify(usuarioRepository).save(usuario);
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao atualizar usuário com CPF e email já cadastrados")
-    void deveLancarExcecaoAoAtualizarUsuarioComCpfEEmailExistentes() {
+    @DisplayName("Deve lançar exceção ao atualizar usuário com email já cadastrado")
+    void deveLancarExcecaoAoAtualizarUsuarioComEmailExistente() {
+        UUID id = UUID.randomUUID();
         Usuario usuario = new Usuario();
-        usuario.setCpf("123");
         usuario.setEmail("email@test.com");
 
-        when(usuarioRepository.findById(1)).thenReturn(Optional.of(new Usuario()));
-        when(usuarioRepository.existsByCpfAndIdNot("123", 1)).thenReturn(true);
-        when(usuarioRepository.existsByEmailAndIdNot("email@test.com", 1)).thenReturn(true);
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(new Usuario()));
+        when(usuarioRepository.existsByEmailAndIdNot("email@test.com", id)).thenReturn(true);
 
-        assertThrows(ResourceAlreadyExistsException.class, () -> usuarioService.atualizar(1, usuario));
+        assertThrows(ResourceAlreadyExistsException.class, () -> usuarioService.atualizar(id, usuario));
     }
 
     @Test
@@ -222,13 +206,14 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve desativar usuário com sucesso")
     void deveDesativarUsuarioComSucesso() {
+        UUID id = UUID.randomUUID();
         Usuario usuario = new Usuario();
         usuario.setAtivo(true);
 
-        when(usuarioRepository.findById(1)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
-        usuarioService.desativar(1);
+        usuarioService.desativar(id);
 
         assertFalse(usuario.getAtivo());
         verify(usuarioRepository).save(usuario);
@@ -237,19 +222,21 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deve deletar usuário com sucesso")
     void deveDeletarUsuarioComSucesso() {
-        when(usuarioRepository.existsById(1)).thenReturn(true);
+        UUID id = UUID.randomUUID();
+        when(usuarioRepository.existsById(id)).thenReturn(true);
 
-        usuarioService.deletar(1);
+        usuarioService.deletar(id);
 
-        verify(usuarioRepository).deleteById(1);
+        verify(usuarioRepository).deleteById(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao deletar usuário inexistente")
     void deveLancarExcecaoAoDeletarUsuarioInexistente() {
-        when(usuarioRepository.existsById(1)).thenReturn(false);
+        UUID id = UUID.randomUUID();
+        when(usuarioRepository.existsById(id)).thenReturn(false);
 
-        assertThrows(ResourceNotFoundException.class, () -> usuarioService.deletar(1));
-        verify(usuarioRepository, never()).deleteById(anyInt());
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.deletar(id));
+        verify(usuarioRepository, never()).deleteById(any(UUID.class));
     }
 }

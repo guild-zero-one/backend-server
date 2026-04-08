@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -82,7 +83,7 @@ public class FornecedorController {
                     content = @Content()),
     })
     @GetMapping("/{id}")
-    public ResponseEntity<FornecedorResponseDto> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<FornecedorResponseDto> buscarPorId(@PathVariable UUID id) {
         Fornecedor fornecedor = fornecedorService.buscarPorId(id);
 
         if(fornecedor == null){
@@ -104,7 +105,7 @@ public class FornecedorController {
                     content = @Content()),
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<FornecedorResponseDto> atualizar(@PathVariable Integer id, @RequestBody FornecedorRequestDto dto){
+    public ResponseEntity<FornecedorResponseDto> atualizar(@PathVariable UUID id, @RequestBody FornecedorRequestDto dto){
         Fornecedor fornecedor = fornecedorMapper.toEntity(dto);
         FornecedorResponseDto response = fornecedorMapper.toResponseDto(fornecedorService.atualizar(id,fornecedor));
         return ResponseEntity.status(200).body(response);
@@ -119,7 +120,7 @@ public class FornecedorController {
                     content = @Content()),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirPorId(@PathVariable Integer id) {
+    public ResponseEntity<Void> excluirPorId(@PathVariable UUID id) {
         fornecedorService.excluirPorId(id);
         return ResponseEntity.noContent().build();
     }

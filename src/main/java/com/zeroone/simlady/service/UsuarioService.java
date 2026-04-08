@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +33,6 @@ public class UsuarioService {
 
     public Usuario cadastrar(Usuario usuario) {
 
-        validarCpf(usuario.getCpf());
         validarEmail(usuario.getEmail());
 
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
@@ -72,7 +71,7 @@ public class UsuarioService {
         return token;
     }
 
-    public void atualizarPermissao( Integer id ,String permissao) {
+    public void atualizarPermissao( UUID id ,String permissao) {
 
         Usuario usuario = buscar(id);
 
@@ -94,32 +93,34 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario buscar(Integer id) {
+    public Usuario buscar(UUID id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
     }
 
-    public Usuario atualizar(Integer id, Usuario usuario) {
+    public Usuario buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+    }
+
+    public Usuario atualizar(UUID id, Usuario usuario) {
 
         Usuario usuarioAntigo = buscar(id);
 
 
-        boolean existePorCpf = usuarioRepository.existsByCpfAndIdNot(usuario.getCpf(), id);
+
         boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
 
-        if(existePorCpf && existePorEmail) {
-            throw new ResourceAlreadyExistsException("Dados inválidos, email e/ou cpf já cadastrados");
+        if(existePorEmail) {
+            throw new ResourceAlreadyExistsException("Dados inválidos, email já cadastrado");
         }
 
         usuarioAntigo.setNome(usuario.getNome());
         usuarioAntigo.setSobrenome(usuario.getSobrenome());
-        usuarioAntigo.setCpf(usuario.getCpf());
         usuarioAntigo.setEmail(usuario.getEmail());
         usuarioAntigo.setSenha(usuario.getSenha());
-        usuarioAntigo.setUrlImagem(usuario.getUrlImagem());
         usuarioAntigo.setPermissao(usuario.getPermissao());
         usuarioAntigo.setAtivo(usuario.getAtivo());
-        usuarioAntigo.setContatos(usuario.getContatos());
         usuarioAntigo.setPedidos(usuario.getPedidos());
 
         usuario.setId(id);
@@ -138,28 +139,18 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
-    public void desativar(Integer id) {
+    public void desativar(UUID id) {
         Usuario usuario = buscar(id);
         usuario.setAtivo(false);
         usuarioRepository.save(usuario);
     }
 
-    public void deletar(Integer id) {
+    public void deletar(UUID id) {
         if (!usuarioRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cliente não encontrado");
         }
 
         usuarioRepository.deleteById(id);
-    }
-
-    private void validarCpf(String cpf) {
-        if (cpf == null) {
-            return;
-        }
-
-        if(usuarioRepository.existsByCpf(cpf)) {
-            throw new ResourceAlreadyExistsException("CPF já cadastrado!");
-        }
     }
 
     private void validarEmail(String email) {
@@ -168,4 +159,3 @@ public class UsuarioService {
         }
     }
 }
-

@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class UsuarioTokenDto {
-    @Schema(description = "E-mail do usuário", example = "andre@gmail.com")
-    private String email;
-
     @Schema(description = "Token de Autenticação")
     private String token;
+
+    @Schema(description = "Dados do usuário autenticado")
+    private UsuarioResponseDto usuario;
 }

@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class ProdutoRequestDto {
     @NotBlank(message = "Nome não pode ser vazio.")
@@ -11,7 +13,6 @@ public class ProdutoRequestDto {
     @Schema(description = "Nome do produto", example = "Malbec Perfume")
     private String nome;
 
-    @NotBlank(message = "SKU não pode ser vazio.")
     @Size(min = 3, max = 70, message = "O SKU deve ter entre 3 e 50 caracteres")
     @Schema(description = "SKU do produto", example = "MAL-PER-100")
     private String sku;
@@ -21,15 +22,14 @@ public class ProdutoRequestDto {
     @Schema(description = "Descrição do produto", example = "O melhor perfume do Brasil")
     private String descricao;
 
-    @NotEmpty(message = "Tag não pode ser vazia, apenas.")
-    @Size(min = 3, max = 50, message = "A tag deve ter entre 3 e 50 caracteres")
-    @Schema(description = "TAG do produto", example = "Lançamento")
-    private String tag;
-
     @NotNull(message = "Quantidade não pode ser nula.")
     @Positive(message = "Quantidade deve ser um número positivo.")
     @Schema(description = "Quantidade de produtos", example = "12")
     private Integer quantidade;
+
+    @NotBlank(message = "URL da imagem não pode ser vazia.")
+    @Schema(description = "URL da imagem do produto", example = "https://boticario-malbec.png")
+    private String urlImagem;
 
     @NotNull(message = "Preço Unitário não pode ser nulo.")
     @Positive(message = "Preço unitário deve ser um número positivo.")
@@ -47,5 +47,5 @@ public class ProdutoRequestDto {
 
     @NotNull(message = "ID do Fornecedor não pode ser nulo.")
     @Schema(description = "ID do fornecedor/marca", example = "1")
-    private Integer fornecedorId;
+    private UUID fornecedorId;
 }

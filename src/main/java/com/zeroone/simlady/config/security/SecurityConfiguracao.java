@@ -38,22 +38,6 @@ public class SecurityConfiguracao {
 
     private final AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
 
-    private static final String[] SWAGGER_URLS = {
-            "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/api/public/**",
-            "/api/public/authenticate",
-            "/webjars/**",
-            "/v3/api-docs/**",
-            "/actuator/*",
-            "/h2-console/**",
-            "/h2-console/**"
-    };
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -61,13 +45,17 @@ public class SecurityConfiguracao {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                                // Swagger and public endpoints
-                                .requestMatchers(SWAGGER_URLS).permitAll()
-                                // User registration and login
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/swagger-ui.html").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/swagger-resources/**").permitAll()
+                                .requestMatchers("/webjars/**").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
+                                .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios/logout").permitAll()
-                                .requestMatchers("/**").hasAuthority("ADMIN")
+                                .anyRequest().authenticated()
                 )
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoJwtEntryPoint))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

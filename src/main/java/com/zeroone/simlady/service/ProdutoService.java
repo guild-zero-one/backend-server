@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class ProdutoService {
         return produtoRepository.findAll(pageable);
     }
 
-    public Produto buscarPorId(Integer id) {
+    public Produto buscarPorId(UUID id) {
         return produtoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto não Encontrado"));
     }
 
@@ -36,15 +37,15 @@ public class ProdutoService {
         return produtoRepository.findProdutoBySkuIgnoreCase(sku);
     }
 
-    public List<Produto> buscarPorFornecedor(Integer id) {
+    public List<Produto> buscarPorFornecedor(UUID id) {
         return produtoRepository.findByFornecedorId(id);
     }
 
-    public void excluirPorId(Integer id) {
+    public void excluirPorId(UUID id) {
         produtoRepository.deleteById(id);
     }
 
-    public Produto atualizar(Integer id, Produto produto) {
+    public Produto atualizar(UUID id, Produto produto) {
         Produto produtoBuscado = buscarPorId(id);
 
         if (produto.getNome() != null) {
@@ -56,11 +57,11 @@ public class ProdutoService {
         if (produto.getDescricao() != null) {
             produtoBuscado.setDescricao(produto.getDescricao());
         }
-        if (produto.getTag() != null) {
-            produtoBuscado.setTag(produto.getTag());
-        }
         if (produto.getQuantidade() != null) {
             produtoBuscado.setQuantidade(produto.getQuantidade());
+        }
+        if (produto.getUrlImagem() != null) {
+            produtoBuscado.setUrlImagem(produto.getUrlImagem());
         }
         if (produto.getPrecoUnitario() != null) {
             produtoBuscado.setPrecoUnitario(produto.getPrecoUnitario());
@@ -71,18 +72,20 @@ public class ProdutoService {
         if (produto.getValorVenda() != null) {
             produtoBuscado.setValorVenda(produto.getValorVenda());
         }
-
+        if (produto.getFornecedor() != null) {
+            produtoBuscado.setFornecedor(produto.getFornecedor());
+        }
         return produtoRepository.save(produtoBuscado);
     }
 
-    public List<ProdutoResponseDto> listarProdutosPorFornecedor(Integer fornecedorId) {
+    public List<ProdutoResponseDto> listarProdutosPorFornecedor(UUID fornecedorId) {
         List<Produto> produtos = produtoRepository.findByFornecedorId(fornecedorId);
         return produtos.stream()
                 .map(produtoMapper::toResponseDto)
                 .toList();
     }
 
-    public List<Produto> buscarListaPorId(List<Integer> ids) {
+    public List<Produto> buscarListaPorId(List<UUID> ids) {
         return produtoRepository.findAllById(ids);
     }
 }

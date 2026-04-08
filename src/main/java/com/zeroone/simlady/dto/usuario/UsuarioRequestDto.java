@@ -4,7 +4,6 @@ import com.zeroone.simlady.entity.enums.Permissao;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.hibernate.validator.constraints.br.CPF;
 
 @Data
 public class UsuarioRequestDto {
@@ -18,10 +17,6 @@ public class UsuarioRequestDto {
     @Schema(description = "Sobrenome do usuário", example = "Silva")
     private String sobrenome;
 
-    @CPF(message = "CPF inválido.")
-    @Schema(description = "CPF", example = "451.967.950-81")
-    private String cpf;
-
     @Email(message = "E-mail inválido.")
     @NotBlank
     @Schema(description = "E-mail do usuário", example = "andre@gmail.com")
@@ -31,6 +26,11 @@ public class UsuarioRequestDto {
     @Size(min = 8, max = 30, message = "Senha deve ter entre 8 e 30 caracteres.")
     @Schema(description = "Senha do usuário", example = "12345678")
     private String senha;
+
+    @Size(min = 11, max = 11, message = "O número de celular deve ter exatamente 11 dígitos")
+    @Pattern(regexp = "\\d{11}", message = "O número de celular deve conter apenas números")
+    @Schema(description = "Número de celular", example = "12345678910")
+    private String celular;
 
     @NotNull(message = "Permissão é obrigatória")
     @Schema(description = "Permissão do usuário", example = "COMUM")

@@ -3,10 +3,12 @@ package com.zeroone.simlady.dto.produto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 public class ProdutoResponseDto {
-    @Schema(description = "ID do Produto", example = "1")
-    private Integer id;
+    @Schema(description = "ID do Produto", example = "550e8400-e29b-41d4-a716-446655440020")
+    private UUID id;
 
     @Schema(description = "Nome do produto", example = "Malbec Perfume")
     private String nome;
@@ -17,11 +19,11 @@ public class ProdutoResponseDto {
     @Schema(description = "Descrição do produto", example = "O melhor perfume do Brasil")
     private String descricao;
 
-    @Schema(description = "TAG do produto", example = "Lançamento")
-    private String tag;
-
     @Schema(description = "Quantidade de produtos", example = "12")
     private Integer quantidade;
+
+    @Schema(description = "URL da imagem do produto", example = "https://boticario-malbec.png")
+    private String urlImagem;
 
     @Schema(description = "Preço unitário de compra", example = "30.00")
     private Double precoUnitario;
@@ -32,6 +34,6 @@ public class ProdutoResponseDto {
     @Schema(description = "Valor de venda", example = "50.00")
     private Double valorVenda;
 
-    @Schema(description = "ID do fornecedor/marca", example = "1")
-    private Integer fornecedorId;
+    @Schema(description = "ID do fornecedor/marca", example = "550e8400-e29b-41d4-a716-446655440010")
+    private UUID fornecedorId;
 }

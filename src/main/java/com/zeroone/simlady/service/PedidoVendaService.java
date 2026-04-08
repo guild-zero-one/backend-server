@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ public class PedidoVendaService {
     private final ProdutoRepository produtoRepository;
 
     public PedidoVenda cadastrar(PedidoVenda pedido) {
-        Integer idUsuario = pedido.getUsuario().getId();
+        UUID idUsuario = pedido.getUsuario().getId();
 
         usuarioService.buscar(idUsuario);
         pedido.getItens().forEach(item -> item.setPedidoVenda(pedido));
@@ -40,24 +41,24 @@ public class PedidoVendaService {
         return pedidoVendaRepository.findAll();
     }
 
-    public PedidoVenda buscar(Integer id) {
+    public PedidoVenda buscar(UUID id) {
         return pedidoVendaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
     }
 
-    public PedidoVenda atualizar(Integer id, PedidoVenda pedidoAtualizado) {
+    public PedidoVenda atualizar(UUID id, PedidoVenda pedidoAtualizado) {
         PedidoVenda existente = buscar(id);
 
         existente.setUsuario(pedidoAtualizado.getUsuario());
         existente.setStatus(pedidoAtualizado.getStatus());
 
-        Map<Integer, PedidoItem> itensExistentes = existente.getItens().stream()
+        Map<UUID, PedidoItem> itensExistentes = existente.getItens().stream()
                 .collect(Collectors.toMap(item -> item.getProduto().getId(), item -> item));
 
         List<PedidoItem> novaLista = new ArrayList<>();
 
         for (PedidoItem itemAtualizado : pedidoAtualizado.getItens()) {
-            Integer idProduto = itemAtualizado.getProduto().getId();
+            UUID idProduto = itemAtualizado.getProduto().getId();
 
             PedidoItem itemExistente = itensExistentes.get(idProduto);
 
@@ -82,14 +83,14 @@ public class PedidoVendaService {
         return pedidoVendaRepository.save(existente);
     }
 
-    public void deletar(Integer id) {
+    public void deletar(UUID id) {
         if (!pedidoVendaRepository.existsById(id)) {
             throw new ResourceNotFoundException("Pedido não encontrado");
         }
         pedidoVendaRepository.deleteById(id);
     }
 
-    public PedidoVenda atualizarStatus(Integer id, StatusPedido novoStatus) {
+    public PedidoVenda atualizarStatus(UUID id, StatusPedido novoStatus) {
         PedidoVenda pedido = buscar(id);
         pedido.setStatus(novoStatus);
         return pedidoVendaRepository.save(pedido);

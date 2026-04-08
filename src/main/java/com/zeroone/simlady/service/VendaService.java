@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -21,7 +22,7 @@ public class VendaService {
     private final PedidoVendaService pedidoVendaService;
 
     @Transactional
-    public Venda cadastrar(Venda venda, List<Integer> idPedidos) {
+    public Venda cadastrar(Venda venda, List<UUID> idPedidos) {
         List<PedidoVenda> pedidos = pedidoVendaRepository.findAllById(idPedidos);
 
         if(pedidos.isEmpty()) {
@@ -47,12 +48,12 @@ public class VendaService {
         return vendaRepository.findAll();
     }
 
-    public Venda buscar(Integer id) {
+    public Venda buscar(UUID id) {
         return vendaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Venda não encontrada"));
     }
 
-    public void deletar(Integer id) {
+    public void deletar(UUID id) {
         if (!vendaRepository.existsById(id)) {
             throw new ResourceNotFoundException("Venda não encontrada");
         }

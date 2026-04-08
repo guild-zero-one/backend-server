@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class VendaRequestDto {
@@ -23,7 +24,7 @@ public class VendaRequestDto {
     @NotNull(message = "Uma venda tem que estar atrelada a um pedido.")
     @NotEmpty(message = "Lista de pedidos não pode ser vazia.")
     @Schema(description = "Lista de ID de Pedidos de venda")
-    private List<Integer> pedidos;
+    private List<UUID> pedidos;
 
     private LocalDate dataVenda;
 }
