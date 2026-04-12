@@ -117,6 +117,68 @@ A principal preocupação é **reduzir custo de processamento e payload**, porta
 
 ---
 
+### 🔹 Listar categorias
+**Objetivo:**
+- Popular tela de seleção no frontend
+
+**Requisitos:**
+- Pode retornar lista completa (baixo volume esperado)
+
+---
+
+### 🔹 Listar categorias por produto
+**Objetivo:**
+- Retornar todas as categorias vinculadas a um produto específico para exibição e gestão.
+
+**Requisitos:**
+- O frontend enviará o `produtoId` como parâmetro.
+- O retorno deve ser uma lista de objetos contendo o ID e o nome da categoria.
+
+**Exemplo de retorno:**
+- `{ "id": 1, "nome": "Feminino" }`
+
+---
+
+### 🔹 Criar nova categoria
+**Objetivo:**
+- Cadastrar uma nova categoria no sistema.
+
+**Requisitos:**
+- Campo único para `nome`.
+- Implementar validação para evitar nomes duplicados (Case Insensitive).
+
+---
+
+### 🔹 Deletar categoria
+**Objetivo:**
+- Exclusão física da categoria no banco de dados.
+
+**Regra de Negócio:**
+- A exclusão deve ser permitida mesmo que a categoria esteja vinculada a produtos.
+- **Comportamento esperado:** O backend deve remover automaticamente as associações existentes na tabela de junção (`produto_categoria`) antes de deletar a categoria (Cascade Delete).
+- *Nota: O frontend será responsável por exibir um alerta de confirmação ao usuário antes desta operação.*
+
+---
+
+### 🔹 Associar categoria a produto
+**Objetivo:**
+- Vincular uma categoria **já existente** a um produto.
+
+**Requisitos:**
+- Receber `produtoId` e `categoriaId`.
+- Validar a existência de ambos os registros antes da criação do vínculo.
+
+---
+
+### 🔹 Desassociar categoria de produto
+**Objetivo:**
+- Remover o vínculo entre um produto e uma categoria.
+
+**Requisitos:**
+- O frontend enviará os identificadores para a remoção pontual da relação.
+
+---
+
 ### 🔹 Listar produtos por categoria aproximada
 **Objetivo:**
 - Busca por termo parcial
@@ -128,25 +190,6 @@ A principal preocupação é **reduzir custo de processamento e payload**, porta
 **Requisitos:**
 - Retorno **paginado**
 - Busca **case insensitive**
-
----
-
-### 🔹 Listar categorias
-**Objetivo:**
-- Popular tela de seleção no frontend
-
-**Requisitos:**
-- Pode retornar lista completa (baixo volume esperado)
-
----
-
-### 🔹 Associar categoria a produto
-- Endpoint para criar associação
-
----
-
-### 🔹 Desassociar categoria de produto
-- Endpoint para remover associação
 
 ---
 
