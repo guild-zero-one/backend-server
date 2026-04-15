@@ -2,6 +2,8 @@ package com.zeroone.simlady.controller;
 
 import com.zeroone.simlady.dto.produto.ProdutoRequestDto;
 import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
+import com.zeroone.simlady.dto.produto.ProdutoLoteRequestDto;
+import com.zeroone.simlady.dto.produto.ProdutoLoteResponseDto;
 import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.entity.Produto;
@@ -15,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +53,22 @@ public class ProdutoController {
         produto.setFornecedor(fornecedor);
 
         ProdutoResponseDto response = produtoMapper.toResponseDto(produtoService.cadastrarProduto(produto));
+        return ResponseEntity.status(201).body(response);
+    }
+
+    @Operation(summary = "Cadastrar produtos em lote", description = "Cadastra múltiplos produtos em uma única requisição. Cria fornecedores automaticamente se não existirem.")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Produtos processados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProdutoLoteResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida",
+                    content = @Content()),
+    })
+    @PostMapping("/lote")
+    public ResponseEntity<ProdutoLoteResponseDto> cadastrarEmLote(
+            @Valid @RequestBody List<ProdutoLoteRequestDto> produtosDto) {
+        ProdutoLoteResponseDto response = produtoService.cadastrarEmLote(produtosDto);
         return ResponseEntity.status(201).body(response);
     }
 
@@ -169,17 +188,99 @@ public class ProdutoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Deletar produto por id", description = "Deleta um produto por id, caso exista")
+    @Operation(summary = "Buscar produtos por fornecedor com filtro", description = "Lista produtos de um fornecedor específico com busca por nome e paginação")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Produto deletado com sucesso",
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ProdutoResponseDto.class)))),
+            @ApiResponse(responseCode = "204", description = "Nenhum produto encontrado",
                     content = @Content()),
+    })
+    @GetMapping("/fornecedor/{fornecedorId}/search")
+    public ResponseEntity<Page<ProdutoResponseDto>> buscarPorFornecedorComFiltro(
+            @PathVariable UUID fornecedorId,
+            @RequestParam(required = false, defaultValue = "") String nome,
+            Pageable pageable) {
+        Page<ProdutoResponseDto> produtos = produtoService.listarPorFornecedorComFiltro(fornecedorId, nome, pageable)
+                .map(produtoMapper::toResponseDto);
+
+        if (produtos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(produtos);
+    }
+
+    @Operation(summary = "Buscar produtos por categoria", description = "Lista produtos de uma categoria específica com busca por nome e paginação")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ProdutoResponseDto.class)))),
+            @ApiResponse(responseCode = "204", description = "Nenhum produto encontrado",
+                    content = @Content()),
+    })
+    @GetMapping("/categoria/search")
+    public ResponseEntity<Page<ProdutoResponseDto>> buscarPorCategoria(
+            @RequestParam String nome,
+            Pageable pageable) {
+        Page<ProdutoResponseDto> produtos = produtoService.listarPorCategoria(nome, pageable)
+                .map(produtoMapper::toResponseDto);
+
+        if (produtos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(produtos);
+    }
+
+    @Operation(summary = "Contar pedidos distintos por produto", description = "Retorna a quantidade de pedidos distintos em que o produto aparece")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Contagem realizada com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class, example = "5"))),
             @ApiResponse(responseCode = "404", description = "Produto não encontrado",
                     content = @Content()),
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirProduto(@PathVariable UUID id) {
-        produtoService.excluirPorId(id);
+    @GetMapping("/{id}/pedidos/count")
+    public ResponseEntity<Long> contarPedidosDistintos(@PathVariable UUID id) {
+        Long count = produtoService.contarPedidosDistintosPorProduto(id);
+        return ResponseEntity.ok(count);
+    }
+
+    @Operation(summary = "Associar categoria ao produto", description = "Associa uma categoria a um produto")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Categoria associada com sucesso",
+                    content = @Content()),
+            @ApiResponse(responseCode = "404", description = "Produto ou categoria não encontrado",
+                    content = @Content()),
+            @ApiResponse(responseCode = "409", description = "Categoria já associada ao produto",
+                    content = @Content()),
+    })
+    @PostMapping("/{produtoId}/categorias/{categoriaId}")
+    public ResponseEntity<Void> associarCategoria(
+            @PathVariable UUID produtoId,
+            @PathVariable UUID categoriaId) {
+        produtoService.associarCategoria(produtoId, categoriaId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Desassociar categoria do produto", description = "Remove a associação de uma categoria a um produto")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Categoria desassociada com sucesso",
+                    content = @Content()),
+            @ApiResponse(responseCode = "404", description = "Produto, categoria ou associação não encontrado",
+                    content = @Content()),
+    })
+    @DeleteMapping("/{produtoId}/categorias/{categoriaId}")
+    public ResponseEntity<Void> desassociarCategoria(
+            @PathVariable UUID produtoId,
+            @PathVariable UUID categoriaId) {
+        produtoService.desassociarCategoria(produtoId, categoriaId);
         return ResponseEntity.noContent().build();
     }
 }
