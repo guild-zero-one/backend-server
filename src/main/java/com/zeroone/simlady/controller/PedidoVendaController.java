@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,6 +69,29 @@ public class PedidoVendaController {
         }
 
         return ResponseEntity.ok(pedidoVendaMapper.toDto(pedidos));
+    }
+
+    @Operation(summary = "Buscar pedidos com filtro e paginação", description = "Busca pedidos por ID ou nome do usuário com paginação e ordenação")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = PedidoVendaResponseDto.class)))),
+            @ApiResponse(responseCode = "204", description = "Nenhum pedido encontrado",
+                    content = @Content()),
+    })
+    @GetMapping("/search")
+    public ResponseEntity<Page<PedidoVendaResponseDto>> buscarComFiltro(
+            @RequestParam(required = false, defaultValue = "") String search,
+            Pageable pageable) {
+        Page<PedidoVendaResponseDto> pedidos = pedidoVendaService.buscarComFiltro(search, pageable)
+                .map(pedidoVendaMapper::toDto);
+
+        if (pedidos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(pedidos);
     }
 
     @Operation(summary = "Buscar pedido por id", description = "Busca pedido por id, caso exista")

@@ -8,6 +8,8 @@ import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -104,5 +106,27 @@ public class PedidoVendaService {
                         .multiply(BigDecimal
                                 .valueOf(item.getQuantidade())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Page<PedidoVenda> buscarComFiltro(String search, Pageable pageable) {
+        if (search == null || search.trim().isEmpty()) {
+            return pedidoVendaRepository.findAll(pageable);
+        }
+
+        String searchNormalizado = search.trim();
+
+        // Tentar buscar por ID
+        try {
+            UUID searchUuid = UUID.fromString(searchNormalizado);
+            Page<PedidoVenda> porId = pedidoVendaRepository.findByIdLike(searchUuid.toString(), pageable);
+            if (!porId.isEmpty()) {
+                return porId;
+            }
+        } catch (IllegalArgumentException e) {
+            // Não é um UUID válido, continuar para busca por nome
+        }
+
+        // Buscar por nome do usuário
+        return pedidoVendaRepository.findByUsuario_NomeContainingIgnoreCase(searchNormalizado, pageable);
     }
 }
