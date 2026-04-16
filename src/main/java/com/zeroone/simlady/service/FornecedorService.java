@@ -3,10 +3,13 @@ package com.zeroone.simlady.service;
 import com.zeroone.simlady.dto.fornecedor.FornecedorComProdutosResponseDto;
 import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.entity.Fornecedor;
+import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.mapper.FornecedorMapper;
+import com.zeroone.simlady.mapper.ProdutoMapper;
 import com.zeroone.simlady.repository.FornecedorRepository;
+import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +23,9 @@ import java.util.UUID;
 public class FornecedorService {
 
     private final FornecedorRepository fornecedorRepository;
-    private final ProdutoService produtoService;
+    private final ProdutoRepository produtoRepository;
     private final FornecedorMapper fornecedorMapper;
+    private final ProdutoMapper produtoMapper;
 
     public Fornecedor cadastrarFornecedor(Fornecedor fornecedor) {
         // Normalizar nome para evitar duplicatas (case insensitive)
@@ -92,8 +96,11 @@ public class FornecedorService {
         Page<Fornecedor> fornecedores = fornecedorRepository.findAll(pageable);
 
         return fornecedores.map(fornecedor -> {
-            List<ProdutoResponseDto> produtos = produtoService.listarProdutosPorFornecedor(fornecedor.getId());
-            return fornecedorMapper.toFornecedorComProdutosResponseDto(fornecedor, produtos);
+            List<Produto> produtos = produtoRepository.findByFornecedorId(fornecedor.getId());
+            List<ProdutoResponseDto> produtosDto = produtos.stream()
+                    .map(produtoMapper::toResponseDto)
+                    .toList();
+            return fornecedorMapper.toFornecedorComProdutosResponseDto(fornecedor, produtosDto);
         });
     }
 }
