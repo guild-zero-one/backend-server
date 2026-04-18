@@ -48,6 +48,10 @@ public class ProdutoService {
         return produtoRepository.findByFornecedorId(id);
     }
 
+    public Page<Produto> listarPorFornecedor(UUID fornecedorId, Pageable pageable) {
+        return produtoRepository.findByFornecedorId(fornecedorId, pageable);
+    }
+
     public void excluirPorId(UUID id) {
         produtoRepository.deleteById(id);
     }

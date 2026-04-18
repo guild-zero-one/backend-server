@@ -103,4 +103,11 @@ public class FornecedorService {
             return fornecedorMapper.toFornecedorComProdutosResponseDto(fornecedor, produtosDto);
         });
     }
+
+    public FornecedorResponseDto toResponseDtoComTotalProdutos(Fornecedor fornecedor) {
+        FornecedorResponseDto dto = fornecedorMapper.toResponseDto(fornecedor);
+        Long totalProdutos = produtoRepository.countByFornecedorId(fornecedor.getId());
+        dto.setTotalProdutos(totalProdutos);
+        return dto;
+    }
 }

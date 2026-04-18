@@ -4,11 +4,13 @@ import com.zeroone.simlady.entity.Categoria;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.CategoriaRepository;
+import com.zeroone.simlady.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,6 +18,7 @@ import java.util.UUID;
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final ProdutoRepository produtoRepository;
 
     public Categoria criar(Categoria categoria) {
         // Normalizar nome para evitar duplicatas (case insensitive)
@@ -72,6 +75,13 @@ public class CategoriaService {
 
     public Page<Categoria> buscarPorNome(String nome, Pageable pageable) {
         return categoriaRepository.findByNomeContainingIgnoreCase(nome, pageable);
+    }
+
+    public List<Categoria> buscarCategoriasPorProduto(UUID produtoId) {
+        // Validar que produto existe
+        produtoRepository.findById(produtoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
+        return categoriaRepository.findByProdutosId(produtoId);
     }
 }
 

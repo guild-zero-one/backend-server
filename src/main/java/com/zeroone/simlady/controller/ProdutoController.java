@@ -149,7 +149,7 @@ public class ProdutoController {
         }
     }
 
-    @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor, caso exista")
+    @Operation(summary = "Buscar produtos por id do fornecedor", description = "Buscar produtos por id do fornecedor com suporte a paginação e busca por nome")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
                     content = @Content(mediaType = "application/json",
@@ -157,17 +157,27 @@ public class ProdutoController {
             @ApiResponse(responseCode = "404", description = "Nenhum produto encontrado",
                     content = @Content())
     })
-    @GetMapping("/fornecedor/{id}")
-    public ResponseEntity<List<ProdutoResponseDto>> buscarPorFornecedor(@PathVariable UUID id) {
-        List<Produto> produtos = produtoService.buscarPorFornecedor(id);
+    @GetMapping("/fornecedor/{fornecedorId}")
+    public ResponseEntity<Page<ProdutoResponseDto>> buscarPorFornecedor(
+            @PathVariable UUID fornecedorId,
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
 
-        if (produtos.isEmpty()) {
-            ResponseEntity.notFound().build();
+        Page<ProdutoResponseDto> produtos;
+
+        if (search != null && !search.trim().isEmpty()) {
+            produtos = produtoService.listarPorFornecedorComFiltro(fornecedorId, search, pageable)
+                    .map(produtoMapper::toResponseDto);
+        } else {
+            produtos = produtoService.listarPorFornecedor(fornecedorId, pageable)
+                    .map(produtoMapper::toResponseDto);
         }
 
-        List<ProdutoResponseDto> produtosResponseDto = produtos.stream().map(produtoMapper::toResponseDto).toList();
+        if (produtos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
 
-        return ResponseEntity.ok(produtosResponseDto);
+        return ResponseEntity.ok(produtos);
     }
 
     @Operation(summary = "Atualizar produto por id", description = "Atualiza um produto por id, caso exista")
@@ -188,30 +198,6 @@ public class ProdutoController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Buscar produtos por fornecedor com filtro", description = "Lista produtos de um fornecedor específico com busca por nome e paginação")
-    @SecurityRequirement(name = "Bearer")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Produtos encontrados com sucesso",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = ProdutoResponseDto.class)))),
-            @ApiResponse(responseCode = "204", description = "Nenhum produto encontrado",
-                    content = @Content()),
-    })
-    @GetMapping("/fornecedor/{fornecedorId}/search")
-    public ResponseEntity<Page<ProdutoResponseDto>> buscarPorFornecedorComFiltro(
-            @PathVariable UUID fornecedorId,
-            @RequestParam(required = false, defaultValue = "") String nome,
-            Pageable pageable) {
-        Page<ProdutoResponseDto> produtos = produtoService.listarPorFornecedorComFiltro(fornecedorId, nome, pageable)
-                .map(produtoMapper::toResponseDto);
-
-        if (produtos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(produtos);
-    }
-
     @Operation(summary = "Buscar produtos por categoria", description = "Lista produtos de uma categoria específica com busca por nome e paginação")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
@@ -221,11 +207,16 @@ public class ProdutoController {
             @ApiResponse(responseCode = "204", description = "Nenhum produto encontrado",
                     content = @Content()),
     })
-    @GetMapping("/categoria/search")
+    @GetMapping("/categorias")
     public ResponseEntity<Page<ProdutoResponseDto>> buscarPorCategoria(
-            @RequestParam String nome,
+            @RequestParam(required = false) String search,
             Pageable pageable) {
-        Page<ProdutoResponseDto> produtos = produtoService.listarPorCategoria(nome, pageable)
+
+        if (search == null || search.trim().isEmpty()) {
+            return ResponseEntity.ok(Page.empty());
+        }
+
+        Page<ProdutoResponseDto> produtos = produtoService.listarPorCategoria(search, pageable)
                 .map(produtoMapper::toResponseDto);
 
         if (produtos.isEmpty()) {

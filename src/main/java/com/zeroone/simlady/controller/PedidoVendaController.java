@@ -51,7 +51,7 @@ public class PedidoVendaController {
         return ResponseEntity.status(201).body(pedidoVendaMapper.toDto(pedido));
     }
 
-    @Operation(summary = "Listar todos os pedidos", description = "Lista todos os Pedidos de Venda cadastrados no sistema")
+    @Operation(summary = "Listar todos os pedidos", description = "Lista todos os Pedidos de Venda cadastrados no sistema com paginação e suporte a busca")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pedidos listados na base",
@@ -61,31 +61,18 @@ public class PedidoVendaController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<List<PedidoVendaResponseDto>> listarPedidos() {
-        List<PedidoVenda> pedidos = pedidoVendaService.listar();
-
-        if (pedidos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(pedidoVendaMapper.toDto(pedidos));
-    }
-
-    @Operation(summary = "Buscar pedidos com filtro e paginação", description = "Busca pedidos por ID ou nome do usuário com paginação e ordenação")
-    @SecurityRequirement(name = "Bearer")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = PedidoVendaResponseDto.class)))),
-            @ApiResponse(responseCode = "204", description = "Nenhum pedido encontrado",
-                    content = @Content()),
-    })
-    @GetMapping("/search")
-    public ResponseEntity<Page<PedidoVendaResponseDto>> buscarComFiltro(
-            @RequestParam(required = false, defaultValue = "") String search,
+    public ResponseEntity<Page<PedidoVendaResponseDto>> listarPedidos(
+            @RequestParam(required = false) String search,
             Pageable pageable) {
-        Page<PedidoVendaResponseDto> pedidos = pedidoVendaService.buscarComFiltro(search, pageable)
-                .map(pedidoVendaMapper::toDto);
+        Page<PedidoVendaResponseDto> pedidos;
+
+        if (search != null && !search.trim().isEmpty()) {
+            pedidos = pedidoVendaService.buscarComFiltro(search, pageable)
+                    .map(pedidoVendaMapper::toDto);
+        } else {
+            pedidos = pedidoVendaService.listarComPaginacao(pageable)
+                    .map(pedidoVendaMapper::toDto);
+        }
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();

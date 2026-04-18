@@ -43,6 +43,10 @@ public class PedidoVendaService {
         return pedidoVendaRepository.findAll();
     }
 
+    public Page<PedidoVenda> listarComPaginacao(Pageable pageable) {
+        return pedidoVendaRepository.findAll(pageable);
+    }
+
     public PedidoVenda buscar(UUID id) {
         return pedidoVendaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));

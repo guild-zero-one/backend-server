@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -49,7 +50,7 @@ public class CategoriaController {
         return ResponseEntity.status(201).body(categoriaMapper.toResponseDto(criada));
     }
 
-    @Operation(summary = "Listar categorias", description = "Lista todas as categorias cadastradas no sistema com paginação")
+    @Operation(summary = "Listar categorias", description = "Lista categorias cadastradas no sistema com suporte a busca por nome e paginação")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Categorias listadas com sucesso",
@@ -59,9 +60,18 @@ public class CategoriaController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<Page<CategoriaResponseDto>> listar(Pageable pageable) {
-        Page<CategoriaResponseDto> categorias = categoriaService.listar(pageable)
-                .map(categoriaMapper::toResponseDto);
+    public ResponseEntity<Page<CategoriaResponseDto>> listar(
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+        Page<CategoriaResponseDto> categorias;
+
+        if (search != null && !search.trim().isEmpty()) {
+            categorias = categoriaService.buscarPorNome(search, pageable)
+                    .map(categoriaMapper::toResponseDto);
+        } else {
+            categorias = categoriaService.listar(pageable)
+                    .map(categoriaMapper::toResponseDto);
+        }
 
         if (categorias.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -85,7 +95,7 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaMapper.toResponseDto(categoria));
     }
 
-    @Operation(summary = "Buscar categorias por nome", description = "Busca categorias por nome parcial (case insensitive)")
+    @Operation(summary = "Listar categorias de um produto", description = "Lista todas as categorias vinculadas a um produto específico")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Categorias encontradas com sucesso",
@@ -93,13 +103,15 @@ public class CategoriaController {
                             array = @ArraySchema(schema = @Schema(implementation = CategoriaResponseDto.class)))),
             @ApiResponse(responseCode = "204", description = "Nenhuma categoria encontrada",
                     content = @Content()),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado",
+                    content = @Content()),
     })
-    @GetMapping("/search")
-    public ResponseEntity<Page<CategoriaResponseDto>> buscarPorNome(
-            @RequestParam String nome,
-            Pageable pageable) {
-        Page<CategoriaResponseDto> categorias = categoriaService.buscarPorNome(nome, pageable)
-                .map(categoriaMapper::toResponseDto);
+    @GetMapping("/produtos/{produtoId}")
+    public ResponseEntity<List<CategoriaResponseDto>> buscarCategoriasPorProduto(@PathVariable UUID produtoId) {
+        List<CategoriaResponseDto> categorias = categoriaService.buscarCategoriasPorProduto(produtoId)
+                .stream()
+                .map(categoriaMapper::toResponseDto)
+                .toList();
 
         if (categorias.isEmpty()) {
             return ResponseEntity.noContent().build();
