@@ -1,6 +1,7 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.dto.fornecedor.FornecedorComProdutosResponseDto;
+import com.zeroone.simlady.dto.fornecedor.FornecedorResponseDto;
 import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
 import com.zeroone.simlady.entity.Fornecedor;
 import com.zeroone.simlady.entity.Produto;
