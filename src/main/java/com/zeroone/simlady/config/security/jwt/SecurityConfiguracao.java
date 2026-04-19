@@ -1,7 +1,13 @@
-package com.zeroone.simlady.config.security;
+package com.zeroone.simlady.config.security.jwt;
 
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jose.util.DefaultResourceRetriever;
+import com.zeroone.simlady.config.security.sso.ClerkJwtFilter;
 import com.zeroone.simlady.service.AutenticacaoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -19,12 +25,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,6 +43,9 @@ public class SecurityConfiguracao {
     private final AutenticacaoService autenticacaoService;
 
     private final AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
+
+    @Value("${clerk.jwks-url}")
+    private String clerkJwksUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -60,6 +69,7 @@ public class SecurityConfiguracao {
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoJwtEntryPoint))
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        http.addFilterBefore(clerkJwtFilterBean(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -74,6 +84,18 @@ public class SecurityConfiguracao {
     }
 
 
+
+    @Bean
+    public ClerkJwtFilter clerkJwtFilterBean() throws Exception {
+        return new ClerkJwtFilter(clerkJwkSource());
+    }
+
+    @Bean
+    public JWKSource<SecurityContext> clerkJwkSource() throws Exception {
+        URL jwksUrl = new URL(clerkJwksUrl);
+        DefaultResourceRetriever retriever = new DefaultResourceRetriever(5000, 5000);
+        return new RemoteJWKSet<>(jwksUrl);
+    }
 
     @Bean
     public AutenticacaoEntryPoint jwtAuthenticationEntryPointBean() {

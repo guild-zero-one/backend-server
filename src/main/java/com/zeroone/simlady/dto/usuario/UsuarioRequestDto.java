@@ -1,6 +1,7 @@
 package com.zeroone.simlady.dto.usuario;
 
 import com.zeroone.simlady.entity.enums.Permissao;
+import com.zeroone.simlady.entity.enums.Provider;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;

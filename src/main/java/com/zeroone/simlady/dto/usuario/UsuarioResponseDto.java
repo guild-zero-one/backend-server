@@ -1,5 +1,6 @@
 package com.zeroone.simlady.dto.usuario;
 
+import com.zeroone.simlady.entity.enums.Provider;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -27,4 +28,10 @@ public class UsuarioResponseDto {
 
     @Schema(description = "Imagem de Perfil", example = "blob.url.com")
     private String urlImagem;
+
+    @Schema(description = "Provedor de autenticação", example = "LOCAL")
+    private Provider provider;
+
+    @Schema(description = "Indica se o perfil está completo", example = "true")
+    private Boolean perfilCompleto;
 }

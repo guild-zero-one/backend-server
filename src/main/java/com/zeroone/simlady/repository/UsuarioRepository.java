@@ -1,6 +1,7 @@
 package com.zeroone.simlady.repository;
 
 import com.zeroone.simlady.entity.Usuario;
+import com.zeroone.simlady.entity.enums.Provider;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID>{
     List<Usuario> findByEmailAndIdNot(String email, UUID id);
 
     Optional<Usuario> findByEmail(String email);
+
+    Optional<Usuario> findByClerkId(String clerkId);
+
+    Optional<Usuario> findByProviderAndProviderId(Provider provider, String providerId);
 }
