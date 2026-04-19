@@ -2,11 +2,12 @@ package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
+import com.zeroone.simlady.entity.enums.Provider;
 import com.zeroone.simlady.exception.BadRequestException;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.UsuarioRepository;
-import com.zeroone.simlady.config.security.GerenciadorTokenJwt;
+import com.zeroone.simlady.config.security.jwt.GerenciadorTokenJwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,9 +18,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,6 +40,8 @@ public class UsuarioService {
 
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
+        usuario.setProvider(Provider.LOCAL);
+        usuario.setPerfilCompleto(true);
 
         return usuarioRepository.save(usuario);
     }
@@ -157,5 +162,42 @@ public class UsuarioService {
         if(usuarioRepository.existsByEmail(email)) {
             throw new ResourceAlreadyExistsException("Email já cadastrado!");
         }
+    }
+
+    @Transactional
+    public Usuario sso(String clerkId, String nome, String sobrenome, String email, String urlImagem) {
+
+        Optional<Usuario> porClerkId = usuarioRepository
+                .findByProviderAndProviderId(Provider.CLERK, clerkId);
+
+        if (porClerkId.isPresent()) {
+            Usuario existing = porClerkId.get();
+            existing.setUrlImagem(urlImagem);
+            return usuarioRepository.save(existing);
+        }
+
+        if (usuarioRepository.existsByEmail(email)) {
+            throw new BadRequestException(
+                    "E-mail já cadastrado com outro método de autenticação."
+            );
+        }
+
+        Usuario novo = new Usuario();
+        novo.setNome(nome);
+        novo.setSobrenome(sobrenome);
+        novo.setEmail(email);
+        novo.setUrlImagem(urlImagem);
+        novo.setProvider(Provider.CLERK);
+        novo.setProviderId(clerkId);
+        novo.setPerfilCompleto(false);
+        novo.setSenha(null);
+        novo.setAtivo(true);
+
+        return usuarioRepository.save(novo);
+    }
+
+    public String gerarTokenDireto(String email) {
+        Authentication auth = new UsernamePasswordAuthenticationToken(email, null, List.of());
+        return gerenciadorTokenJwt.generateToken(auth);
     }
 }

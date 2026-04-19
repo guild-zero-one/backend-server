@@ -1,6 +1,6 @@
 package com.zeroone.simlady.service;
 
-import com.zeroone.simlady.config.security.GerenciadorTokenJwt;
+import com.zeroone.simlady.config.security.jwt.GerenciadorTokenJwt;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;

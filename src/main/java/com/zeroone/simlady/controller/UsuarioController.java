@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -237,5 +238,31 @@ public class UsuarioController {
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         usuarioService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/sso")
+    public ResponseEntity<UsuarioTokenDto> sso(
+            @RequestBody @Valid UsuarioSsoRequest request,
+            Authentication authentication) {
+
+        String clerkId = (String) authentication.getPrincipal();
+
+        Usuario usuario = usuarioService.sso(
+                clerkId,
+                request.getNome(),
+                request.getSobrenome(),
+                request.getEmail(),
+                request.getUrlImagem()
+        );
+
+        String accessToken = usuarioService.gerarTokenDireto(usuario.getEmail());
+        UsuarioResponseDto userDto = usuarioMapper.toDto(usuario);
+
+        UsuarioTokenDto usuarioTokenDto = new UsuarioTokenDto();
+
+        usuarioTokenDto.setToken(accessToken);
+        usuarioTokenDto.setUsuario(userDto);
+
+        return ResponseEntity.ok(usuarioTokenDto);
     }
 }

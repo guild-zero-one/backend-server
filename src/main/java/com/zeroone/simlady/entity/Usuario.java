@@ -1,6 +1,8 @@
 package com.zeroone.simlady.entity;
 
 import com.zeroone.simlady.entity.enums.Permissao;
+import com.zeroone.simlady.entity.enums.Provider;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,13 +33,26 @@ public class Usuario {
     @Column
     private String email;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = true)
+    private String clerkId;
+
+    @Column(nullable = true)
     private String senha;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private Provider provider;
 
     private String celular;
 
+    @Column(name = "provider_id",  nullable = true)
+    private String providerId;
+
     @Column(name = "url_imagem")
     private String urlImagem;
+
+    @Schema(description = "Indica se o perfil do usuário está completo", example = "true")
+    private Boolean perfilCompleto = true;
 
     @OneToMany
     private List<PedidoVenda> pedidos;
