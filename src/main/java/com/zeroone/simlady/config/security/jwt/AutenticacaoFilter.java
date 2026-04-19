@@ -1,4 +1,4 @@
-package com.zeroone.simlady.config.security;
+package com.zeroone.simlady.config.security.jwt;
 
 import com.zeroone.simlady.service.AutenticacaoService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -70,6 +70,11 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().equals("/usuarios/sso");
     }
 
     private void addUsernameInContext(HttpServletRequest request, String username, String jwtToken) {

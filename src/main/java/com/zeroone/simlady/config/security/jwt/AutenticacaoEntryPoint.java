@@ -1,4 +1,4 @@
-package com.zeroone.simlady.config.security;
+package com.zeroone.simlady.config.security.jwt;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
