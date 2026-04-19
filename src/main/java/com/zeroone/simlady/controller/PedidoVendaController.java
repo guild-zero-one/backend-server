@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +51,7 @@ public class PedidoVendaController {
         return ResponseEntity.status(201).body(pedidoVendaMapper.toDto(pedido));
     }
 
-    @Operation(summary = "Listar todos os pedidos", description = "Lista todos os Pedidos de Venda cadastrados no sistema")
+    @Operation(summary = "Listar todos os pedidos", description = "Lista todos os Pedidos de Venda cadastrados no sistema com paginação e suporte a busca")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pedidos listados na base",
@@ -59,14 +61,24 @@ public class PedidoVendaController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<List<PedidoVendaResponseDto>> listarPedidos() {
-        List<PedidoVenda> pedidos = pedidoVendaService.listar();
+    public ResponseEntity<Page<PedidoVendaResponseDto>> listarPedidos(
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+        Page<PedidoVendaResponseDto> pedidos;
+
+        if (search != null && !search.trim().isEmpty()) {
+            pedidos = pedidoVendaService.buscarComFiltro(search, pageable)
+                    .map(pedidoVendaMapper::toDto);
+        } else {
+            pedidos = pedidoVendaService.listarComPaginacao(pageable)
+                    .map(pedidoVendaMapper::toDto);
+        }
 
         if (pedidos.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity.ok(pedidoVendaMapper.toDto(pedidos));
+        return ResponseEntity.ok(pedidos);
     }
 
     @Operation(summary = "Buscar pedido por id", description = "Busca pedido por id, caso exista")

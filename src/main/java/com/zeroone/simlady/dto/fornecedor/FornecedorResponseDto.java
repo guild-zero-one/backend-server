@@ -18,4 +18,7 @@ public class FornecedorResponseDto {
 
     private String descricao;
     private String imagemUrl;
+
+    @Schema(description = "Total de produtos do fornecedor", example = "8")
+    private Long totalProdutos;
 }

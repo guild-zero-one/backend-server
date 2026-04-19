@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,7 +49,7 @@ public class VendaController {
         return ResponseEntity.status(201).body(vendaMapper.toDto(venda));
     }
 
-    @Operation(summary = "Listar todas as vendas", description = "Lista todas as vendas cadastradas no sistema")
+    @Operation(summary = "Listar todas as vendas", description = "Lista todas as vendas cadastradas no sistema com paginação")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vendas listadas na base",
@@ -57,8 +59,9 @@ public class VendaController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<List<VendaResponseDto>> listar() {
-        List<Venda> vendas = vendaService.listar();
+    public ResponseEntity<Page<VendaResponseDto>> listar(Pageable pageable) {
+        Page<VendaResponseDto> vendas = vendaService.listar(pageable)
+                .map(vendaMapper::toDto);
 
         if(vendas.isEmpty()) {
             return ResponseEntity
@@ -66,8 +69,7 @@ public class VendaController {
                     .build();
         }
         return ResponseEntity
-                .ok(vendaMapper
-                        .toDto(vendas));
+                .ok(vendas);
     }
 
     @Operation(summary = "Buscar venda por id", description = "Busca informações da venda por id")

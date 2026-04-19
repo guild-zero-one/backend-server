@@ -52,7 +52,7 @@ public class FornecedorController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @Operation(summary = "Listar todos os fornecedores", description = "Lista todos os fornecedores cadastrados no sistema")
+    @Operation(summary = "Listar todos os fornecedores", description = "Lista todos os fornecedores cadastrados no sistema com suporte a busca e paginação")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fornecedores listados na base",
@@ -62,9 +62,19 @@ public class FornecedorController {
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<Page<FornecedorResponseDto>> listar(Pageable pageable) {
-        Page<FornecedorResponseDto> fornecedores = fornecedorService.listar(pageable)
-                .map(fornecedorMapper::toResponseDto);
+    public ResponseEntity<Page<FornecedorResponseDto>> listar(
+            @RequestParam(required = false) String search,
+            Pageable pageable) {
+
+        Page<FornecedorResponseDto> fornecedores;
+
+        if (search != null && !search.trim().isEmpty()) {
+            fornecedores = fornecedorService.buscarPorNome(search, pageable)
+                    .map(fornecedorService::toResponseDtoComTotalProdutos);
+        } else {
+            fornecedores = fornecedorService.listar(pageable)
+                    .map(fornecedorService::toResponseDtoComTotalProdutos);
+        }
 
         if (fornecedores.isEmpty()) {
             return ResponseEntity.noContent().build();

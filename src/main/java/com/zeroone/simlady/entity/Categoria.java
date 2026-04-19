@@ -14,34 +14,25 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name = "produto")
-public class Produto {
+@Table(name = "categoria")
+public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false, unique = true)
     private String nome;
 
-    private String sku;
-
+    @Column
     private String descricao;
 
-
-    private String urlImagem;
-
-
-    private Integer quantidade;
-    private Double precoUnitario;
-    private Boolean catalogo;
-
-    private Double valorVenda;
-
-    @ManyToOne
-    @JoinColumn(name = "fk_fornecedor", nullable = false)
-    private Fornecedor fornecedor;
-
-    @ManyToMany(mappedBy = "produtos", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Categoria> categorias = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "produto_categoria",
+            joinColumns = @JoinColumn(name = "fk_categoria"),
+            inverseJoinColumns = @JoinColumn(name = "fk_produto")
+    )
+    private Set<Produto> produtos = new HashSet<>();
 
     @CreationTimestamp
     private LocalDateTime criadoEm;
@@ -49,3 +40,4 @@ public class Produto {
     @UpdateTimestamp
     private LocalDateTime atualizadoEm;
 }
+

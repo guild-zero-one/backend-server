@@ -7,6 +7,8 @@ import com.zeroone.simlady.repository.PedidoVendaRepository;
 import com.zeroone.simlady.repository.VendaRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -46,6 +48,10 @@ public class VendaService {
 
     public List<Venda> listar() {
         return vendaRepository.findAll();
+    }
+
+    public Page<Venda> listar(Pageable pageable) {
+        return vendaRepository.findAll(pageable);
     }
 
     public Venda buscar(UUID id) {
