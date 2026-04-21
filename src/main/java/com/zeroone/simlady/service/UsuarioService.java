@@ -12,6 +12,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,6 +44,9 @@ public class UsuarioService {
         usuario.setSenha(senhaCriptografada);
         usuario.setProvider(Provider.LOCAL);
         usuario.setPerfilCompleto(true);
+        if (usuario.getPermissao() == null) {
+            usuario.setPermissao(Permissao.COMUM);
+        }
 
         return usuarioRepository.save(usuario);
     }
@@ -96,6 +101,32 @@ public class UsuarioService {
 
     public List<Usuario> listar() {
         return usuarioRepository.findAll();
+    }
+
+    public Page<Usuario> buscarComFiltro(String search, String type, Pageable pageable) {
+        String termoBusca = search == null || search.trim().isEmpty() ? null : search.trim();
+        Permissao permissao = parsePermissao(type);
+
+        if (permissao == null && termoBusca == null) {
+            return usuarioRepository.findAll(pageable);
+        }
+
+        if (permissao == null) {
+            return usuarioRepository.findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                    termoBusca, termoBusca, termoBusca, pageable
+            );
+        }
+
+        if (termoBusca == null) {
+            return usuarioRepository.findByPermissao(permissao, pageable);
+        }
+
+        return usuarioRepository.findByPermissaoAndNomeContainingIgnoreCaseOrPermissaoAndSobrenomeContainingIgnoreCaseOrPermissaoAndEmailContainingIgnoreCase(
+                permissao, termoBusca,
+                permissao, termoBusca,
+                permissao, termoBusca,
+                pageable
+        );
     }
 
     public Usuario buscar(UUID id) {
@@ -192,6 +223,7 @@ public class UsuarioService {
         novo.setPerfilCompleto(false);
         novo.setSenha(null);
         novo.setAtivo(true);
+        novo.setPermissao(Permissao.COMUM);
 
         return usuarioRepository.save(novo);
     }
@@ -199,5 +231,21 @@ public class UsuarioService {
     public String gerarTokenDireto(String email) {
         Authentication auth = new UsernamePasswordAuthenticationToken(email, null, List.of());
         return gerenciadorTokenJwt.generateToken(auth);
+    }
+
+    private Permissao parsePermissao(String type) {
+        if (type == null || type.trim().isEmpty() || "all".equalsIgnoreCase(type)) {
+            return null;
+        }
+
+        if ("admin".equalsIgnoreCase(type)) {
+            return Permissao.ADMIN;
+        }
+
+        if ("comum".equalsIgnoreCase(type)) {
+            return Permissao.COMUM;
+        }
+
+        throw new BadRequestException("Tipo inválido. Valores aceitos: admin, comum, all.");
     }
 }

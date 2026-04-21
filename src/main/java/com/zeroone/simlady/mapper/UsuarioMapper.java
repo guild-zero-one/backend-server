@@ -15,6 +15,7 @@ public interface UsuarioMapper {
 
     Usuario toEntity (UsuarioAtualizacaoDto dto);
 
+    @Mapping(target = "permissao", source = "permissao")
     UsuarioResponseDto toDto (Usuario entity);
 
     @Mapping(target = "qtdPedidos", source = "usuario", qualifiedByName = "mapQtdPedidos")
@@ -47,6 +48,10 @@ public interface UsuarioMapper {
         }
 
         throw new BadRequestException("Permissão inválida: " + permissao);
+    }
+
+    default String map(Permissao permissao) {
+        return permissao != null ? permissao.name() : Permissao.COMUM.name();
     }
 
     @Mapping(target = "id", ignore = true)

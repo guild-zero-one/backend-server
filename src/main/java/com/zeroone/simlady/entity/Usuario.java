@@ -61,7 +61,7 @@ public class Usuario {
     private Boolean ativo = true;
 
     @Enumerated(EnumType.STRING)
-    private Permissao permissao;
+    private Permissao permissao = Permissao.COMUM;
 
     @CreationTimestamp
     @Column(name = "criado_em")

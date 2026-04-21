@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -97,7 +99,7 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Listar usuários", description = "Lista todos os usuários do sistema")
+    @Operation(summary = "Listar usuários", description = "Lista usuários com suporte a paginação, ordenação, busca textual e filtro por tipo")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuários listados na base",
@@ -108,20 +110,18 @@ public class UsuarioController {
     })
 
     @GetMapping
-    public ResponseEntity <List<UsuarioResponseDto>> listar() {
-        List<Usuario> usuarios = usuarioService.listar();
+    public ResponseEntity<Page<UsuarioResponseDto>> listar(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "all") String type,
+            Pageable pageable) {
+        Page<UsuarioResponseDto> usuarios = usuarioService.buscarComFiltro(search, type, pageable)
+                .map(usuarioMapper::toDto);
 
         if(usuarios.isEmpty()) {
-            return ResponseEntity
-                    .status(204)
-                    .build();
+            return ResponseEntity.noContent().build();
         }
 
-        return ResponseEntity
-                .status(200)
-                .body(usuarios
-                        .stream()
-                        .map(usuarioMapper::toDto).toList());
+        return ResponseEntity.ok(usuarios);
     }
 
     @Operation(summary = "Buscar usuário por id", description = "Busca usuário pelo id, caso exista")

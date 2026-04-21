@@ -2,6 +2,8 @@ package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.config.security.jwt.GerenciadorTokenJwt;
 import com.zeroone.simlady.entity.Usuario;
+import com.zeroone.simlady.entity.enums.Permissao;
+import com.zeroone.simlady.exception.BadRequestException;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.UsuarioRepository;
@@ -11,6 +13,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -115,6 +120,54 @@ class UsuarioServiceTest {
 
         assertEquals(1, result.size());
         verify(usuarioRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("Deve buscar usuários com filtro admin")
+    void deveBuscarUsuariosComFiltroAdmin() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Usuario> page = new PageImpl<>(List.of(new Usuario()));
+
+        when(usuarioRepository.findByPermissaoAndNomeContainingIgnoreCaseOrPermissaoAndSobrenomeContainingIgnoreCaseOrPermissaoAndEmailContainingIgnoreCase(
+                Permissao.ADMIN, "ana",
+                Permissao.ADMIN, "ana",
+                Permissao.ADMIN, "ana",
+                pageable
+        )).thenReturn(page);
+
+        Page<Usuario> result = usuarioService.buscarComFiltro("ana", "admin", pageable);
+
+        assertEquals(1, result.getTotalElements());
+        verify(usuarioRepository).findByPermissaoAndNomeContainingIgnoreCaseOrPermissaoAndSobrenomeContainingIgnoreCaseOrPermissaoAndEmailContainingIgnoreCase(
+                Permissao.ADMIN, "ana",
+                Permissao.ADMIN, "ana",
+                Permissao.ADMIN, "ana",
+                pageable
+        );
+    }
+
+    @Test
+    @DisplayName("Deve buscar usuários sem filtro de tipo quando type for all")
+    void deveBuscarUsuariosSemFiltroTipoQuandoAll() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Usuario> page = new PageImpl<>(List.of(new Usuario()));
+
+        when(usuarioRepository.findAll(pageable)).thenReturn(page);
+
+        Page<Usuario> result = usuarioService.buscarComFiltro("   ", "all", pageable);
+
+        assertEquals(1, result.getTotalElements());
+        verify(usuarioRepository).findAll(pageable);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção para tipo inválido no filtro")
+    void deveLancarExcecaoParaTipoInvalidoNoFiltro() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        assertThrows(BadRequestException.class, () -> usuarioService.buscarComFiltro("ana", "gerente", pageable));
+        verify(usuarioRepository, never()).findByPermissao(any(), any());
+        verify(usuarioRepository, never()).findAll(any(org.springframework.data.domain.Pageable.class));
     }
 
     @Test

@@ -32,6 +32,9 @@ public class UsuarioResponseDto {
     @Schema(description = "Provedor de autenticação", example = "LOCAL")
     private Provider provider;
 
+    @Schema(description = "Tipo de usuário", example = "ADMIN")
+    private String permissao;
+
     @Schema(description = "Indica se o perfil está completo", example = "true")
     private Boolean perfilCompleto;
 }

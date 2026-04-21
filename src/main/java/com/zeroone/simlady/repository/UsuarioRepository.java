@@ -1,9 +1,12 @@
 package com.zeroone.simlady.repository;
 
 import com.zeroone.simlady.entity.Usuario;
+import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.entity.enums.Provider;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -23,4 +26,26 @@ public interface UsuarioRepository extends JpaRepository<Usuario, UUID>{
     Optional<Usuario> findByClerkId(String clerkId);
 
     Optional<Usuario> findByProviderAndProviderId(Provider provider, String providerId);
+
+    Page<Usuario> findByPermissao(
+            Permissao permissao,
+            Pageable pageable
+    );
+
+    Page<Usuario> findByNomeContainingIgnoreCaseOrSobrenomeContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            String nome,
+            String sobrenome,
+            String email,
+            Pageable pageable
+    );
+
+    Page<Usuario> findByPermissaoAndNomeContainingIgnoreCaseOrPermissaoAndSobrenomeContainingIgnoreCaseOrPermissaoAndEmailContainingIgnoreCase(
+            Permissao permissaoNome,
+            String nome,
+            Permissao permissaoSobrenome,
+            String sobrenome,
+            Permissao permissaoEmail,
+            String email,
+            Pageable pageable
+    );
 }
