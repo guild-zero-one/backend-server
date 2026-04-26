@@ -6,8 +6,12 @@ Este documento **consolida correções pendentes do v4** e adiciona novos requis
 
 Novidades desta versão:
 - Separação de DTOs de pedido entre listagem (resumo) e detalhe (completo)
+- Remoção de itens da listagem de pedidos
+- Enriquecimento do detalhe de venda com pedido completo embutido
 - Novo endpoint de pedidos por usuário
 - Endpoint de toggle de pagamento em vendas
+
+> **Nota de implementação:** O Spring com JPA/Hibernate já tem os relacionamentos mapeados. Os JOINs descritos neste documento devem ser feitos via `JOIN FETCH` ou projeções para evitar N+1 queries — especialmente em `GET /vendas/{id}` que encadeia venda → pedido → itens → produto.
 
 ---
 
@@ -18,7 +22,7 @@ Novidades desta versão:
 | Produtos | ⚠️ Pendente do v4 |
 | Usuários | ⚠️ Pendente do v4 |
 | Pedidos | ⚠️ Pendente do v4 + novos requisitos |
-| Vendas | 🆕 Novo requisito |
+| Vendas | 🆕 Novos requisitos |
 
 ---
 
@@ -28,7 +32,7 @@ Novidades desta versão:
 
 **Pendência do v4 — não implementado.**
 
-- Incluir `criadoEm` e `atualizadoEm` no DTO de resposta em todos os endpoints de produto
+Incluir `criadoEm` e `atualizadoEm` no DTO de resposta em todos os endpoints de produto.
 
 ```json
 {
@@ -80,65 +84,94 @@ if (dto.getCelular() != null) usuario.setCelular(dto.getCelular());
 
 ## 🧾 Entidade: Pedidos
 
-### 🔹 Separação de DTOs — listagem vs detalhe
+### 🔹 Separação de DTOs — `PedidoResumoResponse` vs `PedidoDetalheResponse`
 
 **Contexto:**
-Retornar os itens do pedido na listagem gera payload desnecessário — 10 pedidos × 5 itens = 50 objetos trafegando numa tela que só exibe nome do cliente, status e valor total.
-
-**Ajuste necessário:**
-Criar dois DTOs distintos no backend:
-
-**`PedidoResumoResponse`** — usado em `GET /pedidos` e `GET /pedidos/usuario/{usuarioId}`:
-
-| Campo | Descrição |
-|---|---|
-| `id` | UUID do pedido |
-| `status` | `PENDENTE`, `CONCLUIDO` ou `CANCELADO` |
-| `criadoEm` | Data de criação |
-| `atualizadoEm` | Data de atualização |
-| `totalValorVenda` | Valor total de venda |
-| `usuario` | Objeto resumido do cliente (ver campos abaixo) |
-
-**`PedidoDetalheResponse`** — usado em `GET /pedidos/{id}`, inclui tudo acima mais:
-
-| Campo | Descrição |
-|---|---|
-| `idVenda` | UUID da venda associada |
-| `idUsuario` | UUID do usuário |
-| `totalPrecoUnitario` | Total de custo |
-| `itens` | Lista completa de itens com produto resumido |
+Retornar itens na listagem gera payload desnecessário — 10 pedidos × 5 itens = 50 objetos trafegando numa tela que só exibe nome do cliente, status e valor total.
 
 ---
 
-### 🔹 Objeto `usuario` resumido — ambos os DTOs
+### 🔹 `GET /pedidos` — listagem com `PedidoResumoResponse`
 
-**Pendência do v4 — não implementado.**
+**Ajustes necessários:**
+- Remover `itens` da resposta
+- Incluir objeto `usuario` resumido via JOIN
+- Incluir `totalItens` (contagem calculada pelo backend)
+- Incluir `totalValorVenda` (calculado pelo backend)
+- Incluir `atualizadoEm`
+- Manter `idVenda` para indicar se o pedido já foi finalizado em venda
 
-Montar via JOIN a partir do relacionamento `@ManyToOne` existente. Não adicionar coluna no banco.
-
-| Campo | Tipo | Nullable |
-|---|---|---|
-| `id` | uuid | NÃO |
-| `nome` | varchar | NÃO |
-| `sobrenome` | varchar | SIM |
-| `urlImagem` | varchar | SIM |
-| `celular` | varchar | SIM |
-| `ativo` | boolean | NÃO |
+**Exemplo de resposta:**
+```json
+{
+  "content": [
+    {
+      "id": "ped-001",
+      "status": "PENDENTE",
+      "idVenda": null,
+      "criadoEm": "2026-04-25T15:59:14",
+      "atualizadoEm": "2026-04-25T15:59:14",
+      "totalItens": 3,
+      "totalValorVenda": 259.80,
+      "usuario": {
+        "id": "usr-001",
+        "nome": "Maria",
+        "sobrenome": "Oliveira",
+        "urlImagem": "https://...",
+        "celular": "(11) 98888-7777",
+        "ativo": true
+      }
+    }
+  ]
+}
+```
 
 ---
 
-### 🔹 Objeto `produto` resumido nos itens — `PedidoDetalheResponse`
+### 🔹 `GET /pedidos/{id}` — detalhe com `PedidoDetalheResponse`
 
-**Pendência do v4 — não implementado.**
+**Ajustes necessários:**
+- Manter tudo do resumo acima
+- Adicionar `itens` com objeto `produto` resumido embutido
+- Nos itens: incluir `precoUnitario` e `valorVenda` do momento da criação
+- Nos itens: **não expor preços atuais do produto no banco**
+- Adicionar `totalPrecoUnitario` (custo total)
 
-Incluir dentro de cada item do pedido. Não expor preços do produto — o item já possui os valores registrados no momento da criação.
-
-| Campo | Tipo | Nullable |
-|---|---|---|
-| `id` | uuid | NÃO |
-| `nome` | varchar | NÃO |
-| `urlImagem` | varchar | SIM |
-| `descricao` | varchar | SIM |
+**Exemplo de resposta:**
+```json
+{
+  "id": "ped-001",
+  "status": "CONCLUIDO",
+  "idVenda": "vnd-001",
+  "criadoEm": "2026-04-25T12:38:11",
+  "atualizadoEm": "2026-04-25T12:38:11",
+  "totalItens": 2,
+  "totalPrecoUnitario": 250.00,
+  "totalValorVenda": 379.80,
+  "usuario": {
+    "id": "usr-001",
+    "nome": "Maria",
+    "sobrenome": "Oliveira",
+    "urlImagem": "https://...",
+    "celular": "(11) 98888-7777",
+    "ativo": true
+  },
+  "itens": [
+    {
+      "id": "item-001",
+      "quantidade": 2,
+      "precoUnitario": 100.00,
+      "valorVenda": 129.90,
+      "produto": {
+        "id": "prod-abc",
+        "nome": "Perfume Malbec",
+        "urlImagem": "https://...",
+        "descricao": "Fragrância amadeirada"
+      }
+    }
+  ]
+}
+```
 
 ---
 
@@ -163,14 +196,6 @@ Incluir dentro de cada item do pedido. Não expor preços do produto — o item 
   ]
 }
 ```
-
----
-
-### 🔹 Campo `atualizadoEm` ausente
-
-**Pendência do v4 — não implementado.**
-
-- Incluir `atualizadoEm` nos DTOs de listagem e detalhe
 
 ---
 
@@ -201,14 +226,13 @@ GET /pedidos?search=ped-001
 
 ---
 
-### 🔹 Pedidos por usuário — `GET /pedidos/usuario/{usuarioId}` 🆕
+### 🔹 `GET /pedidos/usuario/{usuarioId}` 🆕
 
 **Contexto:**
-Necessário para a versão cliente do app — o usuário comum só deve ver seus próprios pedidos sem depender de filtro no frontend.
+Necessário para a versão cliente do app — o usuário comum só deve ver seus próprios pedidos.
 
 **Requisitos:**
-- Retornar lista paginada de pedidos do usuário informado
-- Usar o mesmo `PedidoResumoResponse` da listagem geral
+- Retornar lista paginada usando o mesmo `PedidoResumoResponse`
 - Suportar os mesmos query params: `page`, `size`, `sort`, `status`
 
 ```
@@ -216,16 +240,27 @@ GET /pedidos/usuario/usr-001?page=0&size=10&sort=criadoEm,desc
 GET /pedidos/usuario/usr-001?status=PENDENTE
 ```
 
+---
+
+## 💰 Entidade: Vendas
+
+### 🔹 `GET /vendas` — listagem com objeto `usuario`
+
+**Ajuste necessário:**
+- Incluir objeto `usuario` resumido via JOIN para nomear a lista pelo cliente
+
+**Campos do objeto `usuario`:** mesmo padrão dos pedidos (id, nome, sobrenome, urlImagem, ativo)
+
 **Exemplo de resposta:**
 ```json
 {
   "content": [
     {
-      "id": "ped-001",
-      "status": "PENDENTE",
-      "criadoEm": "2024-03-01T10:00:00",
-      "atualizadoEm": "2024-03-01T10:00:00",
-      "totalValorVenda": 259.80,
+      "id": "vnd-001",
+      "valorTotal": 120.00,
+      "desconto": 0.00,
+      "pagamentoRealizado": true,
+      "dataVenda": "2026-04-25",
       "usuario": {
         "id": "usr-001",
         "nome": "Maria",
@@ -234,27 +269,70 @@ GET /pedidos/usuario/usr-001?status=PENDENTE
         "ativo": true
       }
     }
-  ],
-  "totalElements": 1,
-  "totalPages": 1,
-  "number": 0,
-  "last": true
+  ]
 }
 ```
 
 ---
 
-### 🔹 Toggle de pagamento — `PATCH /vendas/{id}/pagamento` 🆕
+### 🔹 `GET /vendas/{id}` — detalhe com pedido completo embutido
+
+**Ajuste necessário:**
+- Incluir objeto `pedido` completo embutido — mesmo `PedidoDetalheResponse` com `usuario` e `produto` nos itens
+- Uma única requisição retorna tudo que o detalhe de venda precisa exibir
+
+> **Atenção de implementação:** Este endpoint encadeia `venda → pedido → itens → produto` e `pedido → usuario`. Usar `JOIN FETCH` ou projeções para evitar N+1 queries.
+
+**Exemplo de resposta:**
+```json
+{
+  "id": "vnd-001",
+  "valorTotal": 259.80,
+  "desconto": 0.00,
+  "pagamentoRealizado": false,
+  "dataVenda": "2026-04-25",
+  "pedido": {
+    "id": "ped-001",
+    "status": "CONCLUIDO",
+    "criadoEm": "2026-04-25T12:38:11",
+    "totalValorVenda": 259.80,
+    "usuario": {
+      "id": "usr-001",
+      "nome": "Maria",
+      "sobrenome": "Oliveira",
+      "urlImagem": "https://...",
+      "ativo": true
+    },
+    "itens": [
+      {
+        "id": "item-001",
+        "quantidade": 2,
+        "precoUnitario": 100.00,
+        "valorVenda": 129.90,
+        "produto": {
+          "id": "prod-abc",
+          "nome": "Perfume Malbec",
+          "urlImagem": "https://...",
+          "descricao": "Fragrância amadeirada"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 🔹 `PATCH /vendas/{id}/pagamento` 🆕
 
 **Contexto:**
-O admin alterna o status de pagamento de uma venda diretamente pela tela de detalhe usando um switch.
+O admin alterna o status de pagamento diretamente pela tela de detalhe usando um switch.
 
 **Requisitos:**
 - Receber o novo valor de `pagamentoRealizado` no body
-- Persistir o valor recebido diretamente — sem lógica de inversão no backend
+- Persistir o valor recebido — sem lógica de inversão no backend
 - Retornar a venda atualizada
 
-**Exemplo de requisição:**
 ```
 PATCH /vendas/vnd-001/pagamento
 ```
@@ -262,17 +340,9 @@ PATCH /vendas/vnd-001/pagamento
 { "pagamentoRealizado": true }
 ```
 
-**Exemplo de resposta:**
-```json
-{
-  "id": "vnd-001",
-  "pagamentoRealizado": true,
-  "dataVenda": "2024-03-01",
-  "desconto": 0
-}
-```
+> **Motivo da escolha:** O frontend envia o estado exato que o switch assumiu, eliminando `SELECT` antes do `UPDATE` e evitando condições de corrida.
 
-> **Motivo da escolha:** O frontend envia o estado exato que o switch assumiu, eliminando a necessidade de um `SELECT` antes do `UPDATE` no backend e evitando condições de corrida em caso de cliques rápidos.
+---
 
 ## 📋 Resumo de Pendências v5
 
@@ -281,13 +351,14 @@ PATCH /vendas/vnd-001/pagamento
 | `GET /produtos` | Sem `criadoEm` e `atualizadoEm` | Adicionar campos no DTO |
 | `GET /produtos/{id}` | Sem `criadoEm` e `atualizadoEm` | Adicionar campos no DTO |
 | `PATCH /usuarios/{id}` | Campos não enviados viram `null` | Atualização seletiva por campo |
-| `GET /pedidos` | DTO retorna itens desnecessários na listagem | Separar em `PedidoResumoResponse` |
-| `GET /pedidos` | Sem objeto `usuario` | Adicionar ao DTO via JOIN |
-| `GET /pedidos` | Sem `atualizadoEm` | Adicionar ao DTO |
+| `GET /pedidos` | Retorna itens desnecessários | Remover itens — usar `PedidoResumoResponse` |
+| `GET /pedidos` | Sem `usuario`, `totalItens`, `totalValorVenda`, `atualizadoEm` | Adicionar ao DTO via JOIN |
 | `GET /pedidos` | Sem filtro por `status` | Adicionar query param `?status=` |
 | `GET /pedidos` | Search sem efeito | Corrigir busca por nome e UUID |
-| `GET /pedidos/{id}` | Sem objeto `usuario` e `produto` nos itens | Adicionar ao DTO via JOIN |
-| `GET /pedidos/{id}` | Sem `atualizadoEm` e `valorVenda` nos itens | Adicionar ao DTO |
+| `GET /pedidos/{id}` | Sem `usuario` e `produto` nos itens | Adicionar ao DTO via JOIN — usar `PedidoDetalheResponse` |
+| `GET /pedidos/{id}` | Sem `atualizadoEm`, `valorVenda`, `totalPrecoUnitario` e `totalItens` | Adicionar ao DTO |
 | `POST /pedidos` (itens) | `valorVenda` não aceito no body | Adicionar ao DTO de entrada |
-| `GET /pedidos/usuario/{id}` | Endpoint inexistente | **Implementar** |
-| `PATCH /vendas/{id}/pagamento` | Endpoint inexistente | **Implementar** — recebe `{ pagamentoRealizado: boolean }` no body |
+| `GET /pedidos/usuario/{id}` | Endpoint inexistente | **Implementar** com `PedidoResumoResponse` |
+| `GET /vendas` | Sem objeto `usuario` | Adicionar ao DTO via JOIN |
+| `GET /vendas/{id}` | Sem pedido completo embutido | **Implementar** com `JOIN FETCH` — venda → pedido → itens → produto |
+| `PATCH /vendas/{id}/pagamento` | Endpoint inexistente | **Implementar** — recebe `{ pagamentoRealizado: boolean }` |
