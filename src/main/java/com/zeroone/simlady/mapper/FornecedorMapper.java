@@ -12,8 +12,12 @@ import java.util.List;
 
 @Mapper (componentModel = "spring")
 public interface FornecedorMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "criadoEm", ignore = true)
+    @Mapping(target = "atualizadoEm", ignore = true)
     Fornecedor toEntity(FornecedorRequestDto dto);
 
+    @Mapping(target = "totalProdutos", ignore = true)
     FornecedorResponseDto toResponseDto (Fornecedor fornecedor);
 
     @Mapping(target = "produtos", source = "produtos")

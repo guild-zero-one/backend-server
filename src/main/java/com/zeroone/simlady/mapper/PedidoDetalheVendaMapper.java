@@ -38,7 +38,9 @@ public interface PedidoDetalheVendaMapper {
         if (itens == null || itens.isEmpty()) return BigDecimal.ZERO;
         return itens.stream()
                 .map(item -> {
-                    BigDecimal valorVenda = item.getValorVenda() != null ? item.getValorVenda() : BigDecimal.ZERO;
+                    BigDecimal valorVenda = (item.getProduto() != null && item.getProduto().getValorVenda() != null)
+                            ? BigDecimal.valueOf(item.getProduto().getValorVenda())
+                            : BigDecimal.ZERO;
                     return valorVenda.multiply(BigDecimal.valueOf(item.getQuantidade()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
