@@ -12,3 +12,4 @@ public interface CategoriaMapper {
     CategoriaResponseDto toResponseDto(Categoria categoria);
 }
 
+
