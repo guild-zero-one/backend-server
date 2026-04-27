@@ -143,25 +143,27 @@ public class UsuarioService {
 
         Usuario usuarioAntigo = buscar(id);
 
-
-
-        boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
-
-        if(existePorEmail) {
-            throw new ResourceAlreadyExistsException("Dados inválidos, email já cadastrado");
+        if (usuario.getEmail() != null) {
+            boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
+            if(existePorEmail) {
+                throw new ResourceAlreadyExistsException("Dados inválidos, email já cadastrado");
+            }
         }
 
-        usuarioAntigo.setNome(usuario.getNome());
-        usuarioAntigo.setSobrenome(usuario.getSobrenome());
-        usuarioAntigo.setEmail(usuario.getEmail());
-        usuarioAntigo.setSenha(usuario.getSenha());
-        usuarioAntigo.setPermissao(usuario.getPermissao());
-        usuarioAntigo.setAtivo(usuario.getAtivo());
-        usuarioAntigo.setPedidos(usuario.getPedidos());
+        if (usuario.getNome() != null) {
+            usuarioAntigo.setNome(usuario.getNome());
+        }
+        if (usuario.getSobrenome() != null) {
+            usuarioAntigo.setSobrenome(usuario.getSobrenome());
+        }
+        if (usuario.getEmail() != null) {
+            usuarioAntigo.setEmail(usuario.getEmail());
+        }
+        if (usuario.getCelular() != null) {
+            usuarioAntigo.setCelular(usuario.getCelular());
+        }
 
-        usuario.setId(id);
-
-        return usuarioRepository.save(usuario);
+        return usuarioRepository.save(usuarioAntigo);
     }
 
     public Usuario buscarAutenticado(HttpServletRequest request) {

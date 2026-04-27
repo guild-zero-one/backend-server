@@ -23,4 +23,9 @@ public class PedidoItemRequestDto {
     @Positive(message = "Preço Unitário deve ser um número positivo.")
     @Schema(description = "Preço unitário item", example = "49.99")
     private BigDecimal precoUnitario;
+
+    @NotNull(message = "Valor de venda não pode ser nulo.")
+    @Positive(message = "Valor de venda deve ser um número positivo.")
+    @Schema(description = "Valor de venda do item no momento do pedido", example = "79.99")
+    private BigDecimal valorVenda;
 }

@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -38,5 +37,5 @@ public class PedidoVenda{
     private LocalDateTime criadoEm;
 
     @UpdateTimestamp
-    private LocalDate atualizadoEm;
+    private LocalDateTime atualizadoEm;
 }

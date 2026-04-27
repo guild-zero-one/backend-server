@@ -19,4 +19,7 @@ public class PedidoItemResponseDto {
 
     @Schema(description = "Preço Unitário item", example = "49.99")
     private BigDecimal precoUnitario;
+
+    @Schema(description = "Valor de venda do item no momento do pedido", example = "79.99")
+    private BigDecimal valorVenda;
 }

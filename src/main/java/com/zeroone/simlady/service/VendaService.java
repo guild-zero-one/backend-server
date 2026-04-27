@@ -51,12 +51,18 @@ public class VendaService {
     }
 
     public Page<Venda> listar(Pageable pageable) {
-        return vendaRepository.findAll(pageable);
+        return vendaRepository.listarComUsuario(pageable);
     }
 
     public Venda buscar(UUID id) {
-        return vendaRepository.findById(id)
+        return vendaRepository.buscarDetalhePorId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Venda não encontrada"));
+    }
+
+    public Venda atualizarPagamento(UUID id, Boolean pagamentoRealizado) {
+        Venda venda = buscar(id);
+        venda.setPagamentoRealizado(pagamentoRealizado);
+        return vendaRepository.save(venda);
     }
 
     public void deletar(UUID id) {

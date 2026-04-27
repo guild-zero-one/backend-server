@@ -55,8 +55,12 @@ public class PedidoVendaService {
     public PedidoVenda atualizar(UUID id, PedidoVenda pedidoAtualizado) {
         PedidoVenda existente = buscar(id);
 
-        existente.setUsuario(pedidoAtualizado.getUsuario());
-        existente.setStatus(pedidoAtualizado.getStatus());
+        if (pedidoAtualizado.getUsuario() != null) {
+            existente.setUsuario(pedidoAtualizado.getUsuario());
+        }
+        if (pedidoAtualizado.getStatus() != null) {
+            existente.setStatus(pedidoAtualizado.getStatus());
+        }
 
         Map<UUID, PedidoItem> itensExistentes = existente.getItens().stream()
                 .collect(Collectors.toMap(item -> item.getProduto().getId(), item -> item));
@@ -71,6 +75,7 @@ public class PedidoVendaService {
             if (itemExistente != null) {
                 itemExistente.setQuantidade(itemAtualizado.getQuantidade());
                 itemExistente.setPrecoUnitario(itemAtualizado.getPrecoUnitario());
+                itemExistente.setValorVenda(itemAtualizado.getValorVenda());
                 novaLista.add(itemExistente);
             } else {
                 Produto produto = produtoRepository.findById(idProduto)
@@ -79,6 +84,7 @@ public class PedidoVendaService {
                 novoItem.setProduto(produto);
                 novoItem.setQuantidade(itemAtualizado.getQuantidade());
                 novoItem.setPrecoUnitario(itemAtualizado.getPrecoUnitario());
+                novoItem.setValorVenda(itemAtualizado.getValorVenda());
                 novoItem.setPedidoVenda(existente);
                 novaLista.add(novoItem);
             }
@@ -106,10 +112,37 @@ public class PedidoVendaService {
         return pedido
                 .getItens()
                 .stream()
-                .map(item -> item.getPrecoUnitario()
+                .filter(item -> item.getPrecoUnitario() != null && item.getQuantidade() != null)
+                .map(item -> (item.getValorVenda() != null ? item.getValorVenda() : item.getPrecoUnitario())
                         .multiply(BigDecimal
                                 .valueOf(item.getQuantidade())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public Page<PedidoVenda> listarComFiltros(String search, StatusPedido status, Pageable pageable) {
+        String termoBusca = (search == null || search.trim().isEmpty()) ? null : search.trim();
+        if (termoBusca == null) {
+            return pedidoVendaRepository.buscarResumoPorStatus(status, pageable);
+        }
+
+        try {
+            UUID searchId = UUID.fromString(termoBusca);
+            return pedidoVendaRepository.buscarResumoPorIdEStatus(searchId, status, pageable);
+        } catch (IllegalArgumentException ignored) {
+            // Busca textual por nome/sobrenome.
+        }
+
+        return pedidoVendaRepository.buscarResumoPorNomeEStatus(termoBusca.toLowerCase(), status, pageable);
+    }
+
+    public Page<PedidoVenda> listarPorUsuarioComFiltros(UUID usuarioId, StatusPedido status, Pageable pageable) {
+        usuarioService.buscar(usuarioId);
+        return pedidoVendaRepository.buscarResumoPorUsuarioId(usuarioId, status, pageable);
+    }
+
+    public PedidoVenda buscarDetalhe(UUID id) {
+        return pedidoVendaRepository.buscarDetalhePorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
     }
 
     public Page<PedidoVenda> buscarComFiltro(String search, Pageable pageable) {
