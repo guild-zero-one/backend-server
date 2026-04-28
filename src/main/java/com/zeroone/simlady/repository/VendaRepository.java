@@ -17,6 +17,23 @@ import java.util.UUID;
 @Repository
 public interface VendaRepository extends JpaRepository<Venda, UUID> {
 
+    @Query("""
+    SELECT DISTINCT v FROM Venda v
+    LEFT JOIN FETCH v.pedidos pv
+    LEFT JOIN FETCH pv.usuario u
+    LEFT JOIN FETCH pv.itens pi
+    LEFT JOIN FETCH pi.produto
+    WHERE v.id = :id
+    """)
+    Optional<Venda> findByIdWithDetails(@Param("id") UUID id);
+
+    @Query("""
+    SELECT DISTINCT v FROM Venda v
+    LEFT JOIN FETCH v.pedidos pv
+    LEFT JOIN FETCH pv.usuario
+    """)
+    List<Venda> findAllWithUsuarios();
+
     @Query("SELECT COALESCE(SUM(v.valorTotal), 0) FROM Venda v WHERE v.dataVenda BETWEEN :start AND :end")
     BigDecimal sumValorTotalByDataVendaBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
@@ -93,3 +110,5 @@ public interface VendaRepository extends JpaRepository<Venda, UUID> {
     Long countVendasPendentesPagamento();
 
 }
+
+
