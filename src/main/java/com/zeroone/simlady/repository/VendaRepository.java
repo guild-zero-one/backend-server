@@ -89,4 +89,7 @@ public interface VendaRepository extends JpaRepository<Venda, UUID> {
             """)
     Optional<Venda> buscarDetalhePorId(@Param("id") UUID id);
 
+    @Query("SELECT COUNT(v) FROM Venda v WHERE v.pagamentoRealizado = false")
+    Long countVendasPendentesPagamento();
+
 }
