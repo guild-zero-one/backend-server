@@ -196,18 +196,25 @@ class UsuarioServiceTest {
     @DisplayName("Deve atualizar usuário com sucesso")
     void deveAtualizarUsuarioComSucesso() {
         UUID id = UUID.randomUUID();
-        Usuario usuario = new Usuario();
-        usuario.setEmail("email@test.com");
+        Usuario usuarioExistente = new Usuario();
+        usuarioExistente.setId(id);
+        usuarioExistente.setNome("Nome Antigo");
+        usuarioExistente.setEmail("antigo@test.com");
 
-        when(usuarioRepository.findById(id)).thenReturn(Optional.of(new Usuario()));
+        Usuario usuarioAtualizacao = new Usuario();
+        usuarioAtualizacao.setNome("Nome Novo");
+        usuarioAtualizacao.setEmail("email@test.com");
+
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuarioExistente));
         when(usuarioRepository.existsByEmailAndIdNot("email@test.com", id)).thenReturn(false);
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Usuario result = usuarioService.atualizar(id, usuario);
+        Usuario result = usuarioService.atualizar(id, usuarioAtualizacao);
 
-        assertEquals(usuario, result);
-        assertEquals(id, usuario.getId());
-        verify(usuarioRepository).save(usuario);
+        assertEquals(id, result.getId());
+        assertEquals("Nome Novo", result.getNome());
+        assertEquals("email@test.com", result.getEmail());
+        verify(usuarioRepository).save(usuarioExistente);
     }
 
     @Test

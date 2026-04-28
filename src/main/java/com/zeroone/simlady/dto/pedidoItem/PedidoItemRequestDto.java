@@ -3,6 +3,7 @@ package com.zeroone.simlady.dto.pedidoItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -20,7 +21,12 @@ public class PedidoItemRequestDto {
     private Integer quantidade;
 
     @NotNull(message = "Preço Unitário não pode ser nulo.")
-    @Positive(message = "Preço Unitário deve ser um número positivo.")
+    @PositiveOrZero(message = "Preço Unitário deve ser um número positivo ou zero.")
     @Schema(description = "Preço unitário item", example = "49.99")
     private BigDecimal precoUnitario;
+
+    @NotNull(message = "Valor de venda não pode ser nulo.")
+    @PositiveOrZero(message = "Valor de venda deve ser um número positivo ou zero.")
+    @Schema(description = "Valor de venda do item", example = "59.99")
+    private BigDecimal valorVenda;
 }

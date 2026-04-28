@@ -1,10 +1,12 @@
 package com.zeroone.simlady.controller;
 
-import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
+import com.zeroone.simlady.dto.venda.AtualizarPagamentoVendaDto;
+import com.zeroone.simlady.dto.venda.VendaComUsuarioDto;
+import com.zeroone.simlady.dto.venda.VendaDetalheDto;
 import com.zeroone.simlady.dto.venda.VendaRequestDto;
-import com.zeroone.simlady.dto.venda.VendaResponseDto;
 import com.zeroone.simlady.entity.Venda;
 import com.zeroone.simlady.mapper.VendaMapper;
+import com.zeroone.simlady.mapper.VendaResponseMapper;
 import com.zeroone.simlady.service.VendaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -21,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,36 +33,36 @@ public class VendaController {
 
     private final VendaService vendaService;
     private final VendaMapper vendaMapper;
+    private final VendaResponseMapper vendaResponseMapper;
 
     @Operation(summary = "Cadastrar Venda", description = "Concluí um Pedido e fecha-lo como Venda")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Venda cadastrada com sucesso",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = VendaResponseDto.class))),
+                            schema = @Schema(implementation = VendaDetalheDto.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida",
                     content = @Content()),
     })
     @PostMapping
-    public ResponseEntity<VendaResponseDto> cadastrar(@Valid @RequestBody VendaRequestDto dto) {
+    public ResponseEntity<VendaDetalheDto> cadastrar(@Valid @RequestBody VendaRequestDto dto) {
         Venda venda = vendaMapper.toEntity(dto);
         vendaService.cadastrar(venda, dto.getPedidos());
-        return ResponseEntity.status(201).body(vendaMapper.toDto(venda));
+        return ResponseEntity.status(201).body(vendaService.buscarDetalhe(venda.getId()));
     }
 
-    @Operation(summary = "Listar todas as vendas", description = "Lista todas as vendas cadastradas no sistema com paginação")
+    @Operation(summary = "Listar todas as vendas", description = "Lista todas as vendas cadastradas no sistema com paginação, incluindo usuário resumido")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vendas listadas na base",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = VendaResponseDto.class)))),
+                            array = @ArraySchema(schema = @Schema(implementation = VendaComUsuarioDto.class)))),
             @ApiResponse(responseCode = "204", description = "Sem vendas na base",
                     content = @Content()),
     })
     @GetMapping
-    public ResponseEntity<Page<VendaResponseDto>> listar(Pageable pageable) {
-        Page<VendaResponseDto> vendas = vendaService.listar(pageable)
-                .map(vendaMapper::toDto);
+    public ResponseEntity<Page<VendaComUsuarioDto>> listar(Pageable pageable) {
+        Page<VendaComUsuarioDto> vendas = vendaService.listar(pageable);
 
         if(vendas.isEmpty()) {
             return ResponseEntity
@@ -72,21 +73,36 @@ public class VendaController {
                 .ok(vendas);
     }
 
-    @Operation(summary = "Buscar venda por id", description = "Busca informações da venda por id")
+    @Operation(summary = "Buscar venda por id", description = "Busca informações detalhadas da venda por id, incluindo pedido completo com itens")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Venda encontrada com sucesso",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = VendaResponseDto.class))),
+                            schema = @Schema(implementation = VendaDetalheDto.class))),
             @ApiResponse(responseCode = "404", description = "Venda não encontrada",
                     content = @Content())
     })
     @GetMapping("/{id}")
-    public ResponseEntity<VendaResponseDto> buscar(@PathVariable UUID id) {
-        return ResponseEntity
-                .ok(vendaMapper
-                        .toDto(vendaService
-                                .buscar(id)));
+    public ResponseEntity<VendaDetalheDto> buscar(@PathVariable UUID id) {
+        return ResponseEntity.ok(vendaService.buscarDetalhe(id));
+    }
+
+    @Operation(summary = "Atualizar status de pagamento", description = "Alterna o status de pagamento da venda")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pagamento atualizado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = VendaDetalheDto.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida",
+                    content = @Content()),
+            @ApiResponse(responseCode = "404", description = "Venda não encontrada",
+                    content = @Content())
+    })
+    @PatchMapping("/{id}/pagamento")
+    public ResponseEntity<VendaDetalheDto> atualizarPagamento(
+            @PathVariable UUID id,
+            @Valid @RequestBody AtualizarPagamentoVendaDto dto) {
+        return ResponseEntity.ok(vendaService.atualizarPagamento(id, dto.getPagamentoRealizado()));
     }
 
     @Operation(summary = "Deletar venda por id", description = "Deleta a venda pelo id, caso exista")

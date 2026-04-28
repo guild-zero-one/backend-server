@@ -1,5 +1,6 @@
 package com.zeroone.simlady.dto.venda;
 
+import com.zeroone.simlady.dto.pedido.PedidoDetalheResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -23,4 +24,10 @@ public class VendaResponseDto {
 
     @Schema(description = "Data da venda", example = "20/05/2026")
     private LocalDate dataVenda;
+
+    @Schema(description = "Usuário resumido relacionado à venda")
+    private UsuarioResumoVendaResponseDto usuario;
+
+    @Schema(description = "Pedido completo embutido no detalhe da venda")
+    private PedidoDetalheResponseDto pedido;
 }
