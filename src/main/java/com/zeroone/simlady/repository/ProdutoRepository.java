@@ -27,4 +27,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
            "JOIN pi.pedidoVenda pv " +
            "WHERE pi.produto.id = :produtoId")
     Long countDistinctPedidosByProdutoId(@Param("produtoId") UUID produtoId);
+
+    @Query("SELECT COALESCE(SUM(p.quantidade), 0) FROM Produto p")
+    Long sumQuantidadeTotalEmEstoque();
 }

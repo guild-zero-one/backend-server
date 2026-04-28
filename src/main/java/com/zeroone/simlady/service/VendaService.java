@@ -71,7 +71,7 @@ public class VendaService {
     }
 
     public Venda buscar(UUID id) {
-        return vendaRepository.findById(id)
+        return vendaRepository.buscarDetalhePorId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Venda não encontrada"));
     }
 

@@ -192,11 +192,8 @@ public class UsuarioController {
     @PatchMapping("/{id}")
     public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable UUID id, @Valid @RequestBody UsuarioAtualizacaoDto dto) {
        Usuario usuario = usuarioMapper.toEntity(dto);
-
-        usuarioService
-                .atualizar(id, usuario);
-
-       return ResponseEntity.ok(usuarioMapper.toDto(usuario));
+       Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
+       return ResponseEntity.ok(usuarioMapper.toDto(usuarioAtualizado));
     }
 
     @GetMapping("/autenticado")

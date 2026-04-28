@@ -6,6 +6,7 @@ import com.zeroone.simlady.dto.venda.VendaDetalheDto;
 import com.zeroone.simlady.dto.venda.VendaRequestDto;
 import com.zeroone.simlady.entity.Venda;
 import com.zeroone.simlady.mapper.VendaMapper;
+import com.zeroone.simlady.mapper.VendaResponseMapper;
 import com.zeroone.simlady.service.VendaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,6 +33,7 @@ public class VendaController {
 
     private final VendaService vendaService;
     private final VendaMapper vendaMapper;
+    private final VendaResponseMapper vendaResponseMapper;
 
     @Operation(summary = "Cadastrar Venda", description = "Concluí um Pedido e fecha-lo como Venda")
     @SecurityRequirement(name = "Bearer")

@@ -3,6 +3,7 @@ package com.zeroone.simlady.dto.produto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -36,4 +37,10 @@ public class ProdutoResponseDto {
 
     @Schema(description = "ID do fornecedor/marca", example = "550e8400-e29b-41d4-a716-446655440010")
     private UUID fornecedorId;
+
+    @Schema(description = "Data de criação do produto", example = "2024-01-15T10:30:00")
+    private LocalDateTime criadoEm;
+
+    @Schema(description = "Data de atualização do produto", example = "2024-03-20T14:22:00")
+    private LocalDateTime atualizadoEm;
 }
