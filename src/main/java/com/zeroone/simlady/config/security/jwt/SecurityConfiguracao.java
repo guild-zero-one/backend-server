@@ -47,6 +47,9 @@ public class SecurityConfiguracao {
     @Value("${clerk.jwks-url}")
     private String clerkJwksUrl;
 
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
