@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.Objects;
 
 @Component
@@ -57,7 +58,7 @@ public class PedidoVendaResponseMapper {
         return dto;
     }
 
-    private List<PedidoItemDetalheResponseDto> toItensDetalhe(List<PedidoItem> itens) {
+    private List<PedidoItemDetalheResponseDto> toItensDetalhe(Set<PedidoItem> itens) {
         if (itens == null) {
             return List.of();
         }
@@ -90,7 +91,7 @@ public class PedidoVendaResponseMapper {
         return dto;
     }
 
-    private Integer calcularTotalItens(List<PedidoItem> itens) {
+    private Integer calcularTotalItens(Set<PedidoItem> itens) {
         if (itens == null) {
             return 0;
         }
@@ -102,7 +103,7 @@ public class PedidoVendaResponseMapper {
                 .reduce(0, Integer::sum);
     }
 
-    private BigDecimal calcularTotalPrecoUnitario(List<PedidoItem> itens) {
+    private BigDecimal calcularTotalPrecoUnitario(Set<PedidoItem> itens) {
         if (itens == null) {
             return BigDecimal.ZERO;
         }
@@ -115,7 +116,7 @@ public class PedidoVendaResponseMapper {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private BigDecimal calcularTotalValorVenda(List<PedidoItem> itens) {
+    private BigDecimal calcularTotalValorVenda(Set<PedidoItem> itens) {
         if (itens == null) {
             return BigDecimal.ZERO;
         }

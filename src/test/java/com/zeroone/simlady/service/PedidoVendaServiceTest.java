@@ -47,7 +47,7 @@ class PedidoVendaServiceTest {
 
         PedidoVenda pedido = new PedidoVenda();
         pedido.setUsuario(usuario);
-        pedido.setItens(List.of(item));
+        pedido.setItens(Set.of(item));
 
         when(usuarioService.buscar(usuario.getId())).thenReturn(usuario);
         when(produtoService.buscarPorId(item.getProduto().getId())).thenReturn(item.getProduto());
@@ -105,7 +105,7 @@ class PedidoVendaServiceTest {
 
         PedidoVenda atualizado = new PedidoVenda();
         atualizado.setUsuario(new Usuario());
-        atualizado.setItens(List.of(new PedidoItem()));
+        atualizado.setItens(Set.of(new PedidoItem()));
         atualizado.setStatus(StatusPedido.CONCLUIDO);
 
         when(pedidoVendaRepository.findById(id)).thenReturn(Optional.of(existente));
@@ -170,7 +170,7 @@ class PedidoVendaServiceTest {
         item2.setQuantidade(3);
 
         PedidoVenda pedido = new PedidoVenda();
-        pedido.setItens(Arrays.asList(item1, item2));
+        pedido.setItens(Set.of(item1, item2));
 
         BigDecimal total = pedidoVendaService.calcularValorTotal(pedido);
 
