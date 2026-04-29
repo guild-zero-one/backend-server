@@ -41,7 +41,7 @@ import java.util.List;
 public class SecurityConfiguracao {
 
     private final AutenticacaoService autenticacaoService;
-
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
 
     @Value("${clerk.jwks-url}")
@@ -107,12 +107,7 @@ public class SecurityConfiguracao {
 
     @Bean
     public AutenticacaoFilter jwtAuthenticationFilterBean() {
-        return new AutenticacaoFilter(autenticacaoService, jwtAuthenticationUtilBean());
-    }
-
-    @Bean
-    public GerenciadorTokenJwt jwtAuthenticationUtilBean() {
-        return new GerenciadorTokenJwt();
+        return new AutenticacaoFilter(autenticacaoService, gerenciadorTokenJwt);
     }
 
     @Bean
