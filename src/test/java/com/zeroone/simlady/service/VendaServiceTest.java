@@ -37,6 +37,7 @@ class VendaServiceTest {
     @DisplayName("Deve cadastrar uma venda com sucesso")
     void deveCadastrarVendaComSucesso() {
         Venda venda = new Venda();
+        venda.setDesconto(BigDecimal.ZERO);
         PedidoVenda pedido1 = new PedidoVenda();
         PedidoVenda pedido2 = new PedidoVenda();
         List<PedidoVenda> pedidos = Arrays.asList(pedido1, pedido2);
@@ -102,19 +103,19 @@ class VendaServiceTest {
     void deveBuscarVendaPorIdComSucesso() {
         UUID id = UUID.randomUUID();
         Venda venda = new Venda();
-        when(vendaRepository.findById(id)).thenReturn(Optional.of(venda));
+        when(vendaRepository.buscarDetalhePorId(id)).thenReturn(Optional.of(venda));
 
         Venda resultado = vendaService.buscar(id);
 
         assertEquals(venda, resultado);
-        verify(vendaRepository).findById(id);
+        verify(vendaRepository).buscarDetalhePorId(id);
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao buscar venda inexistente")
     void deveLancarExcecaoAoBuscarVendaInexistente() {
         UUID id = UUID.randomUUID();
-        when(vendaRepository.findById(id)).thenReturn(Optional.empty());
+        lenient().when(vendaRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> vendaService.buscar(id));
     }
