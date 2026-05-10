@@ -265,8 +265,8 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve desativar usuário com sucesso")
-    void deveDesativarUsuarioComSucesso() {
+    @DisplayName("Deve desativar usuário ao fazer toggle quando ativo")
+    void deveDesativarUsuarioAoFazerToggleQuandoAtivo() {
         UUID id = UUID.randomUUID();
         Usuario usuario = new Usuario();
         usuario.setAtivo(true);
@@ -274,10 +274,38 @@ class UsuarioServiceTest {
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
-        usuarioService.desativar(id);
+        String resultado = usuarioService.toggleStatus(id);
 
         assertFalse(usuario.getAtivo());
+        assertEquals("Usuário desativado com sucesso.", resultado);
         verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    @DisplayName("Deve ativar usuário ao fazer toggle quando inativo")
+    void deveAtivarUsuarioAoFazerToggleQuandoInativo() {
+        UUID id = UUID.randomUUID();
+        Usuario usuario = new Usuario();
+        usuario.setAtivo(false);
+
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        String resultado = usuarioService.toggleStatus(id);
+
+        assertTrue(usuario.getAtivo());
+        assertEquals("Usuário ativado com sucesso.", resultado);
+        verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao fazer toggle de status em usuário inexistente")
+    void deveLancarExcecaoAoFazerToggleStatusEmUsuarioInexistente() {
+        UUID id = UUID.randomUUID();
+        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.toggleStatus(id));
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test

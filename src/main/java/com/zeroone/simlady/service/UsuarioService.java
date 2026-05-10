@@ -175,10 +175,13 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
-    public void desativar(UUID id) {
+    public String toggleStatus(UUID id) {
         Usuario usuario = buscar(id);
-        usuario.setAtivo(false);
+        usuario.setAtivo(!usuario.getAtivo());
         usuarioRepository.save(usuario);
+        return usuario.getAtivo()
+                ? "Usuário ativado com sucesso."
+                : "Usuário desativado com sucesso.";
     }
 
     public void deletar(UUID id) {

@@ -220,20 +220,18 @@ public class UsuarioController {
 
     }
 
-    @Operation(summary = "Desativar usuário por id", description = "Desativa usuário pelo id, caso exista")
+    @Operation(summary = "Alternar status do usuário", description = "Ativa ou desativa o usuário pelo id, invertendo o estado atual")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário desativado com sucesso",
+            @ApiResponse(responseCode = "200", description = "Status do usuário alterado com sucesso",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = UsuarioResponseDto.class))),
+                            schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                     content = @Content()),
     })
-
-    @PatchMapping("/desativar/{id}")
-    public ResponseEntity<Void> desativar(@PathVariable UUID id) {
-        usuarioService.desativar(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> toggleStatus(@PathVariable UUID id) {
+        return ResponseEntity.ok(usuarioService.toggleStatus(id));
     }
 
     @Operation(summary = "Deletar usuário por id", description = "Deleta usuário pelo id, caso exista")
