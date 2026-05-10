@@ -8,6 +8,8 @@ import org.mapstruct.Named;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
+import java.util.Objects;
 
 @Mapper(componentModel = "spring", uses = {UsuarioResumoVendaMapper.class, PedidoItemComProdutoMapper.class})
 public interface PedidoDetalheVendaMapper {
@@ -21,29 +23,30 @@ public interface PedidoDetalheVendaMapper {
     PedidoDetalheVendaDto toDto(PedidoVenda entity);
 
     @Named("calculateTotalItens")
-    default Integer calculateTotalItens(List<com.zeroone.simlady.entity.PedidoItem> itens) {
+    default Integer calculateTotalItens(Set<com.zeroone.simlady.entity.PedidoItem> itens) {
         return itens != null ? itens.size() : 0;
     }
 
     @Named("calculateTotalPrecoUnitario")
-    default BigDecimal calculateTotalPrecoUnitario(List<com.zeroone.simlady.entity.PedidoItem> itens) {
+    default BigDecimal calculateTotalPrecoUnitario(Set<com.zeroone.simlady.entity.PedidoItem> itens) {
         if (itens == null || itens.isEmpty()) return BigDecimal.ZERO;
         return itens.stream()
+                .filter(Objects::nonNull)
+                .filter(item -> item.getPrecoUnitario() != null && item.getQuantidade() != null)
                 .map(item -> item.getPrecoUnitario().multiply(BigDecimal.valueOf(item.getQuantidade())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Named("calculateTotalValorVenda")
-    default BigDecimal calculateTotalValorVenda(List<com.zeroone.simlady.entity.PedidoItem> itens) {
+    default BigDecimal calculateTotalValorVenda(Set<com.zeroone.simlady.entity.PedidoItem> itens) {
         if (itens == null || itens.isEmpty()) return BigDecimal.ZERO;
         return itens.stream()
+                .filter(Objects::nonNull)
+                .filter(item -> (item.getValorVenda() != null || item.getPrecoUnitario() != null) && item.getQuantidade() != null)
                 .map(item -> {
-                    BigDecimal valorVenda = (item.getProduto() != null && item.getProduto().getValorVenda() != null)
-                            ? BigDecimal.valueOf(item.getProduto().getValorVenda())
-                            : BigDecimal.ZERO;
+                    BigDecimal valorVenda = item.getValorVenda() != null ? item.getValorVenda() : item.getPrecoUnitario();
                     return valorVenda.multiply(BigDecimal.valueOf(item.getQuantidade()));
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
-

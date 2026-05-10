@@ -1,11 +1,13 @@
 package com.zeroone.simlady.service;
 
+import com.zeroone.simlady.entity.PedidoItem;
 import com.zeroone.simlady.entity.PedidoVenda;
+import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.StatusPedido;
-import com.zeroone.simlady.entity.PedidoItem;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.PedidoVendaRepository;
+import com.zeroone.simlady.repository.ProdutoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +34,9 @@ class PedidoVendaServiceTest {
     @Mock
     private ProdutoService produtoService;
 
+    @Mock
+    private ProdutoRepository produtoRepository;
+
     @InjectMocks
     private PedidoVendaService pedidoVendaService;
 
@@ -47,7 +52,7 @@ class PedidoVendaServiceTest {
 
         PedidoVenda pedido = new PedidoVenda();
         pedido.setUsuario(usuario);
-        pedido.setItens(List.of(item));
+        pedido.setItens(Set.of(item));
 
         when(usuarioService.buscar(usuario.getId())).thenReturn(usuario);
         when(produtoService.buscarPorId(item.getProduto().getId())).thenReturn(item.getProduto());
@@ -100,22 +105,32 @@ class PedidoVendaServiceTest {
     @DisplayName("Deve atualizar pedido de venda com sucesso")
     void deveAtualizarPedidoVendaComSucesso() {
         UUID id = UUID.randomUUID();
+        UUID produtoId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        PedidoItem itemAtualizado = new PedidoItem();
+        itemAtualizado.setProduto(produto);
+
         PedidoVenda existente = new PedidoVenda();
         existente.setId(id);
+        existente.setItens(new HashSet<>());
 
         PedidoVenda atualizado = new PedidoVenda();
         atualizado.setUsuario(new Usuario());
-        atualizado.setItens(List.of(new PedidoItem()));
+        atualizado.setItens(Set.of(itemAtualizado));
         atualizado.setStatus(StatusPedido.CONCLUIDO);
 
         when(pedidoVendaRepository.findById(id)).thenReturn(Optional.of(existente));
         when(pedidoVendaRepository.save(any(PedidoVenda.class))).thenReturn(existente);
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
 
         PedidoVenda result = pedidoVendaService.atualizar(id, atualizado);
 
         assertEquals(existente, result);
         assertEquals(atualizado.getUsuario(), existente.getUsuario());
-        assertEquals(atualizado.getItens(), existente.getItens());
+        assertEquals(1, existente.getItens().size());
         assertEquals(atualizado.getStatus(), existente.getStatus());
         verify(pedidoVendaRepository).save(existente);
     }
@@ -170,7 +185,7 @@ class PedidoVendaServiceTest {
         item2.setQuantidade(3);
 
         PedidoVenda pedido = new PedidoVenda();
-        pedido.setItens(Arrays.asList(item1, item2));
+        pedido.setItens(Set.of(item1, item2));
 
         BigDecimal total = pedidoVendaService.calcularValorTotal(pedido);
 

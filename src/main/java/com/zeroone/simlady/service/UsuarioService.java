@@ -1,5 +1,6 @@
 package com.zeroone.simlady.service;
 
+import com.zeroone.simlady.dto.usuario.UsuarioAtualizacaoDto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.entity.enums.Provider;
@@ -139,31 +140,28 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
-    public Usuario atualizar(UUID id, Usuario usuario) {
+    public Usuario atualizar(UUID id, UsuarioAtualizacaoDto dto) {
 
-        Usuario usuarioAntigo = buscar(id);
+        Usuario usuario = buscar(id);
 
-        if (usuario.getEmail() != null) {
-            boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
-            if(existePorEmail) {
+        if (dto.getEmail() != null) {
+            if (usuarioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
                 throw new ResourceAlreadyExistsException("Dados inválidos, email já cadastrado");
             }
+            usuario.setEmail(dto.getEmail());
         }
 
-        if (usuario.getNome() != null) {
-            usuarioAntigo.setNome(usuario.getNome());
-        }
-        if (usuario.getSobrenome() != null) {
-            usuarioAntigo.setSobrenome(usuario.getSobrenome());
-        }
-        if (usuario.getEmail() != null) {
-            usuarioAntigo.setEmail(usuario.getEmail());
-        }
-        if (usuario.getCelular() != null) {
-            usuarioAntigo.setCelular(usuario.getCelular());
-        }
+        if (dto.getNome() != null) usuario.setNome(dto.getNome());
+        if (dto.getSobrenome() != null) usuario.setSobrenome(dto.getSobrenome());
+        if (dto.getCelular() != null) usuario.setCelular(dto.getCelular());
 
-        return usuarioRepository.save(usuarioAntigo);
+        return usuarioRepository.save(usuario);
+    }
+
+    public void togglePermissao(UUID id) {
+        Usuario usuario = buscar(id);
+        usuario.setPermissao(usuario.getPermissao() == Permissao.ADMIN ? Permissao.COMUM : Permissao.ADMIN);
+        usuarioRepository.save(usuario);
     }
 
     public Usuario buscarAutenticado(HttpServletRequest request) {
@@ -177,10 +175,13 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
-    public void desativar(UUID id) {
+    public String toggleStatus(UUID id) {
         Usuario usuario = buscar(id);
-        usuario.setAtivo(false);
+        usuario.setAtivo(!usuario.getAtivo());
         usuarioRepository.save(usuario);
+        return usuario.getAtivo()
+                ? "Usuário ativado com sucesso."
+                : "Usuário desativado com sucesso.";
     }
 
     public void deletar(UUID id) {

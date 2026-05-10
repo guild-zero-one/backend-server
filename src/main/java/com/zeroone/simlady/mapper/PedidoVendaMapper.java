@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {PedidoItemMapper.class})
 public interface PedidoVendaMapper {
@@ -26,5 +28,11 @@ public interface PedidoVendaMapper {
     PedidoVendaResponseDto toDto(PedidoVenda entity);
 
     List<PedidoVendaResponseDto> toDto(List<PedidoVenda> pedidos);
-}
 
+    default List<PedidoVendaResponseDto> toDto(Set<PedidoVenda> pedidos) {
+        if (pedidos == null) {
+            return List.of();
+        }
+        return pedidos.stream().map(this::toDto).collect(Collectors.toList());
+    }
+}

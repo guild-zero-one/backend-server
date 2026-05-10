@@ -13,8 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,7 +66,7 @@ public class PedidoVendaService {
         Map<UUID, PedidoItem> itensExistentes = existente.getItens().stream()
                 .collect(Collectors.toMap(item -> item.getProduto().getId(), item -> item));
 
-        List<PedidoItem> novaLista = new ArrayList<>();
+        Set<PedidoItem> novaLista = new HashSet<>();
 
         for (PedidoItem itemAtualizado : pedidoAtualizado.getItens()) {
             UUID idProduto = itemAtualizado.getProduto().getId();

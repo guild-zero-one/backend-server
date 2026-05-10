@@ -191,9 +191,22 @@ public class UsuarioController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable UUID id, @Valid @RequestBody UsuarioAtualizacaoDto dto) {
-       Usuario usuario = usuarioMapper.toEntity(dto);
-       Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
-       return ResponseEntity.ok(usuarioMapper.toDto(usuarioAtualizado));
+        Usuario usuario = usuarioService.atualizar(id, dto);
+        return ResponseEntity.ok(usuarioMapper.toDto(usuario));
+    }
+
+    @Operation(summary = "Alternar role do usuário", description = "Alterna a permissão do usuário entre ADMIN e COMUM")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Permissão alterada com sucesso",
+                    content = @Content()),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                    content = @Content())
+    })
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<Void> toggleRole(@PathVariable UUID id) {
+        usuarioService.togglePermissao(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/autenticado")
@@ -207,20 +220,18 @@ public class UsuarioController {
 
     }
 
-    @Operation(summary = "Desativar usuário por id", description = "Desativa usuário pelo id, caso exista")
+    @Operation(summary = "Alternar status do usuário", description = "Ativa ou desativa o usuário pelo id, invertendo o estado atual")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuário desativado com sucesso",
+            @ApiResponse(responseCode = "200", description = "Status do usuário alterado com sucesso",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = UsuarioResponseDto.class))),
+                            schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                     content = @Content()),
     })
-
-    @PatchMapping("/desativar/{id}")
-    public ResponseEntity<Void> desativar(@PathVariable UUID id) {
-        usuarioService.desativar(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> toggleStatus(@PathVariable UUID id) {
+        return ResponseEntity.ok(usuarioService.toggleStatus(id));
     }
 
     @Operation(summary = "Deletar usuário por id", description = "Deleta usuário pelo id, caso exista")

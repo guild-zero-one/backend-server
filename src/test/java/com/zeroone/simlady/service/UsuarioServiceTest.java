@@ -1,6 +1,7 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.config.security.jwt.GerenciadorTokenJwt;
+import com.zeroone.simlady.dto.usuario.UsuarioAtualizacaoDto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
@@ -201,7 +202,7 @@ class UsuarioServiceTest {
         usuarioExistente.setNome("Nome Antigo");
         usuarioExistente.setEmail("antigo@test.com");
 
-        Usuario usuarioAtualizacao = new Usuario();
+        UsuarioAtualizacaoDto usuarioAtualizacao = new UsuarioAtualizacaoDto();
         usuarioAtualizacao.setNome("Nome Novo");
         usuarioAtualizacao.setEmail("email@test.com");
 
@@ -221,7 +222,7 @@ class UsuarioServiceTest {
     @DisplayName("Deve lançar exceção ao atualizar usuário com email já cadastrado")
     void deveLancarExcecaoAoAtualizarUsuarioComEmailExistente() {
         UUID id = UUID.randomUUID();
-        Usuario usuario = new Usuario();
+        UsuarioAtualizacaoDto usuario = new UsuarioAtualizacaoDto();
         usuario.setEmail("email@test.com");
 
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(new Usuario()));
@@ -264,8 +265,8 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deve desativar usuário com sucesso")
-    void deveDesativarUsuarioComSucesso() {
+    @DisplayName("Deve desativar usuário ao fazer toggle quando ativo")
+    void deveDesativarUsuarioAoFazerToggleQuandoAtivo() {
         UUID id = UUID.randomUUID();
         Usuario usuario = new Usuario();
         usuario.setAtivo(true);
@@ -273,10 +274,38 @@ class UsuarioServiceTest {
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
-        usuarioService.desativar(id);
+        String resultado = usuarioService.toggleStatus(id);
 
         assertFalse(usuario.getAtivo());
+        assertEquals("Usuário desativado com sucesso.", resultado);
         verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    @DisplayName("Deve ativar usuário ao fazer toggle quando inativo")
+    void deveAtivarUsuarioAoFazerToggleQuandoInativo() {
+        UUID id = UUID.randomUUID();
+        Usuario usuario = new Usuario();
+        usuario.setAtivo(false);
+
+        when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
+
+        String resultado = usuarioService.toggleStatus(id);
+
+        assertTrue(usuario.getAtivo());
+        assertEquals("Usuário ativado com sucesso.", resultado);
+        verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao fazer toggle de status em usuário inexistente")
+    void deveLancarExcecaoAoFazerToggleStatusEmUsuarioInexistente() {
+        UUID id = UUID.randomUUID();
+        when(usuarioRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> usuarioService.toggleStatus(id));
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test

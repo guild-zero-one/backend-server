@@ -41,11 +41,14 @@ import java.util.List;
 public class SecurityConfiguracao {
 
     private final AutenticacaoService autenticacaoService;
-
+    private final GerenciadorTokenJwt gerenciadorTokenJwt;
     private final AutenticacaoEntryPoint autenticacaoJwtEntryPoint;
 
     @Value("${clerk.jwks-url}")
     private String clerkJwksUrl;
+
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -104,12 +107,7 @@ public class SecurityConfiguracao {
 
     @Bean
     public AutenticacaoFilter jwtAuthenticationFilterBean() {
-        return new AutenticacaoFilter(autenticacaoService, jwtAuthenticationUtilBean());
-    }
-
-    @Bean
-    public GerenciadorTokenJwt jwtAuthenticationUtilBean() {
-        return new GerenciadorTokenJwt();
+        return new AutenticacaoFilter(autenticacaoService, gerenciadorTokenJwt);
     }
 
     @Bean
@@ -121,7 +119,7 @@ public class SecurityConfiguracao {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
 
-        configuracao.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuracao.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         configuracao.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
