@@ -229,7 +229,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
                     content = @Content()),
     })
-    @PatchMapping("/{id}/status")
+    @PatchMapping(value = "/{id}/status", produces = "application/json")
     public ResponseEntity<String> toggleStatus(@PathVariable UUID id) {
         return ResponseEntity.ok(usuarioService.toggleStatus(id));
     }
