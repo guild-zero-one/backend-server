@@ -1,5 +1,6 @@
 package com.zeroone.simlady.service;
 
+import com.zeroone.simlady.dto.usuario.UsuarioAtualizacaoDto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.entity.enums.Provider;
@@ -139,29 +140,28 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
     }
 
-    public Usuario atualizar(UUID id, Usuario usuario) {
+    public Usuario atualizar(UUID id, UsuarioAtualizacaoDto dto) {
 
-        Usuario usuarioAntigo = buscar(id);
+        Usuario usuario = buscar(id);
 
-
-
-        boolean existePorEmail = usuarioRepository.existsByEmailAndIdNot(usuario.getEmail(), id);
-
-        if(existePorEmail) {
-            throw new ResourceAlreadyExistsException("Dados inválidos, email já cadastrado");
+        if (dto.getEmail() != null) {
+            if (usuarioRepository.existsByEmailAndIdNot(dto.getEmail(), id)) {
+                throw new ResourceAlreadyExistsException("Dados inválidos, email já cadastrado");
+            }
+            usuario.setEmail(dto.getEmail());
         }
 
-        usuarioAntigo.setNome(usuario.getNome());
-        usuarioAntigo.setSobrenome(usuario.getSobrenome());
-        usuarioAntigo.setEmail(usuario.getEmail());
-        usuarioAntigo.setSenha(usuario.getSenha());
-        usuarioAntigo.setPermissao(usuario.getPermissao());
-        usuarioAntigo.setAtivo(usuario.getAtivo());
-        usuarioAntigo.setPedidos(usuario.getPedidos());
-
-        usuario.setId(id);
+        if (dto.getNome() != null) usuario.setNome(dto.getNome());
+        if (dto.getSobrenome() != null) usuario.setSobrenome(dto.getSobrenome());
+        if (dto.getCelular() != null) usuario.setCelular(dto.getCelular());
 
         return usuarioRepository.save(usuario);
+    }
+
+    public void togglePermissao(UUID id) {
+        Usuario usuario = buscar(id);
+        usuario.setPermissao(usuario.getPermissao() == Permissao.ADMIN ? Permissao.COMUM : Permissao.ADMIN);
+        usuarioRepository.save(usuario);
     }
 
     public Usuario buscarAutenticado(HttpServletRequest request) {
