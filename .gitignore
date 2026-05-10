@@ -25,3 +25,7 @@ Thumbs.db
 application.properties
 !application.properties.example
 !application-railway.properties
+
+# Claude
+.claude/
+CLAUDE.md
