@@ -20,5 +20,12 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Configuração do Git
-.gitignore
+# Variáveis de ambiente e configurações sensíveis
+.env
+application.properties
+!application.properties.example
+!application-railway.properties
+
+# Claude
+.claude/
+CLAUDE.md

@@ -191,9 +191,22 @@ public class UsuarioController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<UsuarioResponseDto> atualizar(@PathVariable UUID id, @Valid @RequestBody UsuarioAtualizacaoDto dto) {
-       Usuario usuario = usuarioMapper.toEntity(dto);
-       Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
-       return ResponseEntity.ok(usuarioMapper.toDto(usuarioAtualizado));
+        Usuario usuario = usuarioService.atualizar(id, dto);
+        return ResponseEntity.ok(usuarioMapper.toDto(usuario));
+    }
+
+    @Operation(summary = "Alternar role do usuário", description = "Alterna a permissão do usuário entre ADMIN e COMUM")
+    @SecurityRequirement(name = "Bearer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Permissão alterada com sucesso",
+                    content = @Content()),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                    content = @Content())
+    })
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<Void> toggleRole(@PathVariable UUID id) {
+        usuarioService.togglePermissao(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/autenticado")

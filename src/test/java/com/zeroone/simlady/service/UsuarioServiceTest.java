@@ -1,6 +1,7 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.config.security.jwt.GerenciadorTokenJwt;
+import com.zeroone.simlady.dto.usuario.UsuarioAtualizacaoDto;
 import com.zeroone.simlady.entity.Usuario;
 import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.exception.BadRequestException;
@@ -201,7 +202,7 @@ class UsuarioServiceTest {
         usuarioExistente.setNome("Nome Antigo");
         usuarioExistente.setEmail("antigo@test.com");
 
-        Usuario usuarioAtualizacao = new Usuario();
+        UsuarioAtualizacaoDto usuarioAtualizacao = new UsuarioAtualizacaoDto();
         usuarioAtualizacao.setNome("Nome Novo");
         usuarioAtualizacao.setEmail("email@test.com");
 
@@ -221,7 +222,7 @@ class UsuarioServiceTest {
     @DisplayName("Deve lançar exceção ao atualizar usuário com email já cadastrado")
     void deveLancarExcecaoAoAtualizarUsuarioComEmailExistente() {
         UUID id = UUID.randomUUID();
-        Usuario usuario = new Usuario();
+        UsuarioAtualizacaoDto usuario = new UsuarioAtualizacaoDto();
         usuario.setEmail("email@test.com");
 
         when(usuarioRepository.findById(id)).thenReturn(Optional.of(new Usuario()));

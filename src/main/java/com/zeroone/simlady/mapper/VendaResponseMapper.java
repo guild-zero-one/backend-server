@@ -63,6 +63,6 @@ public class VendaResponseMapper {
         if (venda.getPedidos() == null || venda.getPedidos().isEmpty()) {
             return null;
         }
-        return venda.getPedidos().getFirst();
+        return venda.getPedidos().iterator().next();
     }
 }

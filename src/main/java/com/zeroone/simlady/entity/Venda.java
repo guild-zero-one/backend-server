@@ -1,9 +1,6 @@
 package com.zeroone.simlady.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -32,7 +29,7 @@ public class Venda {
     private LocalDate dataVenda;
 
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
-    private List<PedidoVenda> pedidos;
+    private Set<PedidoVenda> pedidos;
 
     @CreationTimestamp
     private LocalDate criadoEm;

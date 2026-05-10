@@ -84,7 +84,7 @@ public class PedidoVendaSearchTest {
         String nomeUsuario = "Maria";
         Page<PedidoVenda> page = new PageImpl<>(List.of(pedido), pageable, 1);
 
-        when(pedidoVendaRepository.findByIdLike(nomeUsuario, pageable)).thenReturn(new PageImpl<>(List.of(), pageable, 0));
+        lenient().when(pedidoVendaRepository.findByIdLike(nomeUsuario, pageable)).thenReturn(new PageImpl<>(List.of(), pageable, 0));
         when(pedidoVendaRepository.findByUsuario_NomeContainingIgnoreCase(nomeUsuario, pageable)).thenReturn(page);
 
         // Act

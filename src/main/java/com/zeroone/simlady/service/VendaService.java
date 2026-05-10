@@ -18,7 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -42,7 +45,7 @@ public class VendaService {
         }
 
         pedidos.forEach(pedido -> {pedido.setVenda(venda);});
-        venda.setPedidos(pedidos);
+        venda.setPedidos(new HashSet<>(pedidos));
         venda.setValorTotal(calcularTotal(venda).subtract(venda.getDesconto()));
 
         return vendaRepository.save(venda);
@@ -64,7 +67,7 @@ public class VendaService {
         return vendaRepository.findAll(pageable).map(venda -> {
             VendaComUsuarioDto dto = vendaComUsuarioMapper.toDto(venda);
             if (venda.getPedidos() != null && !venda.getPedidos().isEmpty()) {
-                dto.setUsuario(usuarioResumoVendaMapper.toDto(venda.getPedidos().get(0).getUsuario()));
+                dto.setUsuario(usuarioResumoVendaMapper.toDto(new ArrayList<>(venda.getPedidos()).get(0).getUsuario()));
             }
             return dto;
         });
@@ -79,7 +82,7 @@ public class VendaService {
         Venda venda = buscar(id);
         VendaDetalheDto dto = vendaDetalheMapper.toDto(venda);
         if (venda.getPedidos() != null && !venda.getPedidos().isEmpty()) {
-            dto.setPedido(pedidoDetalheVendaMapper.toDto(venda.getPedidos().get(0)));
+            dto.setPedido(pedidoDetalheVendaMapper.toDto(new ArrayList<>(venda.getPedidos()).get(0)));
         }
         return dto;
     }
