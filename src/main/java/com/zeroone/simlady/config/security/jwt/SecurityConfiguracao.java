@@ -67,6 +67,8 @@ public class SecurityConfiguracao {
                                 .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/usuarios/logout").permitAll()
+                                .requestMatchers("/uploads/**").permitAll()
+                                .requestMatchers("/storage/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoJwtEntryPoint))

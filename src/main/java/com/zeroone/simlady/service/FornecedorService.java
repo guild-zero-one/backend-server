@@ -82,6 +82,13 @@ public class FornecedorService {
         return fornecedorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Fornecedor Não Encontrado"));
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public void atualizarImageUrl(UUID id, String url) {
+        Fornecedor fornecedor = buscarPorId(id);
+        fornecedor.setImagemUrl(url);
+        fornecedorRepository.save(fornecedor);
+    }
+
     public Fornecedor buscarPorNomeExato(String nome) {
         String nomeNormalizado = nome.trim().toLowerCase();
         return fornecedorRepository.findByNomeIgnoreCase(nomeNormalizado)

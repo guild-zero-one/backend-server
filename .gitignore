@@ -29,3 +29,5 @@ application.properties
 # Claude
 .claude/
 CLAUDE.md
+
+uploads/

@@ -117,6 +117,13 @@ public class ProdutoService {
     }
 
     @Transactional
+    public void atualizarImageUrl(UUID id, String url) {
+        Produto produto = buscarPorId(id);
+        produto.setUrlImagem(url);
+        produtoRepository.save(produto);
+    }
+
+    @Transactional
     public void associarCategoria(UUID produtoId, UUID categoriaId) {
         Produto produto = buscarPorId(produtoId);
         Categoria categoria = categoriaRepository.findById(categoriaId)
