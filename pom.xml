@@ -144,11 +144,6 @@
 			<version>3.2.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.azure</groupId>
-			<artifactId>azure-storage-blob</artifactId>
-			<version>12.27.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
@@ -159,6 +154,12 @@
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-spring-boot2</artifactId>
 			<version>2.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.25.16</version>
 		</dependency>
 
 	</dependencies>

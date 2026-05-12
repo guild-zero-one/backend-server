@@ -184,6 +184,13 @@ public class UsuarioService {
                 : "Usuário desativado com sucesso.";
     }
 
+    @Transactional
+    public void atualizarImageUrl(UUID id, String url) {
+        Usuario usuario = buscar(id);
+        usuario.setUrlImagem(url);
+        usuarioRepository.save(usuario);
+    }
+
     public void deletar(UUID id) {
         if (!usuarioRepository.existsById(id)) {
             throw new ResourceNotFoundException("Cliente não encontrado");
