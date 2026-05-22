@@ -25,10 +25,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 
 import java.net.URL;
 import java.util.Arrays;
@@ -71,7 +71,15 @@ public class SecurityConfiguracao {
                                 .requestMatchers("/storage/**").authenticated()
                                 .anyRequest().authenticated()
                 )
-                .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoJwtEntryPoint))
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(autenticacaoJwtEntryPoint)
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write("{\"message\": \"Você não tem permissão para esta ação.\"}");
+                        })
+                )
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(clerkJwtFilterBean(), UsernamePasswordAuthenticationFilter.class);

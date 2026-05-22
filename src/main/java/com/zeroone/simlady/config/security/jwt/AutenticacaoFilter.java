@@ -58,9 +58,12 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException exception) {
                 LOGGER.info("[FALHA AUTENTICACAO] - Token expirado, usuario: {} - {}",
                         exception.getClaims().getSubject(), exception.getMessage());
-
                 LOGGER.trace("[FALHA AUTENTICACAO] - stack trace: %s", exception);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"message\": \"Token expirado.\"}");
+                return;
             }
         }
 
