@@ -29,15 +29,14 @@ public class FornecedorService {
     private final ProdutoMapper produtoMapper;
 
     public Fornecedor cadastrarFornecedor(Fornecedor fornecedor) {
-        // Normalizar nome para evitar duplicatas (case insensitive)
-        String nomeNormalizado = fornecedor.getNome().trim().toLowerCase();
+        String nomeTrimmed = fornecedor.getNome().trim();
 
-        fornecedorRepository.findByNomeIgnoreCase(nomeNormalizado)
+        fornecedorRepository.findByNomeIgnoreCase(nomeTrimmed)
                 .ifPresent(f -> {
                     throw new ResourceAlreadyExistsException("Fornecedor com este nome já existe");
                 });
 
-        fornecedor.setNome(nomeNormalizado);
+        fornecedor.setNome(nomeTrimmed);
         return fornecedorRepository.save(fornecedor);
     }
 
@@ -53,17 +52,17 @@ public class FornecedorService {
         Fornecedor fornecedorBuscado = buscarPorId(id);
 
         if (fornecedor.getNome() != null) {
-            String nomeNormalizado = fornecedor.getNome().trim().toLowerCase();
+            String nomeTrimmed = fornecedor.getNome().trim();
 
-            // Verificar duplicata apenas se o nome foi alterado
-            if (!nomeNormalizado.equals(fornecedorBuscado.getNome())) {
-                fornecedorRepository.findByNomeIgnoreCase(nomeNormalizado)
+            // Verificar duplicata apenas se o nome foi alterado (comparação case-insensitive)
+            if (!nomeTrimmed.equalsIgnoreCase(fornecedorBuscado.getNome())) {
+                fornecedorRepository.findByNomeIgnoreCase(nomeTrimmed)
                         .ifPresent(f -> {
                             throw new ResourceAlreadyExistsException("Fornecedor com este nome já existe");
                         });
             }
 
-            fornecedorBuscado.setNome(nomeNormalizado);
+            fornecedorBuscado.setNome(nomeTrimmed);
         }
         if (fornecedor.getCnpj() != null) {
             fornecedorBuscado.setCnpj(fornecedor.getCnpj());
