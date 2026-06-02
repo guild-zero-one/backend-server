@@ -30,4 +30,20 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
 
     @Query("SELECT COALESCE(SUM(p.quantidade), 0) FROM Produto p")
     Long sumQuantidadeTotalEmEstoque();
+
+    @Query(value = """
+        SELECT p.nome,
+               COALESCE(SUM(CASE WHEN pv.status IN ('PENDENTE', 'CONCLUIDO') THEN pi.quantidade ELSE 0 END), 0) AS pedidos,
+               p.quantidade AS estoque
+        FROM produto p
+        LEFT JOIN pedido_item pi ON pi.fk_produto = p.id
+        LEFT JOIN pedido_venda pv ON pv.id = pi.fk_pedido
+        GROUP BY p.id, p.nome, p.quantidade
+        ORDER BY (
+            COALESCE(SUM(CASE WHEN pv.status IN ('PENDENTE', 'CONCLUIDO') THEN pi.quantidade ELSE 0 END), 0)::float
+            / NULLIF(p.quantidade, 0)
+        ) DESC NULLS LAST
+        LIMIT 10
+    """, nativeQuery = true)
+    List<Object[]> findProdutosComDemandaEEstoque();
 }

@@ -109,6 +109,55 @@ public interface VendaRepository extends JpaRepository<Venda, UUID> {
     @Query("SELECT COUNT(v) FROM Venda v WHERE v.pagamentoRealizado = false")
     Long countVendasPendentesPagamento();
 
+    @Query("""
+        SELECT FUNCTION('TO_CHAR', v.dataVenda, 'ID') as dia, COALESCE(SUM(v.valorTotal), 0)
+        FROM Venda v
+        WHERE v.dataVenda >= :dataInicio
+        GROUP BY FUNCTION('TO_CHAR', v.dataVenda, 'ID')
+        ORDER BY FUNCTION('TO_CHAR', v.dataVenda, 'ID') ASC
+    """)
+    List<Object[]> findFaturamentoPorDiaSemana(@Param("dataInicio") LocalDate dataInicio);
+
+    @Query("""
+        SELECT FUNCTION('TO_CHAR', v.dataVenda, 'W') as semana, COALESCE(SUM(v.valorTotal), 0)
+        FROM Venda v
+        WHERE v.dataVenda >= :dataInicio
+        GROUP BY FUNCTION('TO_CHAR', v.dataVenda, 'W')
+        ORDER BY FUNCTION('TO_CHAR', v.dataVenda, 'W') ASC
+    """)
+    List<Object[]> findFaturamentoPorSemanaMes(@Param("dataInicio") LocalDate dataInicio);
+
+    @Query("""
+        SELECT FUNCTION('TO_CHAR', v.dataVenda, 'MM') as mes, COALESCE(SUM(v.valorTotal), 0)
+        FROM Venda v
+        WHERE v.dataVenda >= :dataInicio
+        GROUP BY FUNCTION('TO_CHAR', v.dataVenda, 'MM')
+        ORDER BY FUNCTION('TO_CHAR', v.dataVenda, 'MM') ASC
+    """)
+    List<Object[]> findFaturamentoPorMes(@Param("dataInicio") LocalDate dataInicio);
+
+    @Query("""
+        SELECT u.nome, u.sobrenome, v.dataVenda, v.valorTotal
+        FROM Venda v
+        JOIN v.pedidos p
+        JOIN p.usuario u
+        WHERE v.pagamentoRealizado = false
+        ORDER BY v.dataVenda ASC
+    """)
+    List<Object[]> findPagamentosPendentes(Pageable pageable);
+
+    @Query("""
+        SELECT u.nome, u.sobrenome, SUM(v.valorTotal) as total
+        FROM Venda v
+        JOIN v.pedidos p
+        JOIN p.usuario u
+        WHERE p.status = com.zeroone.simlady.entity.enums.StatusPedido.CONCLUIDO
+          AND v.dataVenda >= :dataInicio
+        GROUP BY u.id, u.nome, u.sobrenome
+        ORDER BY total DESC
+    """)
+    List<Object[]> findRankingCompradores(@Param("dataInicio") LocalDate dataInicio, Pageable pageable);
+
 }
 
 

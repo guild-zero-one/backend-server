@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -94,4 +95,26 @@ public interface PedidoVendaRepository extends JpaRepository<PedidoVenda, UUID> 
             WHERE pv.id = :id
             """)
     Optional<PedidoVenda> buscarDetalhePorId(@Param("id") UUID id);
+
+    @Query("""
+        SELECT p.status, COUNT(p)
+        FROM PedidoVenda p
+        GROUP BY p.status
+    """)
+    List<Object[]> countGroupedByStatus();
+
+    @Query("""
+        SELECT u.nome, u.sobrenome, MAX(p.criadoEm) as ultimoPedido
+        FROM PedidoVenda p
+        JOIN p.usuario u
+        WHERE p.status IN (
+            com.zeroone.simlady.entity.enums.StatusPedido.PENDENTE,
+            com.zeroone.simlady.entity.enums.StatusPedido.CONCLUIDO
+        )
+          AND u.permissao = com.zeroone.simlady.entity.enums.Permissao.COMUM
+        GROUP BY u.id, u.nome, u.sobrenome
+        HAVING MAX(p.criadoEm) < :corte
+        ORDER BY MAX(p.criadoEm) ASC
+    """)
+    List<Object[]> findClientesInativos(@Param("corte") LocalDateTime corte, Pageable pageable);
 }
