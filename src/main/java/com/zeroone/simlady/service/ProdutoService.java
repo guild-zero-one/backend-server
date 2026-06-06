@@ -129,12 +129,13 @@ public class ProdutoService {
         Categoria categoria = categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
-        if (produto.getCategorias().contains(categoria)) {
+        if (categoria.getProdutos().contains(produto)) {
             throw new ResourceAlreadyExistsException("Categoria já associada a este produto");
         }
 
-        produto.getCategorias().add(categoria);
-        produtoRepository.save(produto);
+        // Modificar o lado dono do relacionamento (Categoria.produtos) para persistir na tabela produto_categoria
+        categoria.getProdutos().add(produto);
+        categoriaRepository.save(categoria);
     }
 
     @Transactional
@@ -143,12 +144,13 @@ public class ProdutoService {
         Categoria categoria = categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
 
-        if (!produto.getCategorias().contains(categoria)) {
+        if (!categoria.getProdutos().contains(produto)) {
             throw new ResourceNotFoundException("Categoria não está associada a este produto");
         }
 
-        produto.getCategorias().remove(categoria);
-        produtoRepository.save(produto);
+        // Modificar o lado dono do relacionamento (Categoria.produtos) para persistir na tabela produto_categoria
+        categoria.getProdutos().remove(produto);
+        categoriaRepository.save(categoria);
     }
 
     @Transactional

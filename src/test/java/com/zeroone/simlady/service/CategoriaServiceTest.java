@@ -1,9 +1,11 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.entity.Categoria;
+import com.zeroone.simlady.entity.Produto;
 import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
 import com.zeroone.simlady.repository.CategoriaRepository;
+import com.zeroone.simlady.repository.ProdutoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +32,9 @@ public class CategoriaServiceTest {
 
     @Mock
     private CategoriaRepository categoriaRepository;
+
+    @Mock
+    private ProdutoRepository produtoRepository;
 
     @InjectMocks
     private CategoriaService categoriaService;
@@ -177,6 +182,37 @@ public class CategoriaServiceTest {
         // Assert
         assertThat(resultado).isNotNull();
         verify(categoriaRepository, times(1)).save(any(Categoria.class));
+    }
+
+    @Test
+    void testBuscarCategoriasPorProduto_Sucesso() {
+        // Arrange
+        UUID produtoId = UUID.randomUUID();
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(new Produto()));
+        when(categoriaRepository.findByProdutosId(produtoId)).thenReturn(List.of(categoria));
+
+        // Act
+        List<Categoria> resultado = categoriaService.buscarCategoriasPorProduto(produtoId);
+
+        // Assert
+        assertThat(resultado).isNotNull();
+        assertThat(resultado).hasSize(1);
+        assertThat(resultado.getFirst().getNome()).isEqualTo("masculino");
+        verify(categoriaRepository, times(1)).findByProdutosId(produtoId);
+    }
+
+    @Test
+    void testBuscarCategoriasPorProduto_ProdutoNaoEncontrado() {
+        // Arrange
+        UUID produtoId = UUID.randomUUID();
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThatThrownBy(() -> categoriaService.buscarCategoriasPorProduto(produtoId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Produto não encontrado");
+
+        verify(categoriaRepository, never()).findByProdutosId(any());
     }
 }
 

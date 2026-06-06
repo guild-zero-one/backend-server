@@ -1,8 +1,11 @@
 package com.zeroone.simlady.service;
 
 import com.zeroone.simlady.dto.produto.ProdutoResponseDto;
+import com.zeroone.simlady.entity.Categoria;
 import com.zeroone.simlady.entity.Produto;
+import com.zeroone.simlady.exception.ResourceAlreadyExistsException;
 import com.zeroone.simlady.exception.ResourceNotFoundException;
+import com.zeroone.simlady.repository.CategoriaRepository;
 import com.zeroone.simlady.repository.ProdutoRepository;
 import com.zeroone.simlady.mapper.ProdutoMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +33,13 @@ class ProdutoServiceTest {
     private ProdutoRepository produtoRepository;
 
     @Mock
+    private CategoriaRepository categoriaRepository;
+
+    @Mock
     private ProdutoMapper produtoMapper;
+
+    @Mock
+    private FornecedorService fornecedorService;
 
     @InjectMocks
     private ProdutoService produtoService;
@@ -287,5 +296,167 @@ class ProdutoServiceTest {
         assertEquals("https://imagem.com/produto.png", resultado.getFirst().getUrlImagem());
         verify(produtoRepository).findByFornecedorId(fornecedorId);
         verify(produtoMapper).toResponseDto(produto);
+    }
+
+    @Test
+    @DisplayName("Deve associar categoria ao produto com sucesso")
+    void deveAssociarCategoriaAoProdutoComSucesso() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(categoriaRepository.findById(categoriaId)).thenReturn(Optional.of(categoria));
+
+        // When
+        produtoService.associarCategoria(produtoId, categoriaId);
+
+        // Assert
+        assertTrue(categoria.getProdutos().contains(produto));
+        verify(categoriaRepository).save(categoria);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao associar categoria a produto inexistente")
+    void deveLancarExcecaoAoAssociarCategoriaAProdutoInexistente() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
+
+        // Then & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> produtoService.associarCategoria(produtoId, categoriaId));
+        verify(categoriaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao associar categoria inexistente ao produto")
+    void deveLancarExcecaoAoAssociarCategoriaInexistenteAoProduto() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(categoriaRepository.findById(categoriaId)).thenReturn(Optional.empty());
+
+        // Then & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> produtoService.associarCategoria(produtoId, categoriaId));
+        verify(categoriaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao associar categoria já associada ao produto")
+    void deveLancarExcecaoAoAssociarCategoriaJaAssociada() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+        categoria.getProdutos().add(produto);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(categoriaRepository.findById(categoriaId)).thenReturn(Optional.of(categoria));
+
+        // Then & Assert
+        assertThrows(ResourceAlreadyExistsException.class,
+                () -> produtoService.associarCategoria(produtoId, categoriaId));
+        verify(categoriaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve desassociar categoria do produto com sucesso")
+    void deveDesassociarCategoriaDoProdutoComSucesso() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+        categoria.getProdutos().add(produto);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(categoriaRepository.findById(categoriaId)).thenReturn(Optional.of(categoria));
+
+        // When
+        produtoService.desassociarCategoria(produtoId, categoriaId);
+
+        // Assert
+        assertFalse(categoria.getProdutos().contains(produto));
+        verify(categoriaRepository).save(categoria);
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao desassociar categoria de produto inexistente")
+    void deveLancarExcecaoAoDesassociarCategoriaDeProdutoInexistente() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.empty());
+
+        // Then & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> produtoService.desassociarCategoria(produtoId, categoriaId));
+        verify(categoriaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao desassociar categoria inexistente do produto")
+    void deveLancarExcecaoAoDesassociarCategoriaInexistenteDoProduto() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(categoriaRepository.findById(categoriaId)).thenReturn(Optional.empty());
+
+        // Then & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> produtoService.desassociarCategoria(produtoId, categoriaId));
+        verify(categoriaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção ao desassociar categoria não associada ao produto")
+    void deveLancarExcecaoAoDesassociarCategoriaNaoAssociada() {
+        // Given
+        UUID produtoId = UUID.randomUUID();
+        UUID categoriaId = UUID.randomUUID();
+
+        Produto produto = new Produto();
+        produto.setId(produtoId);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+
+        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
+        when(categoriaRepository.findById(categoriaId)).thenReturn(Optional.of(categoria));
+
+        // Then & Assert
+        assertThrows(ResourceNotFoundException.class,
+                () -> produtoService.desassociarCategoria(produtoId, categoriaId));
+        verify(categoriaRepository, never()).save(any());
     }
 }
