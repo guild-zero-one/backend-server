@@ -100,7 +100,8 @@ public class DashboardService {
     public List<PagamentoPendenteDTO> getPagamentosPendentes() {
         List<Object[]> rows = vendaRepository.findPagamentosPendentes(PageRequest.of(0, 10));
         return rows.stream().map(r -> {
-            String cliente = r[0] + " " + r[1];
+            String sobrenome = r[1] != null ? " " + r[1] : "";
+            String cliente = r[0] + sobrenome;
             String data = ((LocalDate) r[2]).format(DateTimeFormatter.ISO_LOCAL_DATE);
             BigDecimal valor = toBigDecimal(r[3]);
             return new PagamentoPendenteDTO(cliente.strip(), data, valor);
