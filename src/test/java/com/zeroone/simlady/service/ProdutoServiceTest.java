@@ -196,6 +196,64 @@ class ProdutoServiceTest {
     }
 
     @Test
+    @DisplayName("Deve listar produtos por fornecedor filtrando pelo campo catalogo quando informado")
+    void deveListarProdutosPorFornecedorFiltrandoPorCatalogoQuandoInformado() {
+        // Given
+        UUID fornecedorId = UUID.randomUUID();
+        Pageable pageable = Pageable.unpaged();
+        Produto produto = new Produto();
+        produto.setId(UUID.randomUUID());
+        produto.setCatalogo(true);
+        Page<Produto> page = new PageImpl<>(List.of(produto));
+
+        when(produtoRepository.findByFornecedorIdAndCatalogo(fornecedorId, true, pageable)).thenReturn(page);
+
+        // When
+        Page<Produto> resultado = produtoService.listarPorFornecedor(fornecedorId, true, pageable);
+
+        // Then
+        assertEquals(page, resultado);
+        verify(produtoRepository).findByFornecedorIdAndCatalogo(fornecedorId, true, pageable);
+    }
+
+    @Test
+    @DisplayName("Deve listar produtos por fornecedor sem filtrar pelo catalogo quando parâmetro for omitido")
+    void deveListarProdutosPorFornecedorSemFiltrarPorCatalogoQuandoOmitido() {
+        // Given
+        UUID fornecedorId = UUID.randomUUID();
+        Pageable pageable = Pageable.unpaged();
+        Page<Produto> page = new PageImpl<>(List.of(new Produto()));
+
+        when(produtoRepository.findByFornecedorIdAndCatalogo(fornecedorId, null, pageable)).thenReturn(page);
+
+        // When
+        Page<Produto> resultado = produtoService.listarPorFornecedor(fornecedorId, null, pageable);
+
+        // Then
+        assertEquals(page, resultado);
+        verify(produtoRepository).findByFornecedorIdAndCatalogo(fornecedorId, null, pageable);
+    }
+
+    @Test
+    @DisplayName("Deve listar produtos por fornecedor com filtro de nome e catalogo")
+    void deveListarProdutosPorFornecedorComFiltroDeNomeECatalogo() {
+        // Given
+        UUID fornecedorId = UUID.randomUUID();
+        Pageable pageable = Pageable.unpaged();
+        Page<Produto> page = new PageImpl<>(List.of(new Produto()));
+
+        when(produtoRepository.findByFornecedorIdAndNomeContainingIgnoreCaseAndCatalogo(fornecedorId, "batom", false, pageable))
+                .thenReturn(page);
+
+        // When
+        Page<Produto> resultado = produtoService.listarPorFornecedorComFiltro(fornecedorId, " batom ", false, pageable);
+
+        // Then
+        assertEquals(page, resultado);
+        verify(produtoRepository).findByFornecedorIdAndNomeContainingIgnoreCaseAndCatalogo(fornecedorId, "batom", false, pageable);
+    }
+
+    @Test
     @DisplayName("Deve excluir produto com sucesso")
     void deveExcluirProdutoComSucesso() {
         // Given

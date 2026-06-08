@@ -161,15 +161,16 @@ public class ProdutoController {
     public ResponseEntity<Page<ProdutoResponseDto>> buscarPorFornecedor(
             @PathVariable UUID fornecedorId,
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean catalogo,
             Pageable pageable) {
 
         Page<ProdutoResponseDto> produtos;
 
         if (search != null && !search.trim().isEmpty()) {
-            produtos = produtoService.listarPorFornecedorComFiltro(fornecedorId, search, pageable)
+            produtos = produtoService.listarPorFornecedorComFiltro(fornecedorId, search, catalogo, pageable)
                     .map(produtoMapper::toResponseDto);
         } else {
-            produtos = produtoService.listarPorFornecedor(fornecedorId, pageable)
+            produtos = produtoService.listarPorFornecedor(fornecedorId, catalogo, pageable)
                     .map(produtoMapper::toResponseDto);
         }
 

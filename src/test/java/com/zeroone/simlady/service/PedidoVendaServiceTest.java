@@ -14,6 +14,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -171,6 +174,40 @@ class PedidoVendaServiceTest {
 
         assertEquals(StatusPedido.CANCELADO, result.getStatus());
         verify(pedidoVendaRepository).save(pedido);
+    }
+
+    @Test
+    @DisplayName("Deve filtrar pedidos pelo usuário quando idUsuario for informado")
+    void deveFiltrarPedidosPeloUsuarioQuandoIdUsuarioForInformado() {
+        UUID idUsuario = UUID.randomUUID();
+        Pageable pageable = Pageable.unpaged();
+        PedidoVenda pedido = new PedidoVenda();
+        Page<PedidoVenda> page = new PageImpl<>(List.of(pedido));
+
+        when(usuarioService.buscar(idUsuario)).thenReturn(new Usuario());
+        when(pedidoVendaRepository.buscarResumoPorUsuarioId(idUsuario, null, pageable)).thenReturn(page);
+
+        Page<PedidoVenda> resultado = pedidoVendaService.listarComFiltros(null, null, idUsuario, pageable);
+
+        assertEquals(page, resultado);
+        verify(pedidoVendaRepository).buscarResumoPorUsuarioId(idUsuario, null, pageable);
+        verify(pedidoVendaRepository, never()).buscarResumoPorStatus(any(), any());
+    }
+
+    @Test
+    @DisplayName("Deve manter listagem geral quando idUsuario não for informado")
+    void deveManterListagemGeralQuandoIdUsuarioNaoForInformado() {
+        Pageable pageable = Pageable.unpaged();
+        PedidoVenda pedido = new PedidoVenda();
+        Page<PedidoVenda> page = new PageImpl<>(List.of(pedido));
+
+        when(pedidoVendaRepository.buscarResumoPorStatus(StatusPedido.PENDENTE, pageable)).thenReturn(page);
+
+        Page<PedidoVenda> resultado = pedidoVendaService.listarComFiltros(null, StatusPedido.PENDENTE, null, pageable);
+
+        assertEquals(page, resultado);
+        verify(pedidoVendaRepository).buscarResumoPorStatus(StatusPedido.PENDENTE, pageable);
+        verify(pedidoVendaRepository, never()).buscarResumoPorUsuarioId(any(), any(), any());
     }
 
     @Test

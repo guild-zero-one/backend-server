@@ -4,10 +4,13 @@ import com.zeroone.simlady.dto.pedido.PedidoVendaRequestDto;
 import com.zeroone.simlady.dto.pedido.PedidoDetalheResponseDto;
 import com.zeroone.simlady.dto.pedido.PedidoResumoResponseDto;
 import com.zeroone.simlady.entity.PedidoVenda;
+import com.zeroone.simlady.entity.Usuario;
+import com.zeroone.simlady.entity.enums.Permissao;
 import com.zeroone.simlady.entity.enums.StatusPedido;
 import com.zeroone.simlady.mapper.PedidoVendaMapper;
 import com.zeroone.simlady.mapper.PedidoVendaResponseMapper;
 import com.zeroone.simlady.service.PedidoVendaService;
+import com.zeroone.simlady.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +38,7 @@ public class PedidoVendaController {
     private final PedidoVendaService pedidoVendaService;
     private final PedidoVendaMapper pedidoVendaMapper;
     private final PedidoVendaResponseMapper pedidoVendaResponseMapper;
+    private final UsuarioService usuarioService;
 
     @Operation(summary = "Cadastrar um Pedido de Venda", description = "Cadastra um novo Pedido de Venda e seus itens")
     @SecurityRequirement(name = "Bearer")
@@ -53,7 +58,8 @@ public class PedidoVendaController {
         return ResponseEntity.status(201).body(pedidoVendaResponseMapper.toDetalhe(pedidoCadastrado));
     }
 
-    @Operation(summary = "Listar todos os pedidos", description = "Lista todos os Pedidos de Venda cadastrados no sistema com paginação e suporte a busca")
+    @Operation(summary = "Listar todos os pedidos", description = "Lista todos os Pedidos de Venda cadastrados no sistema com paginação e suporte a busca. " +
+            "Usuários com permissão 'comum' recebem apenas os próprios pedidos, independentemente do valor informado em 'idUsuario'.")
     @SecurityRequirement(name = "Bearer")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pedidos listados na base",
@@ -66,9 +72,13 @@ public class PedidoVendaController {
     public ResponseEntity<Page<PedidoResumoResponseDto>> listarPedidos(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) StatusPedido status,
+            @RequestParam(required = false) UUID idUsuario,
+            HttpServletRequest request,
             Pageable pageable) {
+        UUID idUsuarioFiltro = resolverIdUsuarioFiltro(idUsuario, request);
+
         Page<PedidoResumoResponseDto> pedidos = pedidoVendaService
-                .listarComFiltros(search, status, pageable)
+                .listarComFiltros(search, status, idUsuarioFiltro, pageable)
                 .map(pedidoVendaResponseMapper::toResumo);
 
         if (pedidos.isEmpty()) {
@@ -76,6 +86,21 @@ public class PedidoVendaController {
         }
 
         return ResponseEntity.ok(pedidos);
+    }
+
+    /**
+     * Usuários 'comum' só podem ver os próprios pedidos: o id da query string é ignorado
+     * e substituído pelo id extraído do usuário autenticado, prevenindo IDOR. Para 'ADMIN'
+     * o valor informado (podendo ser nulo) é respeitado.
+     */
+    private UUID resolverIdUsuarioFiltro(UUID idUsuario, HttpServletRequest request) {
+        Usuario usuarioAutenticado = usuarioService.buscarAutenticado(request);
+
+        if (usuarioAutenticado.getPermissao() == Permissao.COMUM) {
+            return usuarioAutenticado.getId();
+        }
+
+        return idUsuario;
     }
 
     @Operation(summary = "Buscar pedido por id", description = "Busca pedido por id, caso exista")

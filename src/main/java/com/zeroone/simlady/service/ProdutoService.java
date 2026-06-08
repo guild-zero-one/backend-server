@@ -48,8 +48,8 @@ public class ProdutoService {
         return produtoRepository.findByFornecedorId(id);
     }
 
-    public Page<Produto> listarPorFornecedor(UUID fornecedorId, Pageable pageable) {
-        return produtoRepository.findByFornecedorId(fornecedorId, pageable);
+    public Page<Produto> listarPorFornecedor(UUID fornecedorId, Boolean catalogo, Pageable pageable) {
+        return produtoRepository.findByFornecedorIdAndCatalogo(fornecedorId, catalogo, pageable);
     }
 
     public void excluirPorId(UUID id) {
@@ -100,9 +100,9 @@ public class ProdutoService {
         return produtoRepository.findAllById(ids);
     }
 
-    public Page<Produto> listarPorFornecedorComFiltro(UUID fornecedorId, String nome, Pageable pageable) {
+    public Page<Produto> listarPorFornecedorComFiltro(UUID fornecedorId, String nome, Boolean catalogo, Pageable pageable) {
         String nomeNormalizado = nome != null ? nome.trim() : "";
-        return produtoRepository.findByFornecedorIdAndNomeContainingIgnoreCase(fornecedorId, nomeNormalizado, pageable);
+        return produtoRepository.findByFornecedorIdAndNomeContainingIgnoreCaseAndCatalogo(fornecedorId, nomeNormalizado, catalogo, pageable);
     }
 
     public Page<Produto> listarPorCategoria(String categoriaNome, Pageable pageable) {

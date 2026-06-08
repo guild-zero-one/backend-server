@@ -120,7 +120,11 @@ public class PedidoVendaService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public Page<PedidoVenda> listarComFiltros(String search, StatusPedido status, Pageable pageable) {
+    public Page<PedidoVenda> listarComFiltros(String search, StatusPedido status, UUID idUsuario, Pageable pageable) {
+        if (idUsuario != null) {
+            return listarPorUsuarioComFiltros(idUsuario, status, pageable);
+        }
+
         String termoBusca = (search == null || search.trim().isEmpty()) ? null : search.trim();
         if (termoBusca == null) {
             return pedidoVendaRepository.buscarResumoPorStatus(status, pageable);

@@ -13,13 +13,33 @@ import java.util.UUID;
 public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
     List<Produto> findByFornecedorId(UUID fornecedorId);
 
-    Page<Produto> findByFornecedorId(UUID fornecedorId, Pageable pageable);
-
     Long countByFornecedorId(UUID fornecedorId);
 
     Produto findProdutoBySkuIgnoreCase(String sku);
 
-    Page<Produto> findByFornecedorIdAndNomeContainingIgnoreCase(UUID fornecedorId, String nome, Pageable pageable);
+    @Query("""
+        SELECT p FROM Produto p
+        WHERE p.fornecedor.id = :fornecedorId
+          AND (:catalogo IS NULL OR p.catalogo = :catalogo)
+    """)
+    Page<Produto> findByFornecedorIdAndCatalogo(
+            @Param("fornecedorId") UUID fornecedorId,
+            @Param("catalogo") Boolean catalogo,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT p FROM Produto p
+        WHERE p.fornecedor.id = :fornecedorId
+          AND LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+          AND (:catalogo IS NULL OR p.catalogo = :catalogo)
+    """)
+    Page<Produto> findByFornecedorIdAndNomeContainingIgnoreCaseAndCatalogo(
+            @Param("fornecedorId") UUID fornecedorId,
+            @Param("nome") String nome,
+            @Param("catalogo") Boolean catalogo,
+            Pageable pageable
+    );
 
     Page<Produto> findByCategorias_NomeContainingIgnoreCase(String categoriaNome, Pageable pageable);
 
